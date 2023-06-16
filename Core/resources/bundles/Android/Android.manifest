@@ -1,0 +1,10 @@
+ManifestFileVersion: 0
+CRC: 3193562090
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: item_bundle.fusion
+      Dependencies: {}
+    Info_1:
+      Name: content_bundle.fusion
+      Dependencies: {}
