@@ -1,4 +1,5 @@
-﻿using BoneLib.BoneMenu.Elements;
+﻿using BoneLib;
+using BoneLib.BoneMenu.Elements;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
@@ -11,6 +12,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
+using AndroidClipboard;
 
 using UnityEngine;
 
@@ -96,9 +99,17 @@ namespace LabFusion.BoneMenu
                 if (!Clipboard.ContainsText())
                     return;
 
-                var text = Clipboard.GetText();
-                text = text.LimitLength(maxLength);
-                pref.SetValue(text);
+                if (HelperMethods.IsAndroid())
+                {
+                    var text = AndroidClipboard.UniClipboard.GetText();
+                } 
+                else
+                {
+                    var text = Clipboard.GetText();
+                    text = text.LimitLength(maxLength);
+                    pref.SetValue(text);
+                }
+                
             });
             var resetButton = category.CreateFunctionElement($"Reset {name}", Color.white, () => {
                 pref.SetValue("");
