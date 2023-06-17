@@ -118,7 +118,22 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal override void SendToServer(NetworkChannel channel, FusionMessage message) { }
+        internal override void SendToServer(NetworkChannel channel, FusionMessage message) 
+        { 
+            //message id is 0 cause we want to encode fusion's messages into bytes ALWAYS and then decode them twice, first from a riptide message and tthen from a fusion message
+            //move this to riptide's ahndler for concistency with the other layers
+            
+            /*Message riptidemessage = Message.Create(RiptideHandler.ConvertToSendMode(channel), 0);
+            try
+            {
+                unsafe
+            }
+            riptidemessage.AddBytes(message.Buffer, false);
+            currentclient.Send(riptidemessage);*/
+            
+
+                
+        }
 
         /// <summary>
         /// Sends the message to the server if this is a client. Sends to all clients if this is a server.
