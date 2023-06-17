@@ -713,6 +713,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\MelonLoader.dll</HintPath>
     </Reference>
+    <Reference Include="RiptideNetworking, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Core\resources\lib\Any\RiptideNetworking.dll</HintPath>
+    </Reference>
     <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\SLZ.Algorithms.dll</HintPath>
@@ -1270,6 +1274,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\raw_changelog.txt" />
+    <Content Include="Core\resources\lib\Any\RiptideNetworking.dll" />
+    <Content Include="Core\resources\lib\Any\RiptideNetworking.xml" />
     <Content Include="Core\src\AssemblyInfo.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
