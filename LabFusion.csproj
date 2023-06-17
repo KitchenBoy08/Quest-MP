@@ -1274,8 +1274,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\raw_changelog.txt" />
-    <Content Include="Core\resources\lib\Any\RiptideNetworking.dll" />
-    <Content Include="Core\resources\lib\Any\RiptideNetworking.xml" />
+    <EmbeddedResource Include="Core\resources\lib\Any\RiptideNetworking.dll" />
+    <None Include="Core\resources\lib\Any\RiptideNetworking.xml" />
     <Content Include="Core\src\AssemblyInfo.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
