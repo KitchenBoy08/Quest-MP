@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using MelonLoader;
 using LabFusion.Data;
 using LabFusion.Utilities;
 
@@ -17,19 +17,40 @@ namespace LabFusion.Network
 {
     internal class RiptideNetworkLayer : NetworkLayer
     {
+        Server currentserver { get;set;}
+        Client currentclient { get;set;}
+        //
+
         /// <summary>
         /// Returns true if this layer is hosting a server.
         /// </summary>
-        internal override bool IsServer => false;
-
+        internal override bool IsServer => _IsServer();
+        
+        protected bool _IsServer()
+        {
+            if(currentserver != null)
+            {
+                return true;
+            }
+            else { return false; }
+        }
         /// <summary>
         /// Returns true if this layer is a client inside of a server (still returns true if this is the host!)
         /// </summary>
-        internal override bool IsClient => false;
+        internal override bool IsClient => _IsClient();
 
+        protected bool _IsClient()
+        {
+            if (_IsServer() == true) {return true;}
+            else if (currentclient.Connection.IsNotConnected == false) { return true;} 
+            else { return false; }
+        }
+
+        
         /// <summary>
         /// Returns true if the networking solution allows the server to send messages to the host (Actual Server Logic vs P2P).
         /// </summary>
+        /// Riptide should be able to, consider removing this since it's already true in the inherited class
         internal override bool ServerCanSendToHost => true;
 
         /// <summary>
@@ -42,7 +63,10 @@ namespace LabFusion.Network
         /// </summary>
         internal override void StartServer()
         {
+            currentserver = new Server();
+            currentserver.Start(7777, 10);
 
+            InternalServerHelpers.OnStartServer();
         }
 
         /// <summary>
@@ -50,7 +74,8 @@ namespace LabFusion.Network
         /// </summary>
         internal override void Disconnect(string reason = "")
         {
-
+            currentclient.Disconnect();
+            FusionLogger.Log($"Disconnected from server because: {reason}");
         }
 
         /// <summary>
@@ -58,6 +83,7 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
+        /// This should maybe return a username determined from a file or melonpreference, sent over the net
         internal override string GetUsername(ulong userId) => "Unknown";
 
         /// <summary>
@@ -65,7 +91,11 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        internal override bool IsFriend(ulong userId) => false;
+        internal override bool IsFriend(ulong userId) 
+        { 
+            //Currently there's no Friend system in Place and probably isn't needed, so we always return false
+            return false;
+        }
 
         /// <summary>
         /// Sends the message to the specified user if this is a server.
@@ -132,14 +162,22 @@ namespace LabFusion.Network
 
         internal override void OnInitializeLayer()
         {
-
+            //if possible, switch this out for fusion logger
+            RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
+            currentclient = new Client();
         }
 
         internal override void OnLateInitializeLayer() { }
 
         internal override void OnCleanupLayer() { }
 
-        internal override void OnUpdateLayer() { }
+        internal override void OnUpdateLayer() 
+        {
+            if(currentserver != null)
+            {
+                currentserver.Update();
+            }
+        }
 
         internal override void OnLateUpdateLayer() { }
 
@@ -152,5 +190,10 @@ namespace LabFusion.Network
         internal override void OnUserJoin(PlayerId id) { }
 
         internal override void OnSetupBoneMenu(MenuCategory category) { }
+
+        public void ConnectToServer(string ip)
+        {
+            currentclient.Connect(ip + ":7777");
+        }
     }
 }
