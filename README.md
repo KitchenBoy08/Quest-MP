@@ -27,8 +27,8 @@ The module example can be found here:
 https://github.com/Lakatrazz/Fusion-Module-Example
 
 ## Credits
-- EverythingOnArm for most of the actual networking (I think he should get like 70% of the credit for this port)
-- Bonelab Fusion for the actual base mod.
+- EverythingOnArm: For most of the actual networking (I think he should get like 70% of the credit for this port).
+- Lakatrazz: For developing Fusion itself and creating an AWESOME network layer system.
 
 ## Setting up the Source Code
 1. Clone the git repo into a folder
