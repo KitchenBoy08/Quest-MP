@@ -17,6 +17,7 @@ namespace LabFusion.Network {
         STEAM_VR = 0,
         SPACEWAR = 1,
         EMPTY = 2,
+        RIPTIDE = 3,
     }
 
     public static class NetworkLayerDeterminer {
@@ -44,6 +45,8 @@ namespace LabFusion.Network {
                         return NetworkLayerType.SPACEWAR;
                 case NetworkLayerType.EMPTY:
                     return NetworkLayerType.EMPTY;
+                case NetworkLayerType.RIPTIDE:
+                    return NetworkLayerType.RIPTIDE;
             }
         }
 
@@ -61,6 +64,8 @@ namespace LabFusion.Network {
                     return typeof(SpacewarNetworkLayer);
                 case NetworkLayerType.EMPTY:
                     return typeof(EmptyNetworkLayer);
+                case NetworkLayerType.RIPTIDE:
+                    return typeof(RiptideNetworkLayer);
             }
         }
     }
