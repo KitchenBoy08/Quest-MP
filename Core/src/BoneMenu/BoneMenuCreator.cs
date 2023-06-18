@@ -105,8 +105,8 @@ namespace LabFusion.BoneMenu
                     if (!Xamarin.Essentials.Clipboard.HasText)
                         return;
                     else {
-                        Task<string> task1 = AndroidClip.GetClippedItem();
-                        string text = task1.Result;
+                        Task<string> GrabClip = AndroidClip.GetClippedItem();
+                        string text = GrabClip.Result;
                         text = text.LimitLength(maxLength);
                         if (text.Contains("/"))
                         {
