@@ -13,7 +13,7 @@ using Riptide;
 
 namespace LabFusion.Network
 {
-    internal class RiptideLobby
+    internal class RiptideLobby 
     {
 
     }
