@@ -13,7 +13,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using AndroidClipboard;
+using Xamarin.Essentials;
+using Plugin.Clipboard;
 
 using UnityEngine;
 
@@ -95,20 +96,27 @@ namespace LabFusion.BoneMenu
         public static void CreateStringPreference(MenuCategory category, string name, IFusionPref<string> pref, Action<string> onValueChanged = null, int maxLength = PlayerIdManager.MaxNameLength) {
             string currentValue = pref.GetValue();
             var display = category.CreateFunctionElement(string.IsNullOrWhiteSpace(currentValue) ? $"No {name}" : $"{name}: {currentValue}", Color.white, null);
-            var pasteButton = category.CreateFunctionElement($"Paste {name}", Color.white, () => {
-                if (!Clipboard.ContainsText())
-                    return;
-
+            var pasteButton = category.CreateFunctionElement($"Paste {name}", Color.white, async () => {
                 if (HelperMethods.IsAndroid())
                 {
-                    var text = AndroidClipboard.UniClipboard.GetText();
-                } 
-                else
-                {
-                    var text = Clipboard.GetText();
+                    if (Xamarin.Essentials.Clipboard.HasText)
+                        return;
+                    else {
+                        var text = await Xamarin.Essentials.Clipboard.GetTextAsync();
+                        text = text.LimitLength(maxLength);
+                        pref.SetValue(text);
+                    }
+
+                } else { 
+                    if (!System.Windows.Forms.Clipboard.ContainsText())
+                        return;
+                    else { 
+                    var text = System.Windows.Forms.Clipboard.GetText();
                     text = text.LimitLength(maxLength);
                     pref.SetValue(text);
+                    }
                 }
+                
                 
             });
             var resetButton = category.CreateFunctionElement($"Reset {name}", Color.white, () => {

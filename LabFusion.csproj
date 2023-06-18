@@ -527,7 +527,6 @@
     <Compile Include="Core\src\Syncables\SyncBlacklist.cs" />
     <Compile Include="Core\src\UI\FusionUITrigger.cs" />
     <Compile Include="Core\src\UI\InfoBoxPanelView.cs" />
-    <Compile Include="Core\src\Utilities\AndroidClipboard.cs" />
     <Compile Include="Core\src\Utilities\AssemblyUtilities.cs" />
     <Compile Include="Core\src\Utilities\ByteRetriever.cs" />
     <Compile Include="Core\src\Utilities\CommonBarcodes.cs" />
@@ -716,6 +715,18 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\MelonLoader.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>packages\OpenTK.3.0.1\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>packages\OpenTK.GLControl.3.0.1\lib\net20\OpenTK.GLControl.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.Clipboard, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net472\Plugin.Clipboard.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.Clipboard.Abstractions, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net472\Plugin.Clipboard.Abstractions.dll</HintPath>
+    </Reference>
     <Reference Include="RiptideNetworking, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\resources\lib\Any\RiptideNetworking.dll</HintPath>
@@ -772,11 +783,13 @@
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Core\managed\System.Numerics.Vectors.dll</HintPath>
+      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
     <Reference Include="System.Reflection.Context" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.DurableInstancing" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Runtime.Serialization" />
@@ -792,6 +805,9 @@
     <Reference Include="System.ServiceModel.Routing" />
     <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
@@ -1274,8 +1290,124 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\UnityEngine.XRModule.dll</HintPath>
     </Reference>
+    <Reference Include="Xamarin.Essentials, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Xamarin.Essentials.1.7.6\lib\netstandard2.0\Xamarin.Essentials.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="packages\OpenTK.3.0.1\lib\net20\OpenTK.dll" />
+    <Content Include="packages\OpenTK.3.0.1\lib\net20\OpenTK.pdb" />
+    <Content Include="packages\OpenTK.3.0.1\lib\net20\OpenTK.xml" />
+    <Content Include="packages\OpenTK.GLControl.3.0.1\lib\net20\OpenTK.GLControl.dll" />
+    <Content Include="packages\OpenTK.GLControl.3.0.1\lib\net20\OpenTK.GLControl.pdb" />
+    <Content Include="packages\OpenTK.GLControl.3.0.1\lib\net20\OpenTK.GLControl.xml" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.xml" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\lib\netstandard1.0\System.Numerics.Vectors.dll" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\lib\netstandard1.0\System.Numerics.Vectors.xml" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\lib\netstandard2.0\System.Numerics.Vectors.dll" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\lib\netstandard2.0\System.Numerics.Vectors.xml" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\lib\portable-net45+win8+wp8+wpa81\System.Numerics.Vectors.dll" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\lib\portable-net45+win8+wp8+wpa81\System.Numerics.Vectors.xml" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\LICENSE.TXT" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\ref\net45\System.Numerics.Vectors.dll" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\ref\net45\System.Numerics.Vectors.xml" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\ref\net46\System.Numerics.Vectors.dll" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\ref\net46\System.Numerics.Vectors.xml" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\ref\netstandard1.0\System.Numerics.Vectors.dll" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\ref\netstandard1.0\System.Numerics.Vectors.xml" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\ref\netstandard2.0\System.Numerics.Vectors.dll" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\ref\netstandard2.0\System.Numerics.Vectors.xml" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\THIRD-PARTY-NOTICES.TXT" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\useSharedDesignerContext.txt" />
+    <Content Include="packages\System.Numerics.Vectors.4.5.0\version.txt" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.xml" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\netcoreapp2.0\System.Runtime.CompilerServices.Unsafe.dll" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\netcoreapp2.0\System.Runtime.CompilerServices.Unsafe.xml" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.xml" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.xml" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\LICENSE.TXT" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\ref\net461\System.Runtime.CompilerServices.Unsafe.dll" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\ref\net461\System.Runtime.CompilerServices.Unsafe.xml" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\ref\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\ref\netstandard1.0\System.Runtime.CompilerServices.Unsafe.xml" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\ref\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\ref\netstandard2.0\System.Runtime.CompilerServices.Unsafe.xml" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\THIRD-PARTY-NOTICES.TXT" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\useSharedDesignerContext.txt" />
+    <Content Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\version.txt" />
+    <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll" />
+    <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.xml" />
+    <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\netstandard1.0\System.Threading.Tasks.Extensions.dll" />
+    <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\netstandard1.0\System.Threading.Tasks.Extensions.xml" />
+    <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll" />
+    <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\netstandard2.0\System.Threading.Tasks.Extensions.xml" />
+    <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll" />
+    <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.xml" />
+    <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\LICENSE.TXT" />
+    <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\THIRD-PARTY-NOTICES.TXT" />
+    <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\useSharedDesignerContext.txt" />
+    <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\version.txt" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\icon.png" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\monoandroid10.0\Xamarin.Essentials.dll" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\monoandroid10.0\Xamarin.Essentials.pdb" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\monoandroid10.0\Xamarin.Essentials.xml" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\netstandard1.0\Xamarin.Essentials.dll" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\netstandard1.0\Xamarin.Essentials.pdb" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\netstandard1.0\Xamarin.Essentials.xml" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\netstandard2.0\Xamarin.Essentials.dll" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\netstandard2.0\Xamarin.Essentials.pdb" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\netstandard2.0\Xamarin.Essentials.xml" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\tizen40\Xamarin.Essentials.dll" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\tizen40\Xamarin.Essentials.pdb" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\tizen40\Xamarin.Essentials.xml" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\uap10.0.16299\Xamarin.Essentials.dll" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\uap10.0.16299\Xamarin.Essentials.pdb" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\uap10.0.16299\Xamarin.Essentials.xml" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinios10\Xamarin.Essentials.dll" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinios10\Xamarin.Essentials.pdb" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinios10\Xamarin.Essentials.xml" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinmac20\Xamarin.Essentials.dll" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinmac20\Xamarin.Essentials.pdb" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinmac20\Xamarin.Essentials.xml" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarintvos10\Xamarin.Essentials.dll" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarintvos10\Xamarin.Essentials.pdb" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarintvos10\Xamarin.Essentials.xml" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinwatchos10\Xamarin.Essentials.dll" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinwatchos10\Xamarin.Essentials.pdb" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinwatchos10\Xamarin.Essentials.xml" />
+    <Content Include="packages\Xamarin.Essentials.1.7.6\readme.txt" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\MonoAndroid10\Plugin.Clipboard.Abstractions.dll" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\MonoAndroid10\Plugin.Clipboard.Abstractions.pdb" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\MonoAndroid10\Plugin.Clipboard.dll" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\MonoAndroid10\Plugin.Clipboard.pdb" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\MonoAndroid10\Plugin.Clipboard.XML" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net461\Plugin.Clipboard.Abstractions.dll" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net461\Plugin.Clipboard.Abstractions.pdb" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net461\Plugin.Clipboard.dll" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net472\Plugin.Clipboard.Abstractions.dll" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net472\Plugin.Clipboard.Abstractions.pdb" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net472\Plugin.Clipboard.dll" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net472\Plugin.Clipboard.pdb" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\netstandard1.0\Plugin.Clipboard.Abstractions.dll" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\netstandard1.0\Plugin.Clipboard.Abstractions.pdb" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\netstandard1.0\Plugin.Clipboard.dll" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\netstandard1.0\Plugin.Clipboard.pdb" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\UAP10\Plugin.Clipboard.Abstractions.dll" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\UAP10\Plugin.Clipboard.Abstractions.pdb" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\UAP10\Plugin.Clipboard.dll" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\UAP10\Plugin.Clipboard.pdb" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\UAP10\Plugin.Clipboard.XML" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\Xamarin.iOS10\Plugin.Clipboard.Abstractions.dll" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\Xamarin.iOS10\Plugin.Clipboard.Abstractions.pdb" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\Xamarin.iOS10\Plugin.Clipboard.dll" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\Xamarin.iOS10\Plugin.Clipboard.XML" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\Xamarin.Mac20\Plugin.Clipboard.Abstractions.dll" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\Xamarin.Mac20\Plugin.Clipboard.Abstractions.pdb" />
+    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\Xamarin.Mac20\Plugin.Clipboard.dll" />
     <EmbeddedResource Include="Core\resources\raw_changelog.txt" />
     <EmbeddedResource Include="Core\resources\lib\Any\RiptideNetworking.dll" />
     <None Include="Core\resources\lib\Any\RiptideNetworking.xml" />
@@ -1283,6 +1415,57 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
     </Content>
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
+    <None Include="packages\OpenTK.3.0.1\.signature.p7s" />
+    <None Include="packages\OpenTK.3.0.1\content\OpenTK.dll.config" />
+    <None Include="packages\OpenTK.3.0.1\OpenTK.3.0.1.nupkg" />
+    <None Include="packages\OpenTK.GLControl.3.0.1\.signature.p7s" />
+    <None Include="packages\OpenTK.GLControl.3.0.1\OpenTK.GLControl.3.0.1.nupkg" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\.signature.p7s" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\lib\MonoAndroid10\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\lib\MonoTouch10\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\lib\netcoreapp2.0\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\lib\uap10.0.16299\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\lib\xamarinios10\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\lib\xamarinmac20\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\lib\xamarintvos10\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\lib\xamarinwatchos10\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\ref\MonoAndroid10\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\ref\MonoTouch10\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\ref\netcoreapp2.0\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\ref\uap10.0.16299\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\ref\xamarinios10\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\ref\xamarinmac20\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\ref\xamarintvos10\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\ref\xamarinwatchos10\_._" />
+    <None Include="packages\System.Numerics.Vectors.4.5.0\System.Numerics.Vectors.4.5.0.nupkg" />
+    <None Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\.signature.p7s" />
+    <None Include="packages\System.Runtime.CompilerServices.Unsafe.4.5.3\System.Runtime.CompilerServices.Unsafe.4.5.3.nupkg" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\.signature.p7s" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\MonoAndroid10\_._" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\MonoTouch10\_._" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\netcoreapp2.1\_._" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\xamarinios10\_._" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\xamarinmac20\_._" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\xamarintvos10\_._" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\lib\xamarinwatchos10\_._" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\ref\MonoAndroid10\_._" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\ref\MonoTouch10\_._" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\ref\netcoreapp2.1\_._" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\ref\xamarinios10\_._" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\ref\xamarinmac20\_._" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\ref\xamarintvos10\_._" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\ref\xamarinwatchos10\_._" />
+    <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\System.Threading.Tasks.Extensions.4.5.4.nupkg" />
+    <None Include="packages\Xamarin.Essentials.1.7.6\.signature.p7s" />
+    <None Include="packages\Xamarin.Essentials.1.7.6\lib\uap10.0.16299\Xamarin.Essentials.pri" />
+    <None Include="packages\Xamarin.Essentials.1.7.6\LICENSE" />
+    <None Include="packages\Xamarin.Essentials.1.7.6\Xamarin.Essentials.1.7.6.nupkg" />
+    <None Include="packages\Xamarin.Plugins.Clipboard.2.3.0\.signature.p7s" />
+    <None Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\netstandard1.0\Plugin.Clipboard.deps.json" />
+    <None Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\UAP10\Plugin.Clipboard.pri" />
+    <None Include="packages\Xamarin.Plugins.Clipboard.2.3.0\Xamarin.Plugins.Clipboard.2.3.0.nupkg" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

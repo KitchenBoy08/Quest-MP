@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Plugin.Clipboard</name>
+    </assembly>
+    <members>
+        <member name="T:Plugin.Clipboard.CrossClipboard">
+            <summary>
+            Cross platform Clipboard implemenations
+            </summary>
+        </member>
+        <member name="P:Plugin.Clipboard.CrossClipboard.Current">
+            <summary>
+            Current settings to use
+            </summary>
+        </member>
+        <member name="T:Plugin.Clipboard.ClipboardImplementation">
+            <summary>
+            Implementation for Feature
+            </summary>
+        </member>
+    </members>
+</doc>
