@@ -1,5 +1,6 @@
 ﻿using BoneLib;
 
+using MelonLoader;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
