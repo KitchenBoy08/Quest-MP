@@ -15,6 +15,12 @@ namespace LabFusion.Network
 {
     internal class RiptideLobby : INetworkLobby
     {
+        private ConnectionState _lobby;
+
+        public RiptideLobby(ConnectionState lobby)
+        {
+            _lobby = lobby;
+        }
         public Action CreateJoinDelegate(LobbyMetadataInfo info)
         {
             throw new NotImplementedException();
