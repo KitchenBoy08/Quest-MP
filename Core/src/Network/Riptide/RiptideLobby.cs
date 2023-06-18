@@ -13,9 +13,27 @@ using Riptide;
 
 namespace LabFusion.Network
 {
-    internal class RiptideLobby 
+    internal class RiptideLobby : INetworkLobby
     {
+        public Action CreateJoinDelegate(LobbyMetadataInfo info)
+        {
+            throw new NotImplementedException();
+        }
 
+        public string GetMetadata(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetMetadata(string key, string value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryGetMetadata(string key, out string value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
