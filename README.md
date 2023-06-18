@@ -1,8 +1,12 @@
-# BONELAB Fusion Release
-A multiplayer mod for BONELAB featuring support for Oculus and SteamVR.
-This is currently only for PCVR platforms. [You can view a basic installation guide here.](INSTALLATION.md)
+# BONELAB Quest-MP (Fusion)
+This mod is a port of FUSION to Quest, although it should support both Quest and PCVR Crossplay upon release
+
+## Progress on The Mod
+You can see all progress on the mod at: 
+https://trello.com/b/IEXzs0C2/quest-fusion-progress
+
 ## Networking
-This mod is networked and built around Steam, but the networking system can be swapped out using a Networking Layer.
+This mod utilizes Riptide Networking in order to be usable on quest and Steam Networking (Which is only available on PCVR).
 
 ## Modules
 Fusion supports a system called "Modules". This allows other code mods to addon and sync their own events in Fusion.
@@ -23,8 +27,8 @@ The module example can be found here:
 https://github.com/Lakatrazz/Fusion-Module-Example
 
 ## Credits
-- BoneLib AutoUpdater: https://github.com/yowchap/BoneLib
-- Testing/Development Credits In Game
+- EverythingOnArm: For most of the actual networking (I think he should get like 70% of the credit for this port).
+- Lakatrazz: For developing Fusion itself and creating an AWESOME network layer system.
 
 ## Setting up the Source Code
 1. Clone the git repo into a folder
@@ -35,4 +39,4 @@ https://github.com/Lakatrazz/Fusion-Module-Example
 
 ## Disclaimer
 
-#### THIS PROJECT IS NOT AFFILIATED WITH ANY OTHER MULTIPLAYER MODS OR STRESS LEVEL ZERO! This is its own standalone mod and shares no code with others, any similarities are coincidental!
+#### THIS PORT IS NOT OFFICIALLY MAINTAINED BY LAKATRAZZ OR ENDORCED BY HIM, DO NOT BUG HIM ABOUT ANY ISSUES YOU MAY HAVE WITH THIS VERSION.
