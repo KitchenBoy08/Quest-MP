@@ -5,6 +5,7 @@ using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Senders;
+using LabFusion.IPSafety;
 
 using System;
 using System.Collections.Generic;
@@ -99,25 +100,26 @@ namespace LabFusion.BoneMenu
             var pasteButton = category.CreateFunctionElement($"Paste {name}", Color.white, async () => {
                 if (HelperMethods.IsAndroid())
                 {
-                    if (Xamarin.Essentials.Clipboard.HasText)
+                    if (!Xamarin.Essentials.Clipboard.HasText)
                         return;
                     else {
                         var text = await Xamarin.Essentials.Clipboard.GetTextAsync();
                         text = text.LimitLength(maxLength);
+                        IPSafety.IPSafety.EncodeIP(text);
                         pref.SetValue(text);
                     }
 
-                } else { 
+                } else {
                     if (!System.Windows.Forms.Clipboard.ContainsText())
                         return;
-                    else { 
-                    var text = System.Windows.Forms.Clipboard.GetText();
-                    text = text.LimitLength(maxLength);
-                    pref.SetValue(text);
+                    else {
+                        var text = System.Windows.Forms.Clipboard.GetText();
+                        text = text.LimitLength(maxLength);
+                        pref.SetValue(text);
                     }
                 }
-                
-                
+
+
             });
             var resetButton = category.CreateFunctionElement($"Reset {name}", Color.white, () => {
                 pref.SetValue("");
@@ -129,5 +131,6 @@ namespace LabFusion.BoneMenu
                 onValueChanged?.Invoke(v);
             };
         }
+
     }
 }
