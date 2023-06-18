@@ -8,6 +8,7 @@ namespace LabFusion.Data
 {
     public static class ResourcePaths {
         public const string SteamAPIPath = "LabFusion.Core.resources.lib.x86_64.steam_api64.dll";
+        public const string RiptidePath = "LabFusion.Core.resources.lib.Any.RiptideNetworking.dll";
 
         public const string RawChangelogPath = "LabFusion.Core.resources.raw_changelog.txt";
 

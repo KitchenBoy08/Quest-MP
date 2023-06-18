@@ -56,6 +56,7 @@ namespace LabFusion
 
             // Load APIs
             SteamAPILoader.OnLoadSteamAPI();
+            RiptideLoader.OnLoadRiptide();
 
             // Initialize data and hooks
             ByteRetriever.PopulateInitial();
@@ -151,6 +152,7 @@ namespace LabFusion
 
             // Free APIs
             SteamAPILoader.OnFreeSteamAPI();
+            RiptideLoader.OnFreeRiptide();
         }
 
         public override void OnPreferencesLoaded() {
