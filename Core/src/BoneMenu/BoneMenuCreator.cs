@@ -18,6 +18,7 @@ using Xamarin.Essentials;
 using Plugin.Clipboard;
 
 using UnityEngine;
+using UnityEngine.Playables;
 
 namespace LabFusion.BoneMenu
 {
@@ -105,8 +106,15 @@ namespace LabFusion.BoneMenu
                     else {
                         var text = await Xamarin.Essentials.Clipboard.GetTextAsync();
                         text = text.LimitLength(maxLength);
-                        IPSafety.IPSafety.EncodeIP(text);
-                        pref.SetValue(text);
+                        if (text.Contains("/"))
+                        {
+                            IPSafety.IPSafety.DecodeIP(text);
+                            pref.SetValue(text);
+                        } else
+                        {
+                            return;
+                        }
+                        
                     }
 
                 } else {
