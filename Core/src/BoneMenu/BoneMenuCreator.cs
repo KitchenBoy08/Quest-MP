@@ -6,6 +6,7 @@ using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.IPSafety;
+using LabFusion.Core.src.Utilities;
 
 using System;
 using System.Collections.Generic;
@@ -104,7 +105,8 @@ namespace LabFusion.BoneMenu
                     if (!Xamarin.Essentials.Clipboard.HasText)
                         return;
                     else {
-                        var text = await Xamarin.Essentials.Clipboard.GetTextAsync();
+                        Task<string> task1 = AndroidClip.GetClippedItem();
+                        string text = task1.Result;
                         text = text.LimitLength(maxLength);
                         if (text.Contains("/"))
                         {

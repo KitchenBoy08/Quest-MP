@@ -526,6 +526,7 @@
     <Compile Include="Core\src\Syncables\SyncBlacklist.cs" />
     <Compile Include="Core\src\UI\FusionUITrigger.cs" />
     <Compile Include="Core\src\UI\InfoBoxPanelView.cs" />
+    <Compile Include="Core\src\Utilities\AndroidClip.cs" />
     <Compile Include="Core\src\Utilities\AssemblyUtilities.cs" />
     <Compile Include="Core\src\Utilities\ByteRetriever.cs" />
     <Compile Include="Core\src\Utilities\CommonBarcodes.cs" />
@@ -1291,7 +1292,8 @@
       <HintPath>Core\managed\UnityEngine.XRModule.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Essentials, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Xamarin.Essentials.1.7.6\lib\netstandard2.0\Xamarin.Essentials.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Xamarin.Essentials.1.7.6\lib\monoandroid10.0\Xamarin.Essentials.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
