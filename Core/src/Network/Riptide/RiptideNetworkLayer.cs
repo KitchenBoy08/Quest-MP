@@ -19,7 +19,6 @@ namespace LabFusion.Network
     {
         Server currentserver { get;set;}
         Client currentclient { get;set;}
-        //
 
         /// <summary>
         /// Returns true if this layer is hosting a server.

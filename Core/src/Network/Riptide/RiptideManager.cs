@@ -4,21 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using LabFusion.Data;
-using LabFusion.Utilities;
+using LabFusion.Representation;
+using LabFusion.Senders;
 
 using Riptide.Transports;
 using Riptide.Utils;
 using Riptide;
+using JetBrains.Annotations;
 
 namespace LabFusion.Network
 {
-    internal class RiptideLobby
+    internal class RiptideManager 
     {
-
     }
 }
-
-
-
-

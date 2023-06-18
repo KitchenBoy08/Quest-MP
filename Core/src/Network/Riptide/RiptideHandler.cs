@@ -14,10 +14,11 @@ using Riptide.Utils;
 using Riptide.Transports;
 
 using UnityEngine;
+using System.Runtime.CompilerServices;
 
 namespace LabFusion.Network
 {
-    class RiptideHandler
+    public static class RiptideHandler
     {
         public static MessageSendMode ConvertToSendMode (NetworkChannel channel)
         {
