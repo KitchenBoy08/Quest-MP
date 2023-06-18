@@ -5,6 +5,7 @@ using LabFusion.Preferences;
 using LabFusion.BoneMenu;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
+using LabFusion.Core.src.Utilities.Internal;
 
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using SLZ.Marrow.SceneStreaming;
+using System.Net;
+using System.Net.Http;
 
 namespace LabFusion.Network {
     /// <summary>
@@ -40,6 +43,7 @@ namespace LabFusion.Network {
         /// Initializes information about the server, such as module types.
         /// </summary>
         internal static void OnStartServer() {
+
             // Create local id
             var id = new PlayerId(PlayerIdManager.LocalLongId, 0, GetInitialMetadata(), GetInitialEquippedItems());
             id.Insert();
