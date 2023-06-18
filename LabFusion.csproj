@@ -367,7 +367,6 @@
     <Compile Include="Core\src\Network\NetworkLayerDeterminer.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideHandler.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideLobby.cs" />
-    <Compile Include="Core\src\Network\Riptide\RiptideManager.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVRNetworkLayer.cs" />
