@@ -12,6 +12,7 @@ using Riptide.Utils;
 using Riptide;
 using BoneLib.BoneMenu.Elements;
 using LabFusion.Representation;
+using LabFusion.Senders;
 
 namespace LabFusion.Network
 {
@@ -74,6 +75,12 @@ namespace LabFusion.Network
         internal override void Disconnect(string reason = "")
         {
             currentclient.Disconnect();
+            if (IsServer)
+            {
+                currentserver.Stop();
+                currentserver = null;
+            }
+            InternalServerHelpers.OnDisconnect(reason);
             FusionLogger.Log($"Disconnected from server because: {reason}");
         }
 
@@ -110,7 +117,15 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message) { }
+        internal override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message) 
+        { 
+            if (IsServer) 
+            {
+                Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
+                //this should determine user riptide id from fusion player metadata
+                //currentserver.Send(riptidemessage, );
+            }
+        }
 
         /// <summary>
         /// Sends the message to the dedicated server.
@@ -118,20 +133,9 @@ namespace LabFusion.Network
         /// <param name="channel"></param>
         /// <param name="message"></param>
         internal override void SendToServer(NetworkChannel channel, FusionMessage message) 
-        { 
-            //message id is 0 cause we want to encode fusion's messages into bytes ALWAYS and then decode them twice, first from a riptide message and tthen from a fusion message
-            //move this to riptide's ahndler for concistency with the other layers
-            
-            /*Message riptidemessage = Message.Create(RiptideHandler.ConvertToSendMode(channel), 0);
-            try
-            {
-                unsafe
-            }
-            riptidemessage.AddBytes(message.Buffer, false);
-            currentclient.Send(riptidemessage);*/
-            
-
-                
+        {
+            Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
+            currentclient.Send(riptidemessage);
         }
 
         /// <summary>
@@ -139,7 +143,19 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message) { }
+        internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message) 
+        {
+            Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
+            if (!IsServer)
+            {
+                currentclient.Send(riptidemessage);
+            }
+            else
+            {
+                currentserver.SendToAll(riptidemessage);
+            }
+
+        }
 
         /// <summary>
         /// If this is a server, sends this message back to all users except for the provided id.
@@ -207,7 +223,12 @@ namespace LabFusion.Network
 
         public void ConnectToServer(string ip)
         {
+            if (IsServer || IsClient)
+            {
+                Disconnect();
+            }
             currentclient.Connect(ip + ":7777");
+            ConnectionSender.SendConnectionRequest();
         }
     }
 }
