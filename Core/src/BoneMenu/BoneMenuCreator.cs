@@ -8,7 +8,6 @@ using LabFusion.Senders;
 using LabFusion.IPSafety;
 using LabFusion.Core.src.Utilities;
 
-using net.sf.jni4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;

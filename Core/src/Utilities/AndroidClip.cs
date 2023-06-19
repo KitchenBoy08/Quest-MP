@@ -1,5 +1,4 @@
 ﻿using Cysharp.Threading.Tasks.Triggers;
-using net.sf.jni4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +15,10 @@ namespace LabFusion.Core.src.Utilities
         public static void PasteClipboard(string clipboard)
         {
             //Start JVM
-            Bridge.CreateJVM(new BridgeSetup());
 
-            //
+            //Java Code
 
-            //Paste Data
+            //End JVM
 
         }
     }

@@ -714,9 +714,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\Il2CppSystem.Core.dll</HintPath>
     </Reference>
-    <Reference Include="jni4net.n-0.8.8.0">
-      <HintPath>Core\managed\jni4net.n-0.8.8.0.dll</HintPath>
-    </Reference>
     <Reference Include="MelonLoader, Version=0.5.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\MelonLoader.dll</HintPath>
