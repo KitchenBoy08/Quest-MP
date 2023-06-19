@@ -21,9 +21,6 @@ namespace LabFusion.Core.src.Utilities
             //
 
             //Paste Data
-            ClipData pData = clipboardManager.getPrimaryClip();
-            ClipData.Item item = pData.getItemAt(0);
-            String txtpaste = item.getText().toString();
 
         }
     }

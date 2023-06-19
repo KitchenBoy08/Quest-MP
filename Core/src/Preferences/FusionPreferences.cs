@@ -76,6 +76,9 @@ namespace LabFusion.Preferences {
         public struct ClientSettings {
             // Selected network layer
             public static FusionPref<NetworkLayerType> NetworkLayerType { get; internal set; }
+
+            // QUEST/Riptide Code/IP
+            public static FusionPref<string> ServerCode { get; internal set; }
             
             // Nametag settings
             public static FusionPref<bool> NametagsEnabled { get; internal set; }
@@ -166,6 +169,9 @@ namespace LabFusion.Preferences {
 
             // Client settings
             ClientSettings.NetworkLayerType = new FusionPref<NetworkLayerType>(prefCategory, "Network Layer Type", NetworkLayerDeterminer.GetDefaultType(), PrefUpdateMode.IGNORE);
+
+            // QUEST/Riptide Code/IP
+            ClientSettings.ServerCode = new FusionPref<string>(prefCategory, "Server Code", null, PrefUpdateMode.IGNORE);
 
             // Nametag
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);
