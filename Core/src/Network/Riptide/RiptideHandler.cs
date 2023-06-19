@@ -57,6 +57,8 @@ namespace LabFusion.Network
             return bytes;
         }
 
+        //Add here some Bytes to Fusion Message thing, it'll be needed.
+
         public static Riptide.Message PrepareMessage(FusionMessage fusionMessage, NetworkChannel channel)
         {
             //Id is always 0 because a fusion message sent from riptide will always be in bytes
