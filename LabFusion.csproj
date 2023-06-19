@@ -1293,10 +1293,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\UnityEngine.XRModule.dll</HintPath>
     </Reference>
-    <Reference Include="Xamarin.Essentials, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Xamarin.Essentials.1.7.6\lib\monoandroid10.0\Xamarin.Essentials.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages\OpenTK.3.0.1\lib\net20\OpenTK.dll" />
@@ -1355,63 +1351,6 @@
     <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\THIRD-PARTY-NOTICES.TXT" />
     <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\useSharedDesignerContext.txt" />
     <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\version.txt" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\icon.png" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\monoandroid10.0\Xamarin.Essentials.dll" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\monoandroid10.0\Xamarin.Essentials.pdb" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\monoandroid10.0\Xamarin.Essentials.xml" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\netstandard1.0\Xamarin.Essentials.dll" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\netstandard1.0\Xamarin.Essentials.pdb" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\netstandard1.0\Xamarin.Essentials.xml" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\netstandard2.0\Xamarin.Essentials.dll" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\netstandard2.0\Xamarin.Essentials.pdb" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\netstandard2.0\Xamarin.Essentials.xml" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\tizen40\Xamarin.Essentials.dll" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\tizen40\Xamarin.Essentials.pdb" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\tizen40\Xamarin.Essentials.xml" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\uap10.0.16299\Xamarin.Essentials.dll" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\uap10.0.16299\Xamarin.Essentials.pdb" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\uap10.0.16299\Xamarin.Essentials.xml" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinios10\Xamarin.Essentials.dll" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinios10\Xamarin.Essentials.pdb" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinios10\Xamarin.Essentials.xml" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinmac20\Xamarin.Essentials.dll" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinmac20\Xamarin.Essentials.pdb" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinmac20\Xamarin.Essentials.xml" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarintvos10\Xamarin.Essentials.dll" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarintvos10\Xamarin.Essentials.pdb" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarintvos10\Xamarin.Essentials.xml" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinwatchos10\Xamarin.Essentials.dll" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinwatchos10\Xamarin.Essentials.pdb" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\lib\xamarinwatchos10\Xamarin.Essentials.xml" />
-    <Content Include="packages\Xamarin.Essentials.1.7.6\readme.txt" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\MonoAndroid10\Plugin.Clipboard.Abstractions.dll" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\MonoAndroid10\Plugin.Clipboard.Abstractions.pdb" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\MonoAndroid10\Plugin.Clipboard.dll" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\MonoAndroid10\Plugin.Clipboard.pdb" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\MonoAndroid10\Plugin.Clipboard.XML" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net461\Plugin.Clipboard.Abstractions.dll" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net461\Plugin.Clipboard.Abstractions.pdb" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net461\Plugin.Clipboard.dll" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net472\Plugin.Clipboard.Abstractions.dll" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net472\Plugin.Clipboard.Abstractions.pdb" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net472\Plugin.Clipboard.dll" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net472\Plugin.Clipboard.pdb" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\netstandard1.0\Plugin.Clipboard.Abstractions.dll" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\netstandard1.0\Plugin.Clipboard.Abstractions.pdb" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\netstandard1.0\Plugin.Clipboard.dll" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\netstandard1.0\Plugin.Clipboard.pdb" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\UAP10\Plugin.Clipboard.Abstractions.dll" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\UAP10\Plugin.Clipboard.Abstractions.pdb" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\UAP10\Plugin.Clipboard.dll" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\UAP10\Plugin.Clipboard.pdb" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\UAP10\Plugin.Clipboard.XML" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\Xamarin.iOS10\Plugin.Clipboard.Abstractions.dll" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\Xamarin.iOS10\Plugin.Clipboard.Abstractions.pdb" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\Xamarin.iOS10\Plugin.Clipboard.dll" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\Xamarin.iOS10\Plugin.Clipboard.XML" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\Xamarin.Mac20\Plugin.Clipboard.Abstractions.dll" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\Xamarin.Mac20\Plugin.Clipboard.Abstractions.pdb" />
-    <Content Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\Xamarin.Mac20\Plugin.Clipboard.dll" />
     <EmbeddedResource Include="Core\resources\raw_changelog.txt" />
     <EmbeddedResource Include="Core\resources\lib\Any\RiptideNetworking.dll" />
     <None Include="Core\resources\lib\Any\RiptideNetworking.xml" />
@@ -1462,14 +1401,6 @@
     <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\ref\xamarintvos10\_._" />
     <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\ref\xamarinwatchos10\_._" />
     <None Include="packages\System.Threading.Tasks.Extensions.4.5.4\System.Threading.Tasks.Extensions.4.5.4.nupkg" />
-    <None Include="packages\Xamarin.Essentials.1.7.6\.signature.p7s" />
-    <None Include="packages\Xamarin.Essentials.1.7.6\lib\uap10.0.16299\Xamarin.Essentials.pri" />
-    <None Include="packages\Xamarin.Essentials.1.7.6\LICENSE" />
-    <None Include="packages\Xamarin.Essentials.1.7.6\Xamarin.Essentials.1.7.6.nupkg" />
-    <None Include="packages\Xamarin.Plugins.Clipboard.2.3.0\.signature.p7s" />
-    <None Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\netstandard1.0\Plugin.Clipboard.deps.json" />
-    <None Include="packages\Xamarin.Plugins.Clipboard.2.3.0\lib\UAP10\Plugin.Clipboard.pri" />
-    <None Include="packages\Xamarin.Plugins.Clipboard.2.3.0\Xamarin.Plugins.Clipboard.2.3.0.nupkg" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

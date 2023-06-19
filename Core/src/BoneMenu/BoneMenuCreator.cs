@@ -15,9 +15,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using Xamarin.Essentials;
-using Plugin.Clipboard;
-
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -102,27 +99,13 @@ namespace LabFusion.BoneMenu
             var pasteButton = category.CreateFunctionElement($"Paste {name}", Color.white, async () => {
                 if (HelperMethods.IsAndroid())
                 {
-                    if (!Xamarin.Essentials.Clipboard.HasText)
-                        return;
-                    else {
-                        Task<string> GrabClip = AndroidClip.GetClippedItem();
-                        string text = GrabClip.Result;
-                        text = text.LimitLength(maxLength);
-                        if (text.Contains("/"))
-                        {
-                            IPSafety.IPSafety.DecodeIP(text);
-                            pref.SetValue(text);
-                        } else
-                        {
-                            return;
-                        }
-                        
-                    }
 
-                } else {
+                } else 
+                {
                     if (!System.Windows.Forms.Clipboard.ContainsText())
                         return;
-                    else {
+                    else 
+                    {
                         var text = System.Windows.Forms.Clipboard.GetText();
                         text = text.LimitLength(maxLength);
                         pref.SetValue(text);
