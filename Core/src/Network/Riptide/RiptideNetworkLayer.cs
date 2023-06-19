@@ -89,7 +89,8 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        /// This should maybe return a username determined from a file or melonpreference, sent over the net
+        /// This should maybe return a username determined from a Melonpreference or oculsu pltform, sent over the net
+        /// (Not in this method, it should be done upon connection)
         internal override string GetUsername(ulong userId) => "Unknown";
 
         /// <summary>
@@ -109,7 +110,17 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message) { }
+        internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message) 
+        {
+            Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
+            var id = PlayerIdManager.GetPlayerId(userId);
+            if (id != null)
+            {
+                ushort riptideid = (ushort)id;
+                currentserver.Send(riptidemessage, riptideid);
+            }
+
+        }
 
         /// <summary>
         /// Sends the message to the specified user if this is a server.
@@ -123,7 +134,8 @@ namespace LabFusion.Network
             {
                 Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
                 //this should determine user riptide id from fusion player metadata
-                //currentserver.Send(riptidemessage, );
+                ushort riptideid = (ushort)userId;
+                currentserver.Send(riptidemessage, riptideid);
             }
         }
 
@@ -195,11 +207,25 @@ namespace LabFusion.Network
             //if possible, switch this out for fusion logger
             RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
             currentclient = new Client();
+            ulong PlayerId = currentclient.Id;
+            PlayerIdManager.SetLongId(PlayerId);
+            if (PlayerId == 0)
+            {
+                FusionLogger.Warn("Player Lomg Id is 0 and soemthing is probably wrong");
+            }
+            else
+            {
+                FusionLogger.Log($"Player Long Id is {PlayerId}");
+            }
         }
-
+        //probably nothing to do here
         internal override void OnLateInitializeLayer() { }
 
-        internal override void OnCleanupLayer() { }
+        internal override void OnCleanupLayer() 
+        { 
+            Disconnect();
+            //clean up lobbies here once that is implemented
+        }
 
         internal override void OnUpdateLayer() 
         {
@@ -207,6 +233,7 @@ namespace LabFusion.Network
             {
                 currentserver.Update();
             }
+            currentclient.Update();
         }
 
         internal override void OnLateUpdateLayer() { }
@@ -219,6 +246,7 @@ namespace LabFusion.Network
 
         internal override void OnUserJoin(PlayerId id) { }
 
+        //add a button to connect to copied ip, one to copy ip, one to disconnect
         internal override void OnSetupBoneMenu(MenuCategory category) { }
 
         public void ConnectToServer(string ip)
@@ -228,6 +256,8 @@ namespace LabFusion.Network
                 Disconnect();
             }
             currentclient.Connect(ip + ":7777");
+            //Update player id here just to be safe
+            PlayerIdManager.SetLongId(currentclient.Id);
             ConnectionSender.SendConnectionRequest();
         }
     }
