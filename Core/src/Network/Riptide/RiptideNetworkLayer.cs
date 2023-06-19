@@ -13,6 +13,7 @@ using Riptide;
 using BoneLib.BoneMenu.Elements;
 using LabFusion.Representation;
 using LabFusion.Senders;
+using LabFusion.Preferences;
 
 namespace LabFusion.Network
 {
@@ -66,6 +67,17 @@ namespace LabFusion.Network
             currentserver = new Server();
             currentserver.Start(7777, 10);
 
+            currentclient.Connect("127.0.0.1:7777");
+            //Update player id here just to be safe
+            PlayerIdManager.SetLongId(currentclient.Id);
+            if (FusionPreferences.ClientSettings.Nickname != null)
+            {
+                PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
+            }
+            else
+            {
+                PlayerIdManager.SetUsername("Player" + currentclient.Id);
+            }
             InternalServerHelpers.OnStartServer();
         }
 
@@ -91,7 +103,12 @@ namespace LabFusion.Network
         /// <returns></returns>
         /// This should maybe return a username determined from a Melonpreference or oculsu pltform, sent over the net
         /// (Not in this method, it should be done upon connection)
-        internal override string GetUsername(ulong userId) => "Unknown";
+        internal override string GetUsername(ulong userId) 
+        {
+            //Find a way to get nickname, this will do for testing
+            string Username = ("Player" + userId);
+            return Username;
+        }
 
         /// <summary>
         /// Returns true if this is a friend (ex. steam friends).
@@ -217,6 +234,14 @@ namespace LabFusion.Network
             {
                 FusionLogger.Log($"Player Long Id is {PlayerId}");
             }
+            if (FusionPreferences.ClientSettings.Nickname != null)
+            {
+                PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
+            }
+            else
+            {
+                PlayerIdManager.SetUsername("Player" + currentclient.Id);
+            }
         }
         //probably nothing to do here
         internal override void OnLateInitializeLayer() { }
@@ -258,6 +283,14 @@ namespace LabFusion.Network
             currentclient.Connect(ip + ":7777");
             //Update player id here just to be safe
             PlayerIdManager.SetLongId(currentclient.Id);
+            if (FusionPreferences.ClientSettings.Nickname != null)
+            {
+                PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
+            }
+            else
+            {
+                PlayerIdManager.SetUsername("Player" + currentclient.Id);
+            }
             ConnectionSender.SendConnectionRequest();
         }
     }
