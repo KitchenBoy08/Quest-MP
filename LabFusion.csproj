@@ -714,6 +714,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\Il2CppSystem.Core.dll</HintPath>
     </Reference>
+    <Reference Include="jni4net.n-0.8.8.0">
+      <HintPath>..\..\JNI4NET\lib\jni4net.n-0.8.8.0.dll</HintPath>
+    </Reference>
     <Reference Include="MelonLoader, Version=0.5.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\MelonLoader.dll</HintPath>
@@ -723,12 +726,6 @@
     </Reference>
     <Reference Include="OpenTK.GLControl, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>packages\OpenTK.GLControl.3.0.1\lib\net20\OpenTK.GLControl.dll</HintPath>
-    </Reference>
-    <Reference Include="Plugin.Clipboard, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net472\Plugin.Clipboard.dll</HintPath>
-    </Reference>
-    <Reference Include="Plugin.Clipboard.Abstractions, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Xamarin.Plugins.Clipboard.2.3.0\lib\net472\Plugin.Clipboard.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="RiptideNetworking, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

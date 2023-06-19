@@ -13,6 +13,7 @@ using Riptide;
 
 namespace LabFusion.Network
 {
+    //NEED to figure out a proper way to implement lobby data.
     internal class RiptideLobby : INetworkLobby
     {
         private ConnectionState _lobby;
