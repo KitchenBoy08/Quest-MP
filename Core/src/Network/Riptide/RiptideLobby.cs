@@ -16,12 +16,13 @@ namespace LabFusion.Network
     //NEED to figure out a proper way to implement lobby data.
     internal class RiptideLobby : INetworkLobby
     {
-        private ConnectionState _lobby;
+        //this might need to be more fusion oriented than rioptide oriented, needs investigating
+        /*private ConnectionState _lobby;
 
         public RiptideLobby(ConnectionState lobby)
         {
             _lobby = lobby;
-        }
+        }*/
         public Action CreateJoinDelegate(LobbyMetadataInfo info)
         {
             throw new NotImplementedException();
