@@ -1,21 +1,48 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using LabFusion.Network;
+using LabFusion.Preferences;
+using LabFusion.Utilities;
+using MelonLoader;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using LabFusion.Data;
-using LabFusion.Utilities;
-
-using Riptide.Transports;
-using Riptide.Utils;
-using Riptide;
-
-namespace LabFusion.Network
+namespace LabFusion.Core.src.Network.Riptide
 {
-    //NEED to figure out a proper way to implement lobby data.
     internal class RiptideLobby : INetworkLobby
     {
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+        public Action CreateJoinDelegate(LobbyMetadataInfo info) {
+            if (!info.ClientHasLevel)
+            {
+                return ( ) =>
+            {
+                FusionNotifier.Send(new FusionNotification() {
+                        title = "Failed to Join",
+                        showTitleOnPopup = true,
+                        isMenuItem = false,
+                        isPopup = true,
+                        message = $"You do not have the map {info.LevelName} installed!",
+                        popupLength = 6f,
+                    });
+                };
+            }
+
+            if (NetworkInfo.CurrentNetworkLayer is RiptideNetworkLayer riptideLayer)
+            {
+                return () => {
+                    string ip = FusionPreferences.ClientSettings.ServerCode;
+                    riptideLayer.ConnectToServer(ip);
+                };
+            }
+
+            return null;
+=======
+>>>>>>> Stashed changes
         //this might need to be more fusion oriented than rioptide oriented, needs investigating
         /*private ConnectionState _lobby;
 
@@ -26,6 +53,7 @@ namespace LabFusion.Network
         public Action CreateJoinDelegate(LobbyMetadataInfo info)
         {
             throw new NotImplementedException();
+>>>>>>> cc9b3739aa09b24077619e87495756382b427530
         }
 
         public string GetMetadata(string key)
@@ -44,7 +72,4 @@ namespace LabFusion.Network
         }
     }
 }
-
-
-
 

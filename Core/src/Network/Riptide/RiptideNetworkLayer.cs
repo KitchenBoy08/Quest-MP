@@ -221,7 +221,7 @@ namespace LabFusion.Network
 
         internal override void OnInitializeLayer()
         {
-            //if possible, switch this out for fusion logger
+            // If possible, switch this out for Fusion logger
             RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
             currentclient = new Client();
             ulong PlayerId = currentclient.Id;
@@ -271,17 +271,19 @@ namespace LabFusion.Network
 
         internal override void OnUserJoin(PlayerId id) { }
 
-        //add a button to connect to copied ip, one to copy ip, one to disconnect
+        // Add a button to connect to copied ip, one to copy ip, one to disconnect
         internal override void OnSetupBoneMenu(MenuCategory category) { }
 
         public void ConnectToServer(string ip)
         {
+            // Leave if already in lobby
             if (IsServer || IsClient)
             {
                 Disconnect();
             }
             currentclient.Connect(ip + ":7777");
-            //Update player id here just to be safe
+
+            // Update player id here just to be safe
             PlayerIdManager.SetLongId(currentclient.Id);
             if (FusionPreferences.ClientSettings.Nickname != null)
             {
