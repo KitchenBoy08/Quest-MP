@@ -56,7 +56,7 @@ namespace LabFusion
 
             // Load APIs
             SteamAPILoader.OnLoadSteamAPI();
-            //RiptideLoader.OnLoadRiptide();
+            RiptideLoader.OnLoadRiptide();
 
             // Initialize data and hooks
             ByteRetriever.PopulateInitial();
