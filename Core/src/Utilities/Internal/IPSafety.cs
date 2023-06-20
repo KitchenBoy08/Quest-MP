@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LabFusion.MonoBehaviours;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -12,7 +13,7 @@ namespace LabFusion.IPSafety
 {
     internal static class IPSafety
     {
-        public static void EncodeIP(string decodedIP)
+        public static string EncodeIP(string decodedIP)
         {
             decodedIP = decodedIP.Replace(".", "/");
             decodedIP = decodedIP.Replace("0", "3");
@@ -27,10 +28,10 @@ namespace LabFusion.IPSafety
             decodedIP = decodedIP.Replace("9", "2");
 
             string encodedIP = decodedIP;
-            return;
+            return encodedIP;
         }
 
-        public static void DecodeIP(string encodedIP)
+        public static string DecodeIP(string encodedIP)
         {
             encodedIP = encodedIP.Replace("/", ".");
             encodedIP = encodedIP.Replace("3", "0");
@@ -45,7 +46,7 @@ namespace LabFusion.IPSafety
             encodedIP = encodedIP.Replace("2", "9");
 
             string decodedIP = encodedIP;
-            return;
+            return decodedIP;
         }
     }
 }
