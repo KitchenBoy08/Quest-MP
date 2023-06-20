@@ -98,16 +98,6 @@ namespace LabFusion.BoneMenu
             string currentValue = pref.GetValue();
             var display = category.CreateFunctionElement(string.IsNullOrWhiteSpace(currentValue) ? $"No {name}" : $"{name}: {currentValue}", Color.white, null);
             var pasteButton = category.CreateFunctionElement($"Paste {name}", Color.white, async () => {
-                if (HelperMethods.IsAndroid())
-                {
-                    //Grab Code from Fusionprefs
-                    string joinID = FusionPreferences.ClientSettings.ServerCode;
-
-                    //Encode/Decode LATER
-
-                    //Put in Code
-                    pref.SetValue(joinID);
-                } else 
                 {
                     if (!System.Windows.Forms.Clipboard.ContainsText())
                         return;
