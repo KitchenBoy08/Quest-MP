@@ -20,6 +20,7 @@ using UnityEngine;
 
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
+using BoneLib;
 
 namespace LabFusion
 {
@@ -55,9 +56,12 @@ namespace LabFusion
             PersistentData.OnPathInitialize();
 
             // Load APIs
-            SteamAPILoader.OnLoadSteamAPI();
-            RiptideLoader.OnLoadRiptide();
-
+            if (!HelperMethods.IsAndroid())
+            {
+                SteamAPILoader.OnLoadSteamAPI();
+                RiptideLoader.OnLoadRiptide();
+            }
+            
             // Initialize data and hooks
             ByteRetriever.PopulateInitial();
             PDController.OnInitializeMelon();
@@ -151,8 +155,11 @@ namespace LabFusion
             PlayerAdditionsHelper.OnDeinitializeMelon();
 
             // Free APIs
-            SteamAPILoader.OnFreeSteamAPI();
-            //RiptideLoader.OnFreeRiptide();
+            if (!HelperMethods.IsAndroid())
+            {
+                SteamAPILoader.OnFreeSteamAPI();
+                RiptideLoader.OnFreeRiptide();
+            }
         }
 
         public override void OnPreferencesLoaded() {
