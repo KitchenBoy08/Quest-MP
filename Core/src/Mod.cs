@@ -59,9 +59,9 @@ namespace LabFusion
             if (!HelperMethods.IsAndroid())
             {
                 SteamAPILoader.OnLoadSteamAPI();
-                RiptideLoader.OnLoadRiptide();
             }
-            
+            RiptideLoader.OnLoadRiptide();
+
             // Initialize data and hooks
             ByteRetriever.PopulateInitial();
             PDController.OnInitializeMelon();
@@ -158,7 +158,6 @@ namespace LabFusion
             if (!HelperMethods.IsAndroid())
             {
                 SteamAPILoader.OnFreeSteamAPI();
-                RiptideLoader.OnFreeRiptide();
             }
         }
 
