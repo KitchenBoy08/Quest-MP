@@ -60,7 +60,6 @@ namespace LabFusion
             {
                 SteamAPILoader.OnLoadSteamAPI();
             }
-            RiptideLoader.OnLoadRiptide();
 
             // Initialize data and hooks
             ByteRetriever.PopulateInitial();

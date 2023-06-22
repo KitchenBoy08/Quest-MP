@@ -60,7 +60,7 @@ namespace LabFusion.Network {
             LoadedType = type;
 
             switch (type) {
-                default:
+                default: 
                 case NetworkLayerType.STEAM_VR:
                     return typeof(SteamVRNetworkLayer);
                 case NetworkLayerType.SPACEWAR:
