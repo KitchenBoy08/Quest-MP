@@ -79,7 +79,7 @@ namespace LabFusion.Preferences {
 
             // QUEST/Riptide Code/IP
 
-            // Put Server Code here later
+            public static FusionPref<string> ServerCode { get; internal set; }
             
             // Nametag settings
             public static FusionPref<bool> NametagsEnabled { get; internal set; }
@@ -173,7 +173,7 @@ namespace LabFusion.Preferences {
 
             // QUEST/Riptide Code/IP
 
-            // Put server code here later
+            ClientSettings.ServerCode = new FusionPref<string>(prefCategory, "Server Code", null, PrefUpdateMode.IGNORE);
 
             // Nametag
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);
