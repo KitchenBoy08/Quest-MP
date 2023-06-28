@@ -6,47 +6,57 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-//Yes, I know this isn't near the safest way to Encode/Decode the IP. Yes, I know it's easy to crack. Yes, I will fix it later, this is just a placeholder system.
-//Yes, I know this is inefficient and practically useless. Yes, I know that the source code is public and anyone could see the encoder/decoder so all of this is fucking useless.
+//Thank GOD for ChatGPT!
 
 namespace LabFusion.IPSafety
 {
     internal static class IPSafety
     {
-        public static string EncodeIP(string decodedIP)
+        public static string EncodeIpAddress(string ipAddress)
         {
-            decodedIP = decodedIP.Replace(".", "/");
-            decodedIP = decodedIP.Replace("0", "3");
-            decodedIP = decodedIP.Replace("1", "4");
-            decodedIP = decodedIP.Replace("2", "5");
-            decodedIP = decodedIP.Replace("3", "6");
-            decodedIP = decodedIP.Replace("4", "7");
-            decodedIP = decodedIP.Replace("5", "8");
-            decodedIP = decodedIP.Replace("6", "9");
-            decodedIP = decodedIP.Replace("7", "0");
-            decodedIP = decodedIP.Replace("8", "1");
-            decodedIP = decodedIP.Replace("9", "2");
+            string[] octets = ipAddress.Split('.');
 
-            string encodedIP = decodedIP;
-            return encodedIP;
+            if (octets.Length != 4)
+            {
+                throw new ArgumentException("Invalid IP address format.");
+            }
+
+            byte[] binaryIp = new byte[4];
+
+            for (int i = 0; i < 4; i++)
+            {
+                if (!byte.TryParse(octets[i], out byte octet))
+                {
+                    throw new ArgumentException("Invalid IP address format.");
+                }
+
+                binaryIp[i] = octet;
+            }
+
+            return BitConverter.ToString(binaryIp).Replace("-", string.Empty);
         }
 
-        public static string DecodeIP(string encodedIP)
+        public static string DecodeIpAddress(string encodedIp)
         {
-            encodedIP = encodedIP.Replace("/", ".");
-            encodedIP = encodedIP.Replace("3", "0");
-            encodedIP = encodedIP.Replace("4", "1");
-            encodedIP = encodedIP.Replace("5", "2");
-            encodedIP = encodedIP.Replace("6", "3");
-            encodedIP = encodedIP.Replace("7", "4");
-            encodedIP = encodedIP.Replace("8", "5");
-            encodedIP = encodedIP.Replace("9", "6");
-            encodedIP = encodedIP.Replace("0", "7");
-            encodedIP = encodedIP.Replace("1", "8");
-            encodedIP = encodedIP.Replace("2", "9");
+            if (encodedIp.Length != 8)
+            {
+                throw new ArgumentException("Invalid encoded IP address length.");
+            }
 
-            string decodedIP = encodedIP;
-            return decodedIP;
+            byte[] binaryIp = new byte[4];
+
+            for (int i = 0; i < 4; i++)
+            {
+                string octetHex = encodedIp.Substring(i * 2, 2);
+                if (!byte.TryParse(octetHex, System.Globalization.NumberStyles.HexNumber, null, out byte octet))
+                {
+                    throw new ArgumentException("Invalid encoded IP address format.");
+                }
+
+                binaryIp[i] = octet;
+            }
+
+            return string.Join(".", binaryIp);
         }
     }
 }

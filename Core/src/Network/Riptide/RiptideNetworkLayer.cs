@@ -277,9 +277,11 @@ namespace LabFusion.Network
 
         public void ConnectToServer(string ip)
         {
-            //If the IP isn't decoded for whatever reason, decode last second
-            if (ip.Contains("/")) {
-            ip = IPSafety.IPSafety.DecodeIP(ip);
+            // If the IP isn't decoded for whatever reason, decode last second
+            if (ip.Contains(".")) 
+            { } else
+            {
+                ip = IPSafety.IPSafety.DecodeIpAddress(ip);
             }
 
             // Leave if already in lobby
