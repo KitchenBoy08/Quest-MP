@@ -154,10 +154,7 @@ namespace LabFusion
             PlayerAdditionsHelper.OnDeinitializeMelon();
 
             // Free APIs
-            if (!HelperMethods.IsAndroid())
-            {
-                SteamAPILoader.OnFreeSteamAPI();
-            }
+            SteamAPILoader.OnFreeSteamAPI();
         }
 
         public override void OnPreferencesLoaded() {

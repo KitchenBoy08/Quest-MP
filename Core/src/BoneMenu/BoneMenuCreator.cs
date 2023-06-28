@@ -99,13 +99,20 @@ namespace LabFusion.BoneMenu
             var display = category.CreateFunctionElement(string.IsNullOrWhiteSpace(currentValue) ? $"No {name}" : $"{name}: {currentValue}", Color.white, null);
             var pasteButton = category.CreateFunctionElement($"Paste {name}", Color.white, async () => {
                 {
-                    if (!System.Windows.Forms.Clipboard.ContainsText())
-                        return;
-                    else 
+                    if (HelperMethods.IsAndroid())
                     {
-                        var text = System.Windows.Forms.Clipboard.GetText();
-                        text = text.LimitLength(maxLength);
-                        pref.SetValue(text);
+                        pref.SetValue(FusionPreferences.ClientSettings.ServerCode);
+                    }
+                    else
+                    {
+                        if (!System.Windows.Forms.Clipboard.ContainsText())
+                            return;
+                        else
+                        {
+                            var text = System.Windows.Forms.Clipboard.GetText();
+                            text = text.LimitLength(maxLength);
+                            pref.SetValue(text);
+                        }
                     }
                 }
 

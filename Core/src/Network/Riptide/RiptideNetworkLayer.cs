@@ -228,7 +228,7 @@ namespace LabFusion.Network
             PlayerIdManager.SetLongId(PlayerId);
             if (PlayerId == 0)
             {
-                FusionLogger.Warn("Player Lomg Id is 0 and soemthing is probably wrong");
+                FusionLogger.Warn("Player Long Id is 0 and soemthing is probably wrong");
             }
             else
             {

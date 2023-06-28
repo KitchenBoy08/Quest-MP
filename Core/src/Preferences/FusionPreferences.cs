@@ -173,7 +173,7 @@ namespace LabFusion.Preferences {
 
             // QUEST/Riptide Code/IP
 
-            ClientSettings.ServerCode = new FusionPref<string>(prefCategory, "Server Code", null, PrefUpdateMode.IGNORE);
+            ClientSettings.ServerCode = new FusionPref<string>(prefCategory, "Server Code", null, PrefUpdateMode.LOCAL_UPDATE);
 
             // Nametag
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);
@@ -193,7 +193,7 @@ namespace LabFusion.Preferences {
             ClientSettings.GamemodeLateJoining = new FusionPref<bool>(prefCategory, "Gamemode Late Joining", true, PrefUpdateMode.IGNORE);
 
             // Save category
-            prefCategory.SaveToFile(false);
+            prefCategory.SaveToFile(true);
         }
 
         internal static void OnPrepareBoneMenuCategory() {
