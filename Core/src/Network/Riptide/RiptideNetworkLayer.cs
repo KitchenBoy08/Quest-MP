@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using MelonLoader;
 using LabFusion.Data;
 using LabFusion.Utilities;
+using BoneLib;
+using System.IO;
 
 using Riptide.Transports;
 using Riptide.Utils;
@@ -277,11 +279,11 @@ namespace LabFusion.Network
 
         public void ConnectToServer(string ip)
         {
-            // If the IP isn't decoded for whatever reason, decode last second
+            // If the IP isn't decoded for whatever reason, throw error
             if (ip.Contains(".")) 
             { } else
             {
-                ip = IPSafety.IPSafety.DecodeIpAddress(ip);
+                MelonLogger.Msg("IP was not decoded!");
             }
 
             // Leave if already in lobby

@@ -1,10 +1,16 @@
-﻿using LabFusion.MonoBehaviours;
+﻿using Il2CppSystem.Text;
+using Il2CppSystem;
+using LabFusion.MonoBehaviours;
+using MelonLoader.ICSharpCode.SharpZipLib.Checksum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine.UIElements;
+using System.Net;
+using MelonLoader;
 
 //Thank GOD for ChatGPT!
 
@@ -12,51 +18,47 @@ namespace LabFusion.IPSafety
 {
     internal static class IPSafety
     {
-        public static string EncodeIpAddress(string ipAddress)
+        public static byte[] EncodePacket(string ipAddress, byte[] checksum)
         {
-            string[] octets = ipAddress.Split('.');
+            // Convert IP address to byte array
+            byte[] ipBytes = System.Text.Encoding.ASCII.GetBytes(ipAddress);
 
-            if (octets.Length != 4)
-            {
-                throw new ArgumentException("Invalid IP address format.");
-            }
+            // Create encoded packet
+            byte[] encodedPacket = new byte[ipBytes.Length + checksum.Length];
+            System.Buffer.BlockCopy(ipBytes, 0, encodedPacket, 0, ipBytes.Length);
+            System.Buffer.BlockCopy(checksum, 0, encodedPacket, ipBytes.Length, checksum.Length);
 
-            byte[] binaryIp = new byte[4];
-
-            for (int i = 0; i < 4; i++)
-            {
-                if (!byte.TryParse(octets[i], out byte octet))
-                {
-                    throw new ArgumentException("Invalid IP address format.");
-                }
-
-                binaryIp[i] = octet;
-            }
-
-            return BitConverter.ToString(binaryIp).Replace("-", string.Empty);
+            return encodedPacket;
         }
 
-        public static string DecodeIpAddress(string encodedIp)
+        public static string DecodePacket(byte[] encodedPacket, int checksumLength)
         {
-            if (encodedIp.Length != 8)
-            {
-                throw new ArgumentException("Invalid encoded IP address length.");
-            }
+            // Extract IP address
+            byte[] ipBytes = new byte[encodedPacket.Length - checksumLength];
+            System.Buffer.BlockCopy(encodedPacket, 0, ipBytes, 0, ipBytes.Length);
+            string ipAddress = System.Text.Encoding.ASCII.GetString(ipBytes);
 
-            byte[] binaryIp = new byte[4];
+            return ipAddress;
+        }
 
-            for (int i = 0; i < 4; i++)
+        public static string GetPublicIP()
+        {
+            string apiUrl = "https://api.ipify.org"; // API endpoint for retrieving public IP
+            string result = string.Empty;
+
+            try
             {
-                string octetHex = encodedIp.Substring(i * 2, 2);
-                if (!byte.TryParse(octetHex, System.Globalization.NumberStyles.HexNumber, null, out byte octet))
+                using (WebClient client = new WebClient())
                 {
-                    throw new ArgumentException("Invalid encoded IP address format.");
+                    result = client.DownloadString(apiUrl);
                 }
-
-                binaryIp[i] = octet;
+            }
+            catch (System.Exception ex)
+            {
+                MelonLogger.Msg("An error occurred while retrieving the public IP: " + ex.Message);
             }
 
-            return string.Join(".", binaryIp);
+            return result.Trim(); // Trim any whitespace characters
         }
     }
 }

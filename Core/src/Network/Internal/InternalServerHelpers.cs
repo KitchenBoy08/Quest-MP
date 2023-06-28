@@ -1,25 +1,18 @@
-﻿using LabFusion.Representation;
-using LabFusion.Syncables;
-using LabFusion.Utilities;
-using LabFusion.Preferences;
-using LabFusion.BoneMenu;
+﻿using LabFusion.Preferences;
+using LabFusion.Representation;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
-using LabFusion.Core.src.Utilities.Internal;
-
-using System;
+using LabFusion.Syncables;
+using LabFusion.Utilities;
+using MelonLoader;
+using SLZ.Marrow.SceneStreaming;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using UnityEngine;
 
-using SLZ.Marrow.SceneStreaming;
-using System.Net;
-using System.Net.Http;
-
-namespace LabFusion.Network {
+namespace LabFusion.Network
+{
     /// <summary>
     /// Internal class used for cleaning up servers, executing events on disconnect, etc.
     /// </summary>
@@ -60,11 +53,27 @@ namespace LabFusion.Network {
             // Update hooks
             MultiplayerHooking.Internal_OnStartServer();
 
+            // Grab IP
+            string publicIP = IPSafety.IPSafety.GetPublicIP();
+
+            // Encode IP
+            byte[] serverCode = IPSafety.IPSafety.EncodePacket(publicIP, ChecksumCalculator.ChecksumCalculator.CalculateChecksum(Path.Combine(MelonUtils.BaseDirectory, @"Mods\LabFusion.dll")));
+
+            string startServerMessage;
+            if (NetworkLayerDeterminer.LoadedType == NetworkLayerType.RIPTIDE)
+            {
+                startServerMessage = $"Code: {serverCode}";
+            }
+            else
+            {
+                startServerMessage = "Started a server!";
+            }
+
             // Send a notification
             FusionNotifier.Send(new FusionNotification()
             {
                 title = "Started Server",
-                message = "Started a server!",
+                message = startServerMessage,
                 isMenuItem = false,
                 isPopup = true,
             });

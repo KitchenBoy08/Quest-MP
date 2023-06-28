@@ -99,9 +99,21 @@ namespace LabFusion.BoneMenu
             var display = category.CreateFunctionElement(string.IsNullOrWhiteSpace(currentValue) ? $"No {name}" : $"{name}: {currentValue}", Color.white, null);
             var pasteButton = category.CreateFunctionElement($"Paste {name}", Color.white, async () => {
                 {
+                    
                     if (HelperMethods.IsAndroid())
                     {
-                        pref.SetValue(FusionPreferences.ClientSettings.ServerCode);
+                        string serverCode = FusionPreferences.ClientSettings.ServerCode;
+                        if (serverCode.Contains("."))
+                        {
+                            pref.SetValue(serverCode);
+                        }
+                        else
+                        {
+                            byte[] encodedIP = Encoding.UTF8.GetBytes(serverCode);
+                            string decodedIP = IPSafety.IPSafety.DecodePacket(encodedIP, encodedIP.Length);
+
+                            pref.SetValue(decodedIP);
+                        }
                     }
                     else
                     {
