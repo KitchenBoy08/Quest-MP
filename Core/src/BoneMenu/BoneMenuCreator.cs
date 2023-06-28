@@ -18,6 +18,7 @@ using System.Windows.Forms;
 using UnityEngine;
 using UnityEngine.Playables;
 using System.Web.Services.Description;
+using Steamworks;
 
 namespace LabFusion.BoneMenu
 {
@@ -123,7 +124,24 @@ namespace LabFusion.BoneMenu
                         {
                             var text = System.Windows.Forms.Clipboard.GetText();
                             text = text.LimitLength(maxLength);
-                            pref.SetValue(text);
+                            if (NetworkLayerDeterminer.LoadedType == NetworkLayerType.RIPTIDE)
+                            {
+                                if (text.Contains("."))
+                                {
+                                    pref.SetValue(text);
+                                }
+                                else
+                                {
+                                    byte[] encodedIP = Encoding.UTF8.GetBytes(text);
+                                    string decodedIP = IPSafety.IPSafety.DecodePacket(encodedIP, encodedIP.Length);
+
+                                    pref.SetValue(decodedIP);
+                                }
+                            } 
+                            else
+                            {
+                                pref.SetValue(text);
+                            }
                         }
                     }
                 }
