@@ -68,6 +68,7 @@ namespace LabFusion.Network
             currentserver.Start(7777, 10);
 
             currentclient.Connect("127.0.0.1:7777");
+
             //Update player id here just to be safe
             PlayerIdManager.SetLongId(currentclient.Id);
             if (FusionPreferences.ClientSettings.Nickname != null)
