@@ -94,7 +94,8 @@ namespace LabFusion.Utilities {
 
         private static void Internal_UpdateTargetScene() {
             // Make sure we are a client and have loaded
-            if (!NetworkInfo.IsClient)
+            var riptideLayer = new RiptideNetworkLayer();
+            if (!NetworkInfo.IsClient || riptideLayer.IsClient)
                 return;
 
             // If we have entered the loading screen after beginning to load the target, set the value to true

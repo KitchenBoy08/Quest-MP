@@ -72,6 +72,11 @@ namespace LabFusion
         }
 
         public override void OnInitializeMelon() {
+            // Initialize Riptide _IsServer and _IsClient
+            var riptideLayer = new RiptideNetworkLayer();
+            riptideLayer._IsClient();
+            riptideLayer._IsServer();
+
             // Prepare the bonemenu category
             FusionPreferences.OnPrepareBoneMenuCategory();
 
@@ -117,10 +122,6 @@ namespace LabFusion
         }
 
         protected void OnInitializeNetworking() {
-            // Initialize Riptide _IsServer and _IsClient
-            var riptideLayer = new RiptideNetworkLayer();
-            riptideLayer._IsClient();
-            riptideLayer._IsServer();
 
             // If a layer is already set, don't initialize
             if (NetworkInfo.CurrentNetworkLayer != null) {
