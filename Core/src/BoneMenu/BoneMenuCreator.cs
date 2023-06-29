@@ -110,8 +110,8 @@ namespace LabFusion.BoneMenu
                         }
                         else
                         {
-                            byte[] encodedIP = Encoding.UTF8.GetBytes(serverCode);
-                            string decodedIP = IPSafety.IPSafety.DecodePacket(encodedIP, encodedIP.Length);
+                            string encodedIP = IPSafety.IPSafety.EncodeIPAddress(serverCode);
+                            string decodedIP = IPSafety.IPSafety.DecodeIPAddress(encodedIP);
 
                             pref.SetValue(decodedIP);
                         }
@@ -132,8 +132,7 @@ namespace LabFusion.BoneMenu
                                 }
                                 else
                                 {
-                                    byte[] encodedIP = Encoding.UTF8.GetBytes(text);
-                                    string decodedIP = IPSafety.IPSafety.DecodePacket(encodedIP, encodedIP.Length);
+                                    string decodedIP = IPSafety.IPSafety.DecodeIPAddress(text);
 
                                     pref.SetValue(decodedIP);
                                 }

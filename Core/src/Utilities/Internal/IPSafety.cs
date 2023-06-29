@@ -18,27 +18,30 @@ namespace LabFusion.IPSafety
 {
     internal static class IPSafety
     {
-        public static byte[] EncodePacket(string ipAddress, byte[] checksum)
+        public static string EncodeIPAddress(string ipAddress)
         {
-            // Convert IP address to byte array
-            byte[] ipBytes = System.Text.Encoding.ASCII.GetBytes(ipAddress);
+            string[] parts = ipAddress.Split('.');
+            int part1 = int.Parse(parts[0]);
+            int part2 = int.Parse(parts[1]);
+            int part3 = int.Parse(parts[2]);
+            int part4 = int.Parse(parts[3]);
 
-            // Create encoded packet
-            byte[] encodedPacket = new byte[ipBytes.Length + checksum.Length];
-            System.Buffer.BlockCopy(ipBytes, 0, encodedPacket, 0, ipBytes.Length);
-            System.Buffer.BlockCopy(checksum, 0, encodedPacket, ipBytes.Length, checksum.Length);
+            int encodedValue = (part1 << 24) | (part2 << 16) | (part3 << 8) | part4;
 
-            return encodedPacket;
+            return System.Convert.ToBase64String(System.BitConverter.GetBytes(encodedValue));
         }
 
-        public static string DecodePacket(byte[] encodedPacket, int checksumLength)
+        public static string DecodeIPAddress(string encodedIPAddress)
         {
-            // Extract IP address
-            byte[] ipBytes = new byte[encodedPacket.Length - checksumLength];
-            System.Buffer.BlockCopy(encodedPacket, 0, ipBytes, 0, ipBytes.Length);
-            string ipAddress = System.Text.Encoding.ASCII.GetString(ipBytes);
+            byte[] bytes = System.Convert.FromBase64String(encodedIPAddress);
+            int encodedValue = System.BitConverter.ToInt32(bytes, 0);
 
-            return ipAddress;
+            int part1 = (encodedValue >> 24) & 255;
+            int part2 = (encodedValue >> 16) & 255;
+            int part3 = (encodedValue >> 8) & 255;
+            int part4 = encodedValue & 255;
+
+            return $"{part1}.{part2}.{part3}.{part4}";
         }
 
         public static string GetPublicIP()

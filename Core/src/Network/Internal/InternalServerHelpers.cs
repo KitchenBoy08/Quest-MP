@@ -57,7 +57,7 @@ namespace LabFusion.Network
             string publicIP = IPSafety.IPSafety.GetPublicIP();
 
             // Encode IP
-            byte[] serverCode = IPSafety.IPSafety.EncodePacket(publicIP, ChecksumCalculator.ChecksumCalculator.CalculateChecksum(Path.Combine(MelonUtils.BaseDirectory, @"Mods\LabFusion.dll")));
+            string serverCode = IPSafety.IPSafety.EncodeIPAddress(publicIP);
 
             string startServerMessage;
             if (NetworkLayerDeterminer.LoadedType == NetworkLayerType.RIPTIDE)
