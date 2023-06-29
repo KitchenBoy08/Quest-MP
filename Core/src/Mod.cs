@@ -21,7 +21,6 @@ using UnityEngine;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
 using BoneLib;
-using System.Management.Instrumentation;
 
 namespace LabFusion
 {
@@ -118,7 +117,6 @@ namespace LabFusion
         }
 
         protected void OnInitializeNetworking() {
-
             // If a layer is already set, don't initialize
             if (NetworkInfo.CurrentNetworkLayer != null) {
                 FusionLogger.Warn("Cannot initialize new network layer because a previous one is active!");
@@ -130,10 +128,6 @@ namespace LabFusion
                 FusionLogger.Error("The target network layer type is invalid!");
                 return;
             }
-
-            // Call _IsClient() on the riptideLayer instance
-            var riptideLayer = new RiptideNetworkLayer();
-            bool isClient = riptideLayer._IsClient();
 
             // Create the network layer based on the selected type
             // Then, set the layer

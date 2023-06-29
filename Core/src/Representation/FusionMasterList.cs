@@ -30,6 +30,12 @@ namespace LabFusion.Representation {
 
         private static readonly MasterPlayer[] _steamPlayers = new MasterPlayer[] {
             new MasterPlayer(76561198198752494, "Lakatrazz"),
+            new MasterPlayer(76561198097630377, "AlexTheBaBa"),
+            new MasterPlayer(76561198222917852, "Mr.Gaming"),
+            new MasterPlayer(76561198096586464, "brwok"),
+            new MasterPlayer(76561198143565238, "Riggle"),
+            new MasterPlayer(76561198233973112, "Alfie"),
+            new MasterPlayer(76561198061847729, "zz0000"),
             new MasterPlayer(76561198837064193, "172", false),
         };
 

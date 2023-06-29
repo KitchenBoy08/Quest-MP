@@ -50,7 +50,7 @@ namespace LabFusion.Utilities {
                     LoadSender.SendLoadingState(true);
 
                     // Send level load
-                    if (NetworkInfo.IsServer)   
+                    if (NetworkInfo.IsServer)
                         LoadSender.SendLevelLoad(Barcode);
 
                     MultiplayerHooking.Internal_OnLoadingBegin();
@@ -94,8 +94,7 @@ namespace LabFusion.Utilities {
 
         private static void Internal_UpdateTargetScene() {
             // Make sure we are a client and have loaded
-            var riptideLayer = new RiptideNetworkLayer();
-            if (!NetworkInfo.IsClient || riptideLayer.IsClient)
+            if (!NetworkInfo.IsClient)
                 return;
 
             // If we have entered the loading screen after beginning to load the target, set the value to true
