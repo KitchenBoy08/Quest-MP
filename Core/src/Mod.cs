@@ -117,6 +117,11 @@ namespace LabFusion
         }
 
         protected void OnInitializeNetworking() {
+            // Initialize Riptide _IsServer and _IsClient
+            var riptideLayer = new RiptideNetworkLayer();
+            riptideLayer._IsClient();
+            riptideLayer._IsServer();
+
             // If a layer is already set, don't initialize
             if (NetworkInfo.CurrentNetworkLayer != null) {
                 FusionLogger.Warn("Cannot initialize new network layer because a previous one is active!");
