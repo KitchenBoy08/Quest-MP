@@ -21,6 +21,7 @@ using UnityEngine;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
 using BoneLib;
+using System.Management.Instrumentation;
 
 namespace LabFusion
 {
@@ -72,11 +73,6 @@ namespace LabFusion
         }
 
         public override void OnInitializeMelon() {
-            // Initialize Riptide _IsServer and _IsClient
-            var riptideLayer = new RiptideNetworkLayer();
-            riptideLayer._IsClient();
-            riptideLayer._IsServer();
-
             // Prepare the bonemenu category
             FusionPreferences.OnPrepareBoneMenuCategory();
 
@@ -134,6 +130,10 @@ namespace LabFusion
                 FusionLogger.Error("The target network layer type is invalid!");
                 return;
             }
+
+            // Call _IsClient() on the riptideLayer instance
+            var riptideLayer = new RiptideNetworkLayer();
+            bool isClient = riptideLayer._IsClient();
 
             // Create the network layer based on the selected type
             // Then, set the layer

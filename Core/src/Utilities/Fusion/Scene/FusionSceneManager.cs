@@ -50,7 +50,7 @@ namespace LabFusion.Utilities {
                     LoadSender.SendLoadingState(true);
 
                     // Send level load
-                    if (NetworkInfo.IsServer)
+                    if (NetworkInfo.IsServer)   
                         LoadSender.SendLevelLoad(Barcode);
 
                     MultiplayerHooking.Internal_OnLoadingBegin();

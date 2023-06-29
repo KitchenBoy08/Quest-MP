@@ -44,9 +44,18 @@ namespace LabFusion.Network
 
         public bool _IsClient()
         {
-            if (_IsServer() == true) {return true;}
-            else if (currentclient.Connection.IsNotConnected == false) { return true;} 
-            else { return false; }
+            if (_IsServer()) // Assuming _IsServer() returns a boolean
+            {
+                return true;
+            }
+            else if (currentclient != null && currentclient.Connection != null && currentclient.Connection.IsNotConnected == false)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         
