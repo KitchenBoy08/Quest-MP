@@ -29,7 +29,7 @@ namespace LabFusion.Network
         /// </summary>
         internal override bool IsServer => _IsServer();
         
-        protected bool _IsServer()
+        public bool _IsServer()
         {
             if(currentserver != null)
             {
@@ -42,7 +42,7 @@ namespace LabFusion.Network
         /// </summary>
         internal override bool IsClient => _IsClient();
 
-        protected bool _IsClient()
+        public bool _IsClient()
         {
             if (_IsServer() == true) {return true;}
             else if (currentclient.Connection.IsNotConnected == false) { return true;} 

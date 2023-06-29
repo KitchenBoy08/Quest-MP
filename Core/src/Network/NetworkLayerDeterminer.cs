@@ -26,7 +26,7 @@ namespace LabFusion.Network {
         public static NetworkLayerType GetDefaultType() {
             if (HelperMethods.IsAndroid())
             {
-                return NetworkLayerType.RIPTIDE;
+                return NetworkLayerType.EMPTY;
             } else
             {
                 return NetworkLayerType.STEAM_VR;
