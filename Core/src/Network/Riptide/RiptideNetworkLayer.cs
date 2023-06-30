@@ -1,41 +1,83 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MelonLoader;
-using LabFusion.Data;
-using LabFusion.Utilities;
-using BoneLib;
-using System.IO;
 
+using BoneLib.BoneMenu;
+using BoneLib.BoneMenu.Elements;
+
+using LabFusion.Data;
+using LabFusion.Extensions;
+using LabFusion.Representation;
+using LabFusion.Utilities;
+using LabFusion.Preferences;
+
+using SLZ.Rig;
+
+using Riptide;
 using Riptide.Transports;
 using Riptide.Utils;
-using Riptide;
-using BoneLib.BoneMenu.Elements;
-using LabFusion.Representation;
+
+using UnityEngine;
+
+using Color = UnityEngine.Color;
+
+using MelonLoader;
+
+using System.Windows.Forms;
+
 using LabFusion.Senders;
-using LabFusion.Preferences;
+using LabFusion.BoneMenu;
+
+using System.IO;
+
+using UnhollowerBaseLib;
+using LabFusion.SDK.Gamemodes;
+using Steamworks;
 
 namespace LabFusion.Network
 {
-    internal class RiptideNetworkLayer : NetworkLayer
+    internal abstract class RiptideNetworkLayer : NetworkLayer
     {
-        Server currentserver { get;set;}
-        Client currentclient { get;set;}
+        protected float _lastLobbyUpdate = 0f;
+
+        private FunctionElement _createServerElement;
+
+        protected ulong _targetServerIP;
+
+        protected string _targetJoinIP;
+
+        protected bool _isInitialized = false;
+
+        private INetworkLobby _currentLobby;
+        internal override INetworkLobby CurrentLobby => _currentLobby;
+
+        public abstract uint ApplicationID { get; }
+
+        public const int ReceiveBufferSize = 32;
+
+        // AsyncCallbacks are bad!
+        // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
+        public const bool AsyncCallbacks = false;
+
+        Server currentserver { get; set; }
+        Client currentclient { get; set; }
 
         /// <summary>
         /// Returns true if this layer is hosting a server.
         /// </summary>
         internal override bool IsServer => _IsServer();
-        
+
         protected bool _IsServer()
         {
-            if(currentserver != null)
+            switch (currentserver)
             {
-                return true;
+                case not null:
+                    return true;
+                default: return false;
             }
-            else { return false; }
         }
         /// <summary>
         /// Returns true if this layer is a client inside of a server (still returns true if this is the host!)
@@ -44,12 +86,22 @@ namespace LabFusion.Network
 
         protected bool _IsClient()
         {
-            if (_IsServer() == true) {return true;}
-            else if (currentclient.Connection.IsNotConnected == false) { return true;} 
-            else { return false; }
+            if (currentclient != null && currentclient.Connection != null)
+            {
+                switch (_IsServer(), currentclient.Connection.IsNotConnected)
+                {
+                    case (true, false):
+                        return true;
+                    case (false, true):
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+            return false;
         }
 
-        
+
         /// <summary>
         /// Returns true if the networking solution allows the server to send messages to the host (Actual Server Logic vs P2P).
         /// </summary>
@@ -59,7 +111,6 @@ namespace LabFusion.Network
         /// <summary>
         /// Returns the current active lobby.
         /// </summary>
-        internal override INetworkLobby CurrentLobby => null;
 
         /// <summary>
         /// Starts the server.
@@ -67,6 +118,8 @@ namespace LabFusion.Network
         internal override void StartServer()
         {
             currentserver = new Server();
+            currentclient = new Client();
+
             currentserver.Start(7777, 10);
 
             currentclient.Connect("127.0.0.1:7777");
@@ -106,7 +159,7 @@ namespace LabFusion.Network
         /// <returns></returns>
         /// This should maybe return a username determined from a Melonpreference or oculsu pltform, sent over the net
         /// (Not in this method, it should be done upon connection)
-        internal override string GetUsername(ulong userId) 
+        internal override string GetUsername(ulong userId)
         {
             //Find a way to get nickname, this will do for testing
             string Username = ("Player" + userId);
@@ -118,8 +171,8 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        internal override bool IsFriend(ulong userId) 
-        { 
+        internal override bool IsFriend(ulong userId)
+        {
             //Currently there's no Friend system in Place and probably isn't needed, so we always return false
             return false;
         }
@@ -130,9 +183,9 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message) 
+        internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
         {
-            Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
+            Riptide.Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
             var id = PlayerIdManager.GetPlayerId(userId);
             if (id != null)
             {
@@ -148,11 +201,11 @@ namespace LabFusion.Network
         /// <param name="userId"></param>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message) 
-        { 
-            if (IsServer) 
+        internal override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
+        {
+            if (IsServer)
             {
-                Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
+                Riptide.Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
                 //this should determine user riptide id from fusion player metadata
                 ushort riptideid = (ushort)userId;
                 currentserver.Send(riptidemessage, riptideid);
@@ -164,9 +217,9 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal override void SendToServer(NetworkChannel channel, FusionMessage message) 
+        internal override void SendToServer(NetworkChannel channel, FusionMessage message)
         {
-            Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
+            Riptide.Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
             currentclient.Send(riptidemessage);
         }
 
@@ -175,9 +228,9 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="message"></param>
-        internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message) 
+        internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
         {
-            Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
+            Riptide.Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
             if (!IsServer)
             {
                 currentclient.Send(riptidemessage);
@@ -226,36 +279,47 @@ namespace LabFusion.Network
         {
             // If possible, switch this out for Fusion logger
             RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
-            currentclient = new Client();
-            ulong PlayerId = currentclient.Id;
-            PlayerIdManager.SetLongId(PlayerId);
-            if (PlayerId == 0)
+
+            // Initialize currentclient only if it is null
+            if (currentclient == null)
             {
-                FusionLogger.Warn("Player Long Id is 0 and soemthing is probably wrong");
+                currentclient = new Client();
+            }
+
+            ulong playerId = currentclient.Id;
+            PlayerIdManager.SetLongId(playerId);
+
+            if (playerId == 0)
+            {
+                FusionLogger.Warn("Player Long Id is 0 and something is probably wrong");
             }
             else
             {
-                FusionLogger.Log($"Player Long Id is {PlayerId}");
+                FusionLogger.Log($"Player Long Id is {playerId}");
             }
+
             if (FusionPreferences.ClientSettings.Nickname != null)
             {
                 PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
             }
             else
             {
-                PlayerIdManager.SetUsername("Player" + currentclient.Id);
+                PlayerIdManager.SetUsername("Player" + playerId);
             }
         }
-        //probably nothing to do here
-        internal override void OnLateInitializeLayer() { }
 
-        internal override void OnCleanupLayer() 
-        { 
+        //probably nothing to do here
+        internal override void OnLateInitializeLayer() {
+            HookRiptideEvents();
+        }
+
+        internal override void OnCleanupLayer()
+        {
             Disconnect();
             //clean up lobbies here once that is implemented
         }
 
-        internal override void OnUpdateLayer() 
+        internal override void OnUpdateLayer()
         {
             if (currentserver != null)
             {
@@ -272,19 +336,16 @@ namespace LabFusion.Network
 
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes) { }
 
-        internal override void OnUserJoin(PlayerId id) { }
+        internal override void OnUserJoin(PlayerId id) {
+            OnUpdateRiptideLobby();
+        }
 
         // Add a button to connect to copied ip, one to copy ip, one to disconnect
+        // Currently uses the same system as steam, by pasting in the ip and joining, so this isn't needed for now
         internal override void OnSetupBoneMenu(MenuCategory category) { }
 
         public void ConnectToServer(string ip)
         {
-            // If the IP isn't decoded for whatever reason, throw error
-            if (ip.Contains(".")) 
-            { } else
-            {
-                MelonLogger.Msg("IP was not decoded!");
-            }
 
             // Leave if already in lobby
             if (IsServer || IsClient)
@@ -304,6 +365,51 @@ namespace LabFusion.Network
                 PlayerIdManager.SetUsername("Player" + currentclient.Id);
             }
             ConnectionSender.SendConnectionRequest();
+        }
+
+        private void HookRiptideEvents()
+        {
+            // Add server hooks
+            MultiplayerHooking.OnMainSceneInitialized += OnUpdateRiptideLobby;
+            GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
+            MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
+        }
+
+        private void OnUpdateRiptideLobby()
+        {
+            // Make sure the lobby exists
+            if (CurrentLobby == null)
+            {
+#if DEBUG
+                FusionLogger.Warn("Tried updating the steam lobby, but it was null!");
+#endif
+                return;
+            }
+
+            // Write active info about the lobby
+            LobbyMetadataHelper.WriteInfo(CurrentLobby);
+
+            // Update bonemenu items
+            OnUpdateCreateServerText();
+
+            // Save current time
+            _lastLobbyUpdate = Time.realtimeSinceStartup;
+        }
+        private void OnUpdateCreateServerText()
+        {
+            if (FusionSceneManager.IsDelayedLoading())
+                return;
+
+            bool isClient = _IsClient();
+            if (isClient)
+                _createServerElement.SetName("Create Server");
+            else
+                _createServerElement.SetName("Disconnect from Server");
+        }
+
+        private void OnGamemodeChanged(Gamemode gamemode)
+        {
+            OnUpdateRiptideLobby();
         }
     }
 }

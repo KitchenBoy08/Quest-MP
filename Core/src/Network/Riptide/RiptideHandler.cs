@@ -40,7 +40,7 @@ namespace LabFusion.Network
             return sendMode;
         }
 
-        public static byte[] FusionMessagetoBytes (FusionMessage fusionMessage)
+        public static byte[] FusionMessageToBytes (FusionMessage fusionMessage)
         {
             byte[] bytes = new byte[fusionMessage.Length];
             try
@@ -63,8 +63,23 @@ namespace LabFusion.Network
         {
             //Id is always 0 because a fusion message sent from riptide will always be in bytes
             Riptide.Message message = Riptide.Message.Create(RiptideHandler.ConvertToSendMode(channel), 0);
-            message.AddBytes(FusionMessagetoBytes(fusionMessage));
+            message.AddBytes(FusionMessageToBytes(fusionMessage));
             return message;
+        }
+
+        //Recieving Messages WIP
+        public static void OnP2PMessageRecieved(IntPtr messageIntPtr,int dataBlockSize, bool isServerHandled = false)
+        {
+            try
+            {
+                unsafe
+                {
+                    FusionMessageHandler.ReadMessage((byte*)messageIntPtr, dataBlockSize, isServerHandled);
+                }
+            } catch (Exception e)
+            {
+                FusionLogger.Error($"Failed reading message from server with reason: {e.Message}\nTrace:{e.StackTrace}");
+            }
         }
     }
     

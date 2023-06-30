@@ -21,6 +21,7 @@ using UnityEngine;
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
 using BoneLib;
+using System.ComponentModel.DataAnnotations;
 
 namespace LabFusion
 {
@@ -102,6 +103,9 @@ namespace LabFusion
 
             // Finally, initialize the network layer
             OnInitializeNetworking();
+
+            var riptideLayer = new RiptideNetworkLayer();
+            riptideLayer.OnInitializeLayer();
 
 #if DEBUG
             FusionUnityLogger.OnInitializeMelon();

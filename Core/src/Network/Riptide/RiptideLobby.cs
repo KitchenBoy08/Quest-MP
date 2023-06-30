@@ -2,6 +2,9 @@
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Utilities;
+using Riptide;
+using Riptide.Utils;
+using Riptide.Transports;
 using MelonLoader;
 using System;
 using System.Collections.Generic;
@@ -43,7 +46,7 @@ namespace LabFusion.Core.src.Network.Riptide
             return null;
         }
 
-        //this might need to be more fusion oriented than rioptide oriented, needs investigating
+        //this might need to be more fusion oriented than Riptide oriented, needs investigating
         /*private ConnectionState _lobby;
 
         public RiptideLobby(ConnectionState lobby)
