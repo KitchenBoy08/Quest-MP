@@ -40,7 +40,7 @@ using BoneLib;
 
 namespace LabFusion.Network
 {
-    internal abstract class RiptideNetworkLayer : NetworkLayer
+    public abstract class RiptideNetworkLayer : NetworkLayer
     {
         protected float _lastLobbyUpdate = 0f;
 
@@ -314,6 +314,8 @@ namespace LabFusion.Network
         internal override void OnCleanupLayer()
         {
             Disconnect();
+
+            UnHookRiptideEvents();
             //clean up lobbies here once that is implemented
         }
 
@@ -359,6 +361,14 @@ namespace LabFusion.Network
                 PlayerIdManager.SetUsername("Player" + currentclient.Id);
             }
             ConnectionSender.SendConnectionRequest();
+        }
+
+        private void UnHookRiptideEvents()
+        {
+            // Remove server hooks
+            MultiplayerHooking.OnMainSceneInitialized -= OnUpdateRiptideLobby;
+            GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
+            MultiplayerHooking.OnServerSettingsChanged -= OnUpdateRiptideLobby;
         }
 
         private void HookRiptideEvents()
@@ -528,9 +538,9 @@ namespace LabFusion.Network
             // Is a server already running? Disconnect then create server.
             if (IsClient)
             {
-                Disconnect();
+                NetworkHelper.Disconnect();
             }
-            StartServer();
+            NetworkHelper.StartServer();
 
         }
     }
