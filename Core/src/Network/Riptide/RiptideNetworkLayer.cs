@@ -36,6 +36,7 @@ using System.IO;
 using UnhollowerBaseLib;
 using LabFusion.SDK.Gamemodes;
 using Steamworks;
+using BoneLib;
 
 namespace LabFusion.Network
 {
@@ -45,14 +46,9 @@ namespace LabFusion.Network
 
         private FunctionElement _createServerElement;
 
-        protected ulong _targetServerIP;
-
-        protected string _targetJoinIP;
-
         protected bool _isInitialized = false;
 
-        private INetworkLobby _currentLobby;
-        internal override INetworkLobby CurrentLobby => _currentLobby;
+        protected string _targetServerIP;
 
         public abstract uint ApplicationID { get; }
 
@@ -93,6 +89,8 @@ namespace LabFusion.Network
                     case (true, false):
                         return true;
                     case (false, true):
+                        return true;
+                    case (true, true):
                         return true;
                     default:
                         return false;
@@ -340,10 +338,6 @@ namespace LabFusion.Network
             OnUpdateRiptideLobby();
         }
 
-        // Add a button to connect to copied ip, one to copy ip, one to disconnect
-        // Currently uses the same system as steam, by pasting in the ip and joining, so this isn't needed for now
-        internal override void OnSetupBoneMenu(MenuCategory category) { }
-
         public void ConnectToServer(string ip)
         {
 
@@ -410,6 +404,134 @@ namespace LabFusion.Network
         private void OnGamemodeChanged(Gamemode gamemode)
         {
             OnUpdateRiptideLobby();
+        }
+
+        internal override void OnSetupBoneMenu(MenuCategory category)
+        {
+            // Create the basic options
+            CreateMatchmakingMenu(category);
+            BoneMenuCreator.CreateGamemodesMenu(category);
+            BoneMenuCreator.CreateSettingsMenu(category);
+            BoneMenuCreator.CreateNotificationsMenu(category);
+            BoneMenuCreator.CreateBanListMenu(category);
+
+#if DEBUG
+            // Debug only (dev tools)
+            BoneMenuCreator.CreateDebugMenu(category);
+#endif
+        }
+
+        // Matchmaking menu
+        private MenuCategory _serverInfoCategory;
+        private MenuCategory _manualJoiningCategory;
+
+        private void CreateMatchmakingMenu(MenuCategory category)
+        {
+            // Root category
+            var matchmaking = category.CreateCategory("Matchmaking", Color.red);
+
+            // Server making
+            _serverInfoCategory = matchmaking.CreateCategory("Server Info", Color.white);
+            CreateServerInfoMenu(_serverInfoCategory);
+
+            // Manual joining
+            _manualJoiningCategory = matchmaking.CreateCategory("Manual Joining", Color.white);
+            CreateManualJoiningMenu(_manualJoiningCategory);
+        }
+
+        private FunctionElement _targetServerElement;
+        private void CreateManualJoiningMenu(MenuCategory category)
+        {
+            category.CreateFunctionElement("Join Server", Color.white, OnClickJoinServer);
+            _targetServerElement = category.CreateFunctionElement("Server ID:", Color.white, null);
+            category.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerID);
+        }
+
+        private void OnPasteServerID()
+        {
+            if (!HelperMethods.IsAndroid())
+            {
+                if (!Clipboard.ContainsText())
+                    return;
+
+                string serverCode = Clipboard.GetText();
+
+                if (serverCode.Contains("."))
+                {
+                    _targetServerIP = serverCode;
+                }
+                else
+                {
+                    string decodedIP = IPSafety.IPSafety.DecodeIPAddress(serverCode);
+                    _targetServerIP = decodedIP;
+                }
+            } else
+            {
+                string serverCode = FusionPreferences.ClientSettings.ServerCode;
+
+                if (serverCode.Contains("."))
+                {
+                    _targetServerIP = serverCode;
+                }
+                else
+                {
+                    string decodedIP = IPSafety.IPSafety.DecodeIPAddress(serverCode);
+                    _targetServerIP = decodedIP;
+                }
+            }
+        }
+
+        private void CreateServerInfoMenu(MenuCategory category)
+        {
+            _createServerElement = category.CreateFunctionElement("Create Server", Color.white, OnClickCreateServer);
+            if (!HelperMethods.IsAndroid())
+            {
+                category.CreateFunctionElement("Copy Server Code to Clipboard", Color.white, OnCopyServerCode);
+            }
+            category.CreateFunctionElement("Display Server Code", Color.white, OnDisplayServerCode);
+
+            BoneMenuCreator.CreatePlayerListMenu(category);
+            BoneMenuCreator.CreateAdminActionsMenu(category);
+        }
+
+        private void OnDisplayServerCode()
+        {
+            string ip = IPSafety.IPSafety.GetPublicIP();
+            string encodedIP = IPSafety.IPSafety.EncodeIPAddress(ip);
+
+            FusionNotifier.Send(new FusionNotification()
+            {
+                title = "Server Code",
+                showTitleOnPopup = true,
+                isMenuItem = false,
+                isPopup = true,
+                message = $"Code: {encodedIP}",
+                popupLength = 20f,
+            });
+        }
+
+        private void OnCopyServerCode()
+        {
+            string ip = IPSafety.IPSafety.GetPublicIP();
+            string encodedIP = IPSafety.IPSafety.EncodeIPAddress(ip);
+
+            Clipboard.SetText(encodedIP);
+        }
+
+        private void OnClickJoinServer()
+        {
+            ConnectToServer(_targetServerIP);
+        }
+
+        private void OnClickCreateServer()
+        {
+            // Is a server already running? Disconnect then create server.
+            if (IsClient)
+            {
+                Disconnect();
+            }
+            StartServer();
+
         }
     }
 }

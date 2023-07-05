@@ -2,7 +2,7 @@
 using BoneLib.BoneMenu.Elements;
 using LabFusion.Preferences;
 using LabFusion.SDK.Gamemodes;
-
+using MelonLoader;
 using UnityEngine;
 
 namespace LabFusion.BoneMenu
@@ -12,7 +12,8 @@ namespace LabFusion.BoneMenu
         private static MenuCategory _gamemodesCategory;
         private static FunctionElement _gamemodeElement;
 
-        public static void CreateGamemodesMenu(MenuCategory category) {
+        public static void CreateGamemodesMenu(MenuCategory category)
+        {
             // Root category
             _gamemodesCategory = category.CreateCategory("Gamemodes", Color.cyan);
             ClearGamemodes();
@@ -32,13 +33,15 @@ namespace LabFusion.BoneMenu
             Gamemode.LateJoining = FusionPreferences.ClientSettings.GamemodeLateJoining.GetValue();
         }
 
-        public static void SetActiveGamemodeText(string text) {
+        public static void SetActiveGamemodeText(string text)
+        {
             if (_gamemodeElement != null)
                 _gamemodeElement.SetName(text);
         }
 
-        public static void RefreshGamemodes() {
-            // Clear existing gamemodes just incase
+        public static void RefreshGamemodes()
+        {
+            // Clear existing gamemodes just in case
             ClearGamemodes(false);
 
             // Add stop button
@@ -53,13 +56,15 @@ namespace LabFusion.BoneMenu
             CreateBoolPreference(_gamemodesCategory, "Late Joining", FusionPreferences.ClientSettings.GamemodeLateJoining);
 
             // Add necessary gamemodes
-            foreach (var gamemode in GamemodeManager.Gamemodes) {
-                // Make sure the gamemode isnt null
+            foreach (var gamemode in GamemodeManager.Gamemodes)
+            {
+                // Make sure the gamemode isn't null
                 if (gamemode == null)
                     continue;
 
-                // Make sure this gamemode should be in bonemenu
-                if (gamemode.VisibleInBonemenu) {
+                // Make sure this gamemode should be in BoneMenu
+                if (gamemode.VisibleInBonemenu)
+                {
                     var upperCategory = _gamemodesCategory.CreateCategory(gamemode.GamemodeCategory, Color.white);
                     var lowerCategory = upperCategory.CreateCategory(gamemode.GamemodeName, Color.white);
                     gamemode.OnBoneMenuCreated(lowerCategory);
@@ -67,16 +72,23 @@ namespace LabFusion.BoneMenu
             }
         }
 
-        public static void ClearGamemodes(bool showText = true) {
-            // Clear all gamemodes from the list
-            _gamemodesCategory.Elements.Clear();
+        public static void ClearGamemodes(bool showText = true)
+        {
+            // Check if _gamemodesCategory is null
+            if (_gamemodesCategory == null)
+                MelonLogger.Msg("_gamemodesCategory not properly initialized!");
+            else
+            {
+                // Clear all gamemodes from the list
+                _gamemodesCategory.Elements.Clear();
 
-            // Don't show the text if disabled
-            if (!showText)
-                return;
+                // Don't show the text if disabled
+                if (!showText)
+                    return;
 
-            // Add text for joining a server
-            _gamemodesCategory.CreateFunctionElement("Gamemodes will show when in a server!", Color.yellow, null);
+                // Add text for joining a server
+                _gamemodesCategory.CreateFunctionElement("Gamemodes will show when in a server!", Color.yellow, null);
+            }
         }
     }
 }

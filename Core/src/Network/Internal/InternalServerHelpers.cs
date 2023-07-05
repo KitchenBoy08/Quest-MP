@@ -16,18 +16,25 @@ namespace LabFusion.Network
     /// <summary>
     /// Internal class used for cleaning up servers, executing events on disconnect, etc.
     /// </summary>
-    internal static class InternalServerHelpers {
-        private static void DisposeUser(PlayerId id) {
-            if (id != null) {
+    internal static class InternalServerHelpers
+    {
+        private static void DisposeUser(PlayerId id)
+        {
+            if (id != null)
+            {
                 if (PlayerRepManager.TryGetPlayerRep(id.SmallId, out var rep))
-                    rep.Dispose();
+                {
+                    rep?.Dispose();
+                }
 
                 id.Dispose();
             }
         }
 
-        private static void DisposeUsers() {
-            foreach (var id in PlayerIdManager.PlayerIds.ToList()) {
+        private static void DisposeUsers()
+        {
+            foreach (var id in PlayerIdManager.PlayerIds?.ToList())
+            {
                 DisposeUser(id);
             }
         }
@@ -35,11 +42,11 @@ namespace LabFusion.Network
         /// <summary>
         /// Initializes information about the server, such as module types.
         /// </summary>
-        internal static void OnStartServer() {
-
+        internal static void OnStartServer()
+        {
             // Create local id
             var id = new PlayerId(PlayerIdManager.LocalLongId, 0, GetInitialMetadata(), GetInitialEquippedItems());
-            id.Insert();
+            id?.Insert();
             PlayerIdManager.ApplyLocalId();
 
             // Register module message handlers so they can send messages
@@ -85,7 +92,8 @@ namespace LabFusion.Network
         /// <summary>
         /// Called when the user joins a server.
         /// </summary>
-        internal static void OnJoinServer() {
+        internal static void OnJoinServer()
+        {
             // Send settings
             FusionPreferences.SendClientSettings();
 
@@ -105,7 +113,8 @@ namespace LabFusion.Network
         /// <summary>
         /// Cleans up the scene from all users. ONLY call this from within a network layer!
         /// </summary>
-        internal static void OnDisconnect(string reason = "") {
+        internal static void OnDisconnect(string reason = "")
+        {
             // Cleanup gamemodes
             GamemodeRegistration.ClearGamemodeTable();
             ModuleMessageHandler.ClearHandlerTable();
@@ -122,7 +131,8 @@ namespace LabFusion.Network
             MultiplayerHooking.Internal_OnDisconnect();
 
             // Send a notification
-            if (string.IsNullOrWhiteSpace(reason)) {
+            if (string.IsNullOrWhiteSpace(reason))
+            {
                 FusionNotifier.Send(new FusionNotification()
                 {
                     title = "Disconnected from Server",
@@ -131,7 +141,8 @@ namespace LabFusion.Network
                     isPopup = true,
                 });
             }
-            else {
+            else
+            {
                 FusionNotifier.Send(new FusionNotification()
                 {
                     title = "Disconnected from Server",
@@ -147,7 +158,8 @@ namespace LabFusion.Network
         /// Updates information about the new user.
         /// </summary>
         /// <param name="id"></param>
-        internal static void OnUserJoin(PlayerId id, bool isInitialJoin) {
+        internal static void OnUserJoin(PlayerId id, bool isInitialJoin)
+        {
             // Send client info
             FusionPreferences.SendClientSettings();
 
@@ -158,7 +170,8 @@ namespace LabFusion.Network
             MultiplayerHooking.Internal_OnPlayerJoin(id);
 
             // Send notification
-            if (isInitialJoin && id.TryGetDisplayName(out var name)) {
+            if (isInitialJoin && id?.TryGetDisplayName(out var name) == true)
+            {
                 FusionNotifier.Send(new FusionNotification()
                 {
                     title = $"{name} Join",
@@ -173,7 +186,8 @@ namespace LabFusion.Network
         /// Cleans up a single user after they have left.
         /// </summary>
         /// <param name="longId"></param>
-        internal static void OnUserLeave(ulong longId) {
+        internal static void OnUserLeave(ulong longId)
+        {
             var playerId = PlayerIdManager.GetPlayerId(longId);
 
             // Make sure the player exists in our game
@@ -181,7 +195,8 @@ namespace LabFusion.Network
                 return;
 
             // Send notification
-            if (playerId.TryGetDisplayName(out var name)) {
+            if (playerId.TryGetDisplayName(out var name))
+            {
                 FusionNotifier.Send(new FusionNotification()
                 {
                     title = $"{name} Leave",
@@ -200,7 +215,8 @@ namespace LabFusion.Network
         /// Gets the default metadata for the local player.
         /// </summary>
         /// <returns></returns>
-        internal static Dictionary<string, string> GetInitialMetadata() {
+        internal static Dictionary<string, string> GetInitialMetadata()
+        {
             // Create the dict
             var metadata = new Dictionary<string, string> {
                 // Username
@@ -220,11 +236,13 @@ namespace LabFusion.Network
         /// Gets the default list of equipped items.
         /// </summary>
         /// <returns></returns>
-        internal static List<string> GetInitialEquippedItems() {
+        internal static List<string> GetInitialEquippedItems()
+        {
             List<string> list = new List<string>();
 
-            foreach (var item in PointItemManager.LoadedItems) {
-                if (item.IsEquipped)
+            foreach (var item in PointItemManager.LoadedItems)
+            {
+                if (item?.IsEquipped == true)
                     list.Add(item.Barcode);
             }
 

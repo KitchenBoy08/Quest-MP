@@ -36,8 +36,8 @@ namespace LabFusion.Network
 
             // Info for people incase this layer ends up being selected
             category.CreateFunctionElement("You currently have no networking selected.", Color.white, null);
-            category.CreateFunctionElement("This means you likely do not have Steam open.", Color.white, null);
-            category.CreateFunctionElement("Please install and open Steam.", Color.white, null);
+            category.CreateFunctionElement("This means that you didn't properlly switch to the Riptide Networking Layer.", Color.white, null);
+            category.CreateFunctionElement("Please install and open Steam or use Riptide.", Color.white, null);
         }
     }
 }

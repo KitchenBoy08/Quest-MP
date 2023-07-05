@@ -16,8 +16,8 @@ namespace LabFusion.Network {
     public enum NetworkLayerType {
         STEAM_VR = 0,
         SPACEWAR = 1,
-        EMPTY = 2,
-        RIPTIDE = 3,
+        RIPTIDE = 2,
+        EMPTY = 3,
     }
 
     public static class NetworkLayerDeterminer {
@@ -46,10 +46,10 @@ namespace LabFusion.Network {
                         return VerifyType(NetworkLayerType.EMPTY);
                     else
                         return NetworkLayerType.SPACEWAR;
-                case NetworkLayerType.EMPTY:
-                    return NetworkLayerType.EMPTY;
                 case NetworkLayerType.RIPTIDE:
                     return NetworkLayerType.RIPTIDE;
+                case NetworkLayerType.EMPTY:
+                    return NetworkLayerType.EMPTY;
             }
         }
 
@@ -65,10 +65,10 @@ namespace LabFusion.Network {
                     return typeof(SteamVRNetworkLayer);
                 case NetworkLayerType.SPACEWAR:
                     return typeof(SpacewarNetworkLayer);
-                case NetworkLayerType.EMPTY:
-                    return typeof(EmptyNetworkLayer);
                 case NetworkLayerType.RIPTIDE:
                     return typeof(RiptideNetworkLayer);
+                case NetworkLayerType.EMPTY:
+                    return typeof(EmptyNetworkLayer);
             }
         }
     }
