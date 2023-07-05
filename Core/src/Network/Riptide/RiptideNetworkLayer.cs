@@ -155,11 +155,11 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        /// This should maybe return a username determined from a Melonpreference or oculsu pltform, sent over the net
+        /// This should maybe return a username determined from a Melonpreference or oculus platform, sent over the net
         /// (Not in this method, it should be done upon connection)
         internal override string GetUsername(ulong userId)
         {
-            //Find a way to get nickname, this will do for testing
+            // Find a way to get nickname, this will do for testing
             string Username = ("Player" + userId);
             return Username;
         }
@@ -385,7 +385,7 @@ namespace LabFusion.Network
             if (CurrentLobby == null)
             {
 #if DEBUG
-                FusionLogger.Warn("Tried updating the steam lobby, but it was null!");
+                FusionLogger.Warn("Tried updating the Riptide lobby, but it was null!");
 #endif
                 return;
             }
