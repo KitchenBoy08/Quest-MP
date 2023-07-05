@@ -68,6 +68,7 @@ namespace LabFusion.Network
         }
 
         //Recieving Messages WIP
+        // this needs to handle a riptide message, which is its own thing
         public static void OnP2PMessageRecieved(IntPtr messageIntPtr,int dataBlockSize, bool isServerHandled = false)
         {
             try

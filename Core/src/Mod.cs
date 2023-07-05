@@ -104,8 +104,10 @@ namespace LabFusion
             // Finally, initialize the network layer
             OnInitializeNetworking();
 
-            var riptideLayer = new RiptideNetworkLayer();
-            riptideLayer.OnInitializeLayer();
+            //The line of code above this already does this properly! Those 2 lines should never be needed and wouldn't even work!
+
+            //var riptideLayer = new RiptideNetworkLayer();
+            //riptideLayer.OnInitializeLayer();
 
 #if DEBUG
             FusionUnityLogger.OnInitializeMelon();
