@@ -1,4 +1,4 @@
-# BONELAB Quest-MP (Fusion)
+# BONELAB TideFusion
 This mod is a port of FUSION to Quest, although it should support both Quest and PCVR Crossplay upon release
 
 ## Progress on The Mod
@@ -27,8 +27,9 @@ The module example can be found here:
 https://github.com/Lakatrazz/Fusion-Module-Example
 
 ## Credits
-- EverythingOnArm: For most of the actual networking (I think he should get like 70% of the credit for this port).
+- EverythingOnArm: For most of the actual networking (Should get like 70% of the credit for this port).
 - Lakatrazz: For developing Fusion itself and creating an AWESOME network layer system.
+- KitchenBoy: Port lead/worked on some of the extra things like IP Encoding.
 
 ## Setting up the Source Code
 1. Clone the git repo into a folder
