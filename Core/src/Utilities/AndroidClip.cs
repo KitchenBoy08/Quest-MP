@@ -1,25 +1,34 @@
-﻿using Cysharp.Threading.Tasks.Triggers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
-using System.Windows.Forms;
+﻿using System;
+using Android.Content;
+using Android.Widget;
 
-namespace LabFusion.Core.src.Utilities
+public class AndroidClip
 {
-    public static class AndroidClip
+    private readonly Context _context;
+
+    public AndroidClip(Context context)
     {
-        public static void PasteClipboard(string clipboard)
+        _context = context;
+    }
+
+    public string GetClipboardText()
+    {
+        var clipboardManager = (ClipboardManager)_context.GetSystemService(Context.ClipboardService);
+        var clipData = clipboardManager.PrimaryClip;
+
+        if (clipData != null && clipData.ItemCount > 0)
         {
-            //Start JVM
-
-            //Java Code
-
-            //End JVM
-
+            var clipItem = clipData.GetItemAt(0);
+            return clipItem.Text;
         }
+
+        return string.Empty;
+    }
+
+    public void CopyToClipboard(string text)
+    {
+        var clipboardManager = (ClipboardManager)_context.GetSystemService(Context.ClipboardService);
+        var clipData = ClipData.NewPlainText("Text", text);
+        clipboardManager.PrimaryClip = clipData;
     }
 }

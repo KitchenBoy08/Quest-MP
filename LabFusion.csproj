@@ -749,6 +749,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\MelonLoader.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Android">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid\v12.0\Mono.Android.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>packages\OpenTK.3.0.1\lib\net20\OpenTK.dll</HintPath>
     </Reference>
@@ -1314,6 +1317,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\UnityEngine.XRModule.dll</HintPath>
     </Reference>
+    <Reference Include="Xamarin.Android.NUnitLite">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\ReferenceAssemblies\Microsoft\Framework\MonoAndroid\v1.0\Xamarin.Android.NUnitLite.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Essentials, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Xamarin.Essentials.1.7.7\lib\netstandard2.0\Xamarin.Essentials.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Core\dependencies\RiptideNetworking\.gitignore" />
@@ -1441,6 +1450,9 @@
     <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\item_bundle.fusion" />
     <EmbeddedResource Include="Core\resources\bundles\Android\content_bundle.fusion" />
     <EmbeddedResource Include="Core\resources\bundles\Android\item_bundle.fusion" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -477,27 +477,17 @@ namespace LabFusion.Network
                 }
             } else
             {
-                string serverCode = FusionPreferences.ClientSettings.ServerCode;
+                var context = Android.App.Application.Context;
+                var androidClip = new AndroidClip(context);
 
-                if (serverCode.Contains("."))
-                {
-                    _targetServerIP = serverCode;
-                }
-                else
-                {
-                    string decodedIP = IPSafety.IPSafety.DecodeIPAddress(serverCode);
-                    _targetServerIP = decodedIP;
-                }
+                string serverCode = androidClip.GetClipboardText();
             }
         }
 
         private void CreateServerInfoMenu(MenuCategory category)
         {
             _createServerElement = category.CreateFunctionElement("Create Server", Color.white, OnClickCreateServer);
-            if (!HelperMethods.IsAndroid())
-            {
-                category.CreateFunctionElement("Copy Server Code to Clipboard", Color.white, OnCopyServerCode);
-            }
+            category.CreateFunctionElement("Copy Server Code to Clipboard", Color.white, OnCopyServerCode);
             category.CreateFunctionElement("Display Server Code", Color.white, OnDisplayServerCode);
 
             BoneMenuCreator.CreatePlayerListMenu(category);
@@ -522,10 +512,22 @@ namespace LabFusion.Network
 
         private void OnCopyServerCode()
         {
-            string ip = IPSafety.IPSafety.GetPublicIP();
-            string encodedIP = IPSafety.IPSafety.EncodeIPAddress(ip);
+            if (!HelperMethods.IsAndroid())
+            {
+                string ip = IPSafety.IPSafety.GetPublicIP();
+                string encodedIP = IPSafety.IPSafety.EncodeIPAddress(ip);
 
-            Clipboard.SetText(encodedIP);
+                Clipboard.SetText(encodedIP);
+            } else
+            {
+                var context = Android.App.Application.Context;
+                var androidClip = new AndroidClip(context);
+
+                string ip = IPSafety.IPSafety.GetPublicIP();
+                string encodedIP = IPSafety.IPSafety.EncodeIPAddress(ip);
+
+                androidClip.CopyToClipboard(encodedIP);
+            }
         }
 
         private void OnClickJoinServer()
