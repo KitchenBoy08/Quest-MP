@@ -40,7 +40,7 @@ using BoneLib;
 
 namespace LabFusion.Network
 {
-    public abstract class RiptideNetworkLayer : NetworkLayer
+    public class RiptideNetworkLayer : NetworkLayer
     {
         protected float _lastLobbyUpdate = 0f;
 
