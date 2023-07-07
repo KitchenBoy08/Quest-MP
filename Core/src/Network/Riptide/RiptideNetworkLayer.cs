@@ -260,10 +260,7 @@ namespace LabFusion.Network
         internal override void OnInitializeLayer()
         {
             FusionLogger.Log("Initialized Riptide Layer");
-
-            // Load BoneMenu seperately from the typical way Fusion does it, since it isn't properly loading for some reason
-            OnSetupRiptideBoneMenu(FusionPreferences.fusionCategory);
-
+            
             // If possible, switch this out for Fusion logger
             RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
 
@@ -295,7 +292,7 @@ namespace LabFusion.Network
             }
         }
 
-        //probably nothing to do here
+        // Probably nothing to do here
         internal override void OnLateInitializeLayer() {
             HookRiptideEvents();
         }
@@ -305,7 +302,7 @@ namespace LabFusion.Network
             Disconnect();
 
             UnHookRiptideEvents();
-            //clean up lobbies here once that is implemented
+            // Clean up lobbies here once that is implemented 
         }
 
         internal override void OnUpdateLayer()
@@ -357,7 +354,10 @@ namespace LabFusion.Network
             // Remove server hooks
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
+            MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
+            MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged -= OnUpdateRiptideLobby;
+            MultiplayerHooking.OnDisconnect -= OnDisconnect;
         }
 
         private void HookRiptideEvents()
@@ -365,7 +365,34 @@ namespace LabFusion.Network
             // Add server hooks
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
+            MultiplayerHooking.OnPlayerJoin += OnUserJoin;
+            MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
+            MultiplayerHooking.OnDisconnect += OnDisconnect;
+        }
+
+        private void OnPlayerLeave(PlayerId id)
+        {
+            /*
+            RiptideVoiceIdentifier.RemoveVoiceIdentifier(id);
+            */
+            OnUpdateRiptideLobby();
+        }
+
+        private void OnPlayerJoin(PlayerId id)
+        {
+            /*
+            if (!id.IsSelf)
+                RiptideVoiceIdentifier.GetVoiceIdentifier(id);
+            */
+            OnUpdateRiptideLobby();
+        }
+
+        private void OnDisconnect()
+        {
+            /*
+            RiptideVoiceIdentifier.CleanupAll();
+            */
         }
 
         private void OnUpdateRiptideLobby()
@@ -405,7 +432,7 @@ namespace LabFusion.Network
             OnUpdateRiptideLobby();
         }
 
-        internal void OnSetupRiptideBoneMenu(MenuCategory category)
+        internal override void OnSetupBoneMenu(MenuCategory category)
         {
             // Create the basic options
             CreateMatchmakingMenu(category);

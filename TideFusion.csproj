@@ -689,7 +689,6 @@
     <Compile Include="Core\src\Utilities\Fusion\FusionBundleLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionNotifier.cs" />
     <Compile Include="Core\src\Utilities\Internal\ChecksumCalculator.cs" />
-    <Compile Include="Core\src\Utilities\Internal\GrabPublicIP.cs" />
     <Compile Include="Core\src\Utilities\Internal\IPSafety.cs" />
     <Compile Include="Core\src\Utilities\Internal\NativeUtilities.cs" />
     <Compile Include="Core\src\Utilities\Internal\PooleePusher.cs" />

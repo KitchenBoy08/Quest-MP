@@ -34,9 +34,9 @@ namespace Steamworks
                    ((x & 0xff000000) >> 24);
         }
 
-        static public uint IpToInt32( this IPAddress ipAddress )
+        static public uint IpToInt32(this IPAddress ipAddress)
         {
-            return Swap( (uint) ipAddress.Address );
+            return Swap(BitConverter.ToUInt32(ipAddress.GetAddressBytes(), 0));
         }
 
         static public IPAddress Int32ToIp( uint ipAddress )

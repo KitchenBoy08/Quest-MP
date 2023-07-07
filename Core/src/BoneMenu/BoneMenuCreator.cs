@@ -6,7 +6,7 @@ using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.IPSafety;
-using LabFusion.Core.src.Utilities;
+using LabFusion.Core.src;
 
 using System;
 using System.Collections.Generic;
@@ -98,7 +98,7 @@ namespace LabFusion.BoneMenu
         public static void CreateStringPreference(MenuCategory category, string name, IFusionPref<string> pref, Action<string> onValueChanged = null, int maxLength = PlayerIdManager.MaxNameLength) {
             string currentValue = pref.GetValue();
             var display = category.CreateFunctionElement(string.IsNullOrWhiteSpace(currentValue) ? $"No {name}" : $"{name}: {currentValue}", Color.white, null);
-            var pasteButton = category.CreateFunctionElement($"Paste {name}", Color.white, async () => {
+            var pasteButton = category.CreateFunctionElement($"Paste {name}", Color.white, () => {
                 {
                     
                     if (HelperMethods.IsAndroid())
