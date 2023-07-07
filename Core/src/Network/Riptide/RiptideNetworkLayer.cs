@@ -413,8 +413,8 @@ namespace LabFusion.Network
             if (FusionSceneManager.IsDelayedLoading())
                 return;
 
-            bool isClient = _IsClient();
-            if (isClient)
+            bool isServer = _IsServer();
+            if (isServer)
                 _createServerElement.SetName("Create Server");
             else
                 _createServerElement.SetName("Disconnect from Server");
@@ -461,9 +461,35 @@ namespace LabFusion.Network
         private FunctionElement _targetServerElement;
         private void CreateManualJoiningMenu(MenuCategory category)
         {
-            category.CreateFunctionElement("Join Server", Color.white, OnClickJoinServer);
-            _targetServerElement = category.CreateFunctionElement("Server ID:", Color.white, null);
-            category.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerIP);
+            if (!HelperMethods.IsAndroid())
+            {
+                category.CreateFunctionElement("Join Server", Color.green, OnClickJoinServer);
+                _targetServerElement = category.CreateFunctionElement("Server ID:", Color.white, null);
+                category.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerIP);
+            }
+            else
+            {
+                if (FusionPreferences.ClientSettings.ServerCode == "PASTE SERVER CODE HERE")
+                {
+                    category.CreateFunctionElement("ERROR: CLICK ME", Color.red, OnClickCodeError);
+                } else
+                {
+                    category.CreateFunctionElement($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode}", Color.green, OnClickJoinServer);
+                }
+            }
+        }
+
+        private void OnClickCodeError()
+        {
+            FusionNotifier.Send(new FusionNotification()
+            {
+                title = "Code is Null",
+                showTitleOnPopup = true,
+                isMenuItem = false,
+                isPopup = true,
+                message = $"No server code has been put in FusionPreferences!",
+                popupLength = 5f,
+            });
         }
 
         private void OnPasteServerIP()
@@ -554,7 +580,10 @@ namespace LabFusion.Network
 
         private void OnClickJoinServer()
         {
-            ConnectToServer(_targetServerIP);
+            if (!HelperMethods.IsAndroid())
+            {
+                ConnectToServer(_targetServerIP);
+            }
         }
 
         private void OnClickCreateServer()

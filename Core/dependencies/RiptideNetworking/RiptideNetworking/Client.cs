@@ -123,7 +123,7 @@ namespace Riptide
                 connectBytes = null;
 
             Heartbeat();
-            RiptideLogger.Log(LogType.Info, LogName, $"Connecting to {connection}...");
+            RiptideLogger.Log(LogType.Info, LogName, $"Connecting to server...");
             return true;
         }
 
