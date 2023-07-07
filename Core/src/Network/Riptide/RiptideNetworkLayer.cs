@@ -37,22 +37,16 @@ using UnhollowerBaseLib;
 using LabFusion.SDK.Gamemodes;
 using Steamworks;
 using BoneLib;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace LabFusion.Network
 {
     public class RiptideNetworkLayer : NetworkLayer
     {
-        protected float _lastLobbyUpdate = 0f;
 
         private FunctionElement _createServerElement;
 
-        protected bool _isInitialized = false;
-
         protected string _targetServerIP;
-
-        public abstract uint ApplicationID { get; }
-
-        public const int ReceiveBufferSize = 32;
 
         // AsyncCallbacks are bad!
         // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
@@ -259,8 +253,8 @@ namespace LabFusion.Network
 
         internal override void OnInitializeLayer()
         {
-            FusionLogger.Log("Initialized Riptide Layer");
-            
+
+            // Initialize RiptideLogger
             // If possible, switch this out for Fusion logger
             RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
 
@@ -290,6 +284,8 @@ namespace LabFusion.Network
             {
                 PlayerIdManager.SetUsername("Player" + playerId);
             }
+
+            FusionLogger.Log("Initialized Riptide Layer");
         }
 
         // Probably nothing to do here
@@ -411,9 +407,6 @@ namespace LabFusion.Network
 
             // Update bonemenu items
             OnUpdateCreateServerText();
-
-            // Save current time
-            _lastLobbyUpdate = Time.realtimeSinceStartup;
         }
         private void OnUpdateCreateServerText()
         {
@@ -470,40 +463,65 @@ namespace LabFusion.Network
         {
             category.CreateFunctionElement("Join Server", Color.white, OnClickJoinServer);
             _targetServerElement = category.CreateFunctionElement("Server ID:", Color.white, null);
-            category.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerID);
+            category.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerIP);
         }
 
-        private void OnPasteServerID()
+        private void OnPasteServerIP()
         {
             if (!HelperMethods.IsAndroid())
             {
                 if (!Clipboard.ContainsText())
+                {
                     return;
+                }
+                else
+                {
+                    string serverCode = Clipboard.GetText();
 
-                string serverCode = Clipboard.GetText();
+                    if (serverCode.Contains("."))
+                    {
+                        _targetServerIP = serverCode;
+                    }
+                    else
+                    {
+                        string decodedIP = IPSafety.IPSafety.DecodeIPAddress(serverCode);
+                        _targetServerIP = decodedIP;
+                    }
+                }
+            } else
+            {
+
+                string serverCode = FusionPreferences.ClientSettings.ServerCode;
 
                 if (serverCode.Contains("."))
                 {
                     _targetServerIP = serverCode;
+                } else if (serverCode == "PASTE SERVER CODE HERE")
+                {
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        title = "Code is Null",
+                        showTitleOnPopup = true,
+                        isMenuItem = false,
+                        isPopup = true,
+                        message = $"No server code has been put in FusionPreferences!",
+                        popupLength = 5f,
+                    });
                 }
-                else
                 {
                     string decodedIP = IPSafety.IPSafety.DecodeIPAddress(serverCode);
                     _targetServerIP = decodedIP;
                 }
-            } else
-            {
-                var context = Android.App.Application.Context;
-                var androidClip = new AndroidClip(context);
-
-                string serverCode = androidClip.GetClipboardText();
             }
         }
 
         private void CreateServerInfoMenu(MenuCategory category)
         {
             _createServerElement = category.CreateFunctionElement("Create Server", Color.white, OnClickCreateServer);
-            category.CreateFunctionElement("Copy Server Code to Clipboard", Color.white, OnCopyServerCode);
+            if (HelperMethods.IsAndroid())
+            {
+                category.CreateFunctionElement("Copy Server Code to Clipboard", Color.white, OnCopyServerCode);
+            }
             category.CreateFunctionElement("Display Server Code", Color.white, OnDisplayServerCode);
 
             BoneMenuCreator.CreatePlayerListMenu(category);
@@ -528,22 +546,10 @@ namespace LabFusion.Network
 
         private void OnCopyServerCode()
         {
-            if (!HelperMethods.IsAndroid())
-            {
-                string ip = IPSafety.IPSafety.GetPublicIP();
-                string encodedIP = IPSafety.IPSafety.EncodeIPAddress(ip);
+            string ip = IPSafety.IPSafety.GetPublicIP();
+            string encodedIP = IPSafety.IPSafety.EncodeIPAddress(ip);
 
-                Clipboard.SetText(encodedIP);
-            } else
-            {
-                var context = Android.App.Application.Context;
-                var androidClip = new AndroidClip(context);
-
-                string ip = IPSafety.IPSafety.GetPublicIP();
-                string encodedIP = IPSafety.IPSafety.EncodeIPAddress(ip);
-
-                androidClip.CopyToClipboard(encodedIP);
-            }
+            Clipboard.SetText(encodedIP);
         }
 
         private void OnClickJoinServer()

@@ -172,7 +172,7 @@ namespace LabFusion.Preferences {
 
             // QUEST/Riptide Code/IP
 
-            ClientSettings.ServerCode = new FusionPref<string>(prefCategory, "Server Code", $"192.168.1.1", PrefUpdateMode.LOCAL_UPDATE);
+            ClientSettings.ServerCode = new FusionPref<string>(prefCategory, "Server Code", $"PASTE SERVER CODE HERE", PrefUpdateMode.LOCAL_UPDATE);
 
             // Nametag
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);

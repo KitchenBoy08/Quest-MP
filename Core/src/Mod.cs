@@ -97,6 +97,7 @@ namespace LabFusion
 
             // Load network layer type
             ActiveNetworkingType = NetworkLayerDeterminer.GetLoadedType();
+            FusionLogger.Log($"Loaded Networking Layer: {ActiveNetworkingType.Name}");
 
             // Finally, initialize the network layer
             OnInitializeNetworking();
@@ -127,8 +128,9 @@ namespace LabFusion
             }
 
             // Create the network layer based on the selected type
-            // Then, set the layer
             var layer = Activator.CreateInstance(ActiveNetworkingType) as NetworkLayer;
+
+            // Then, set the layer
             InternalLayerHelpers.SetLayer(layer);
         }
 

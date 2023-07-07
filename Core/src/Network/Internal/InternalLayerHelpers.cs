@@ -26,7 +26,6 @@ namespace LabFusion.Network
         internal static void OnLateInitializeLayer() {
             if (CurrentNetworkLayer == null)
             {
-                FusionLogger.Log("Current Network Layer is null while trying OnLateInitalizeLayer!");
             } else
             {
                 CurrentNetworkLayer.OnLateInitializeLayer();
@@ -36,7 +35,6 @@ namespace LabFusion.Network
         internal static void OnCleanupLayer() {
             if (CurrentNetworkLayer == null)
             {
-                FusionLogger.Log("Current Network Layer is null while trying OnCleanupLayer!");
             }
             else
             {
@@ -49,7 +47,6 @@ namespace LabFusion.Network
         internal static void OnUpdateLayer() {
             if (CurrentNetworkLayer == null)
             {
-                FusionLogger.Log("Current Network Layer is null while trying OnUpdateLayer!");
             }
             else
             {
@@ -60,7 +57,6 @@ namespace LabFusion.Network
         internal static void OnLateUpdateLayer() {
             if (CurrentNetworkLayer == null)
             {
-                FusionLogger.Log("Current Network Layer is null while trying OnLateUpdateLayer!");
             }
             else
             {
@@ -71,7 +67,6 @@ namespace LabFusion.Network
         internal static void OnGUILayer() {
             if (CurrentNetworkLayer == null)
             {
-                FusionLogger.Log("Current Network Layer is null while trying OnGUILayer!");
             }
             else
             {
@@ -83,7 +78,6 @@ namespace LabFusion.Network
         {
             if (CurrentNetworkLayer == null)
             {
-                FusionLogger.Log("Current Network Layer is null while trying OnVoiceChatUpdate!");
             }
             else
             {
@@ -95,7 +89,6 @@ namespace LabFusion.Network
         {
             if (CurrentNetworkLayer == null)
             {
-                FusionLogger.Log("Current Network Layer is null while trying OnVoiceBytesRecieved!");
             }
             else
             {
@@ -106,7 +99,6 @@ namespace LabFusion.Network
         internal static void OnSetupBoneMenuLayer(MenuCategory category) {
             if (CurrentNetworkLayer == null)
             {
-                FusionLogger.Log("Current Network Layer is null while trying OnSetupBoneMenuLayer!");
             } else
             {
                 CurrentNetworkLayer.OnSetupBoneMenu(category);
@@ -116,7 +108,6 @@ namespace LabFusion.Network
         internal static void OnUserJoin(PlayerId id) {
             if (CurrentNetworkLayer == null)
             {
-                FusionLogger.Log("Current Network Layer is null while trying OnUserJoin!");
             }
             else
             {

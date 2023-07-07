@@ -24,7 +24,7 @@ namespace LabFusion.Core.src.Network.Riptide
     public class RiptideVoiceIdentifier
     {
         //Not a promise to be finished, but I'm just working on it cause I'm bored
-
+        /*
         public static List<RiptideVoiceIdentifier> VoiceIdentifiers = new List<RiptideVoiceIdentifier>();
 
         private const float _defaultVolumeMultiplier = 10f;
@@ -44,5 +44,6 @@ namespace LabFusion.Core.src.Network.Riptide
         {
  
         }
+        */
     }
 }
