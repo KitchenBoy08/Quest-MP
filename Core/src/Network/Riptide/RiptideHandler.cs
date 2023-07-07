@@ -67,20 +67,12 @@ namespace LabFusion.Network
             return message;
         }
 
-        //Recieving Messages WIP
-        // this needs to handle a riptide message, which is its own thing
-        public static void OnP2PMessageRecieved(IntPtr messageIntPtr,int dataBlockSize, bool isServerHandled = false)
+        // Recieving Messages WIP
+        // This needs to handle a riptide message, which is its own thing
+        [MessageHandler(0)]
+        public static void OnP2PMessageRecieved() /// Ill work on this later. Not really sure how to do this
         {
-            try
-            {
-                unsafe
-                {
-                    FusionMessageHandler.ReadMessage((byte*)messageIntPtr, dataBlockSize, isServerHandled);
-                }
-            } catch (Exception e)
-            {
-                FusionLogger.Error($"Failed reading message from server with reason: {e.Message}\nTrace:{e.StackTrace}");
-            }
+
         }
     }
     

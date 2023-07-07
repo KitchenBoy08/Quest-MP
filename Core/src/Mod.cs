@@ -27,14 +27,14 @@ namespace LabFusion
 {
     public struct FusionVersion
     {
-        public const byte versionMajor = 1;
-        public const byte versionMinor = 4;
+        public const byte versionMajor = 0;
+        public const byte versionMinor = 0;
         public const short versionPatch = 1;
     }
 
     public class FusionMod : MelonMod {
-        public const string Name = "LabFusion";
-        public const string Author = "Lakatrazz";
+        public const string Name = "TideFusion";
+        public const string Author = "Lakatrazz, EverythingOnArm and KitchenBoy";
         public static readonly Version Version = new(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
 
         public static string Changelog { get; internal set; } = null;
@@ -57,10 +57,7 @@ namespace LabFusion
             PersistentData.OnPathInitialize();
 
             // Load APIs
-            if (!HelperMethods.IsAndroid())
-            {
-                SteamAPILoader.OnLoadSteamAPI();
-            }
+            SteamAPILoader.OnLoadSteamAPI();
 
             // Initialize data and hooks
             ByteRetriever.PopulateInitial();
@@ -166,6 +163,7 @@ namespace LabFusion
             
 #if DEBUG
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
+            FusionLogger.Log($"Networking layer is {NetworkLayerDeterminer.GetLoadedType()}");
 #endif
             // Fix random static grips in the scene
             StaticGripFixer.OnMainSceneInitialized();

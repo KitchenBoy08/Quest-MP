@@ -396,7 +396,6 @@
     <Compile Include="Core\src\Network\Messages\Spawning\SpawnableCratePlacerMessage.cs" />
     <Compile Include="Core\src\Network\NetworkLayerDeterminer.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideHandler.cs" />
-    <Compile Include="Core\src\Network\Riptide\RiptideLobby.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideVoiceIdentifier.cs" />
     <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />

@@ -257,24 +257,13 @@ namespace LabFusion.Network
             }
         }
 
-        /// <summary>
-        /// If this is a server, sends this message back to all users except for the provided id.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="channel"></param>
-        /// <param name="message"></param>
-        internal override void BroadcastMessageExcept(ulong userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
-        {
-            for (var i = 0; i < PlayerIdManager.PlayerIds.Count; i++)
-            {
-                var id = PlayerIdManager.PlayerIds[i];
-                if (id.LongId != userId && (id.SmallId != 0 || !ignoreHost))
-                    SendFromServer(id.SmallId, channel, message);
-            }
-        }
-
         internal override void OnInitializeLayer()
         {
+            FusionLogger.Log("Initialized Riptide Layer");
+
+            // Load BoneMenu seperately from the typical way Fusion does it, since it isn't properly loading for some reason
+            OnSetupRiptideBoneMenu(FusionPreferences.fusionCategory);
+
             // If possible, switch this out for Fusion logger
             RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
 
@@ -416,7 +405,7 @@ namespace LabFusion.Network
             OnUpdateRiptideLobby();
         }
 
-        internal override void OnSetupBoneMenu(MenuCategory category)
+        internal void OnSetupRiptideBoneMenu(MenuCategory category)
         {
             // Create the basic options
             CreateMatchmakingMenu(category);
