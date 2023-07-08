@@ -27,8 +27,8 @@ namespace LabFusion
 {
     public struct FusionVersion
     {
-        public const byte versionMajor = 0;
-        public const byte versionMinor = 0;
+        public const byte versionMajor = 1;
+        public const byte versionMinor = 4;
         public const short versionPatch = 1;
     }
 

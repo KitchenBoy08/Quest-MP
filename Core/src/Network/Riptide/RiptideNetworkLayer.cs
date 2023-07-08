@@ -569,11 +569,15 @@ namespace LabFusion.Network
                     if (serverCode.Contains("."))
                     {
                         _targetServerIP = serverCode;
+
+                        string encodedIP = IPSafety.IPSafety.EncodeIPAddress(serverCode);
+                        _targetServerElement.SetName($"Server ID: {serverCode}");
                     }
                     else
                     {
                         string decodedIP = IPSafety.IPSafety.DecodeIPAddress(serverCode);
                         _targetServerIP = decodedIP;
+                        _targetServerElement.SetName($"Server ID: {serverCode}");
                     }
                 }
             } else
@@ -606,7 +610,7 @@ namespace LabFusion.Network
         private void CreateServerInfoMenu(MenuCategory category)
         {
             _createServerElement = category.CreateFunctionElement("Create Server", Color.white, OnClickCreateServer);
-            if (HelperMethods.IsAndroid())
+            if (!HelperMethods.IsAndroid())
             {
                 category.CreateFunctionElement("Copy Server Code to Clipboard", Color.white, OnCopyServerCode);
             }
@@ -644,7 +648,14 @@ namespace LabFusion.Network
         {
             if (!HelperMethods.IsAndroid())
             {
-                ConnectToServer(_targetServerIP);
+                if (_targetServerIP.Contains("."))
+                {
+                    ConnectToServer(_targetServerIP);
+                } else
+                {
+                    string targetIP = IPSafety.IPSafety.DecodeIPAddress(_targetServerIP);
+                    ConnectToServer(targetIP);
+                }
             } else
             {
                 string serverCode = FusionPreferences.ClientSettings.ServerCode;
