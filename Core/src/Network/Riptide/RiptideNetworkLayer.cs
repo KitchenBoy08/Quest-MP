@@ -121,11 +121,23 @@ namespace LabFusion.Network
             PlayerIdManager.SetLongId(currentclient.Id);
             if (FusionPreferences.ClientSettings.Nickname != null)
             {
-                PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
+                if (HelperMethods.IsAndroid())
+                {
+                    PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname + " (Quest)");
+                } else
+                {
+                    PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname + " (PC)");
+                }
             }
             else
             {
-                PlayerIdManager.SetUsername("Player" + currentclient.Id);
+                if (HelperMethods.IsAndroid())
+                {
+                    PlayerIdManager.SetUsername("Player" + currentclient.Id + " (Quest)");
+                } else
+                {
+                    PlayerIdManager.SetUsername("Player" + currentclient.Id + " (PC)");
+                }
             }
             InternalServerHelpers.OnStartServer();
         }
