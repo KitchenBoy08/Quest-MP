@@ -253,7 +253,6 @@ namespace LabFusion.Network
 
         internal override void OnInitializeLayer()
         {
-
             // Initialize RiptideLogger
             // If possible, switch this out for Fusion logger
             RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
@@ -353,7 +352,6 @@ namespace LabFusion.Network
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged -= OnUpdateRiptideLobby;
-            MultiplayerHooking.OnDisconnect -= OnDisconnect;
         }
 
         private void HookRiptideEvents()
@@ -364,47 +362,20 @@ namespace LabFusion.Network
             MultiplayerHooking.OnPlayerJoin += OnUserJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
-            MultiplayerHooking.OnDisconnect += OnDisconnect;
         }
 
         private void OnPlayerLeave(PlayerId id)
         {
-            /*
-            RiptideVoiceIdentifier.RemoveVoiceIdentifier(id);
-            */
             OnUpdateRiptideLobby();
         }
 
         private void OnPlayerJoin(PlayerId id)
         {
-            /*
-            if (!id.IsSelf)
-                RiptideVoiceIdentifier.GetVoiceIdentifier(id);
-            */
             OnUpdateRiptideLobby();
-        }
-
-        private void OnDisconnect()
-        {
-            /*
-            RiptideVoiceIdentifier.CleanupAll();
-            */
         }
 
         private void OnUpdateRiptideLobby()
         {
-            // Make sure the lobby exists
-            if (CurrentLobby == null)
-            {
-#if DEBUG
-                FusionLogger.Warn("Tried updating the Riptide lobby, but it was null!");
-#endif
-                return;
-            }
-
-            // Write active info about the lobby
-            LobbyMetadataHelper.WriteInfo(CurrentLobby);
-
             // Update bonemenu items
             OnUpdateCreateServerText();
         }
@@ -413,8 +384,7 @@ namespace LabFusion.Network
             if (FusionSceneManager.IsDelayedLoading())
                 return;
 
-            bool isServer = _IsServer();
-            if (isServer)
+            if (!_IsClient())
                 _createServerElement.SetName("Create Server");
             else
                 _createServerElement.SetName("Disconnect from Server");
@@ -477,6 +447,82 @@ namespace LabFusion.Network
                     category.CreateFunctionElement($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode}", Color.green, OnClickJoinServer);
                 }
             }
+            CreateRecentlyJoinedMenu(category);
+        }
+
+        private void CreateRecentlyJoinedMenu(MenuCategory category)
+        {
+            // Root Category
+            var recentlyJoinedMenu = category.CreateCategory("Recently Joined", Color.white);
+
+            recentlyJoinedMenu.CreateFunctionElement("Reset Codes", Color.red, OnResetCodes);
+
+            // FunctionElements didn't like adding an input to the function, so this is the best I can do for now
+            // I will probably optimize this later
+            if (FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[0] == null)
+            {
+                recentlyJoinedMenu.CreateSubPanel("NULL", Color.yellow);
+            } else
+            {
+                recentlyJoinedMenu.CreateFunctionElement(FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[0], Color.white, OnClickJoinCode0);
+            }
+
+            if (FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[1] == null)
+            {
+                recentlyJoinedMenu.CreateSubPanel("NULL", Color.yellow);
+            }
+            else
+            {
+                recentlyJoinedMenu.CreateFunctionElement(FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[1], Color.white, OnClickJoinCode1);
+            }
+
+            if (FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[2] == null)
+            {
+                recentlyJoinedMenu.CreateSubPanel("NULL", Color.yellow);
+            }
+            else
+            {
+                recentlyJoinedMenu.CreateFunctionElement(FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[2], Color.white, OnClickJoinCode2);
+            }
+
+            if (FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[3] == null)
+            {
+                recentlyJoinedMenu.CreateSubPanel("NULL", Color.yellow);
+            }
+            else
+            {
+                recentlyJoinedMenu.CreateFunctionElement(FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[3], Color.white, OnClickJoinCode3);
+            }
+        }
+
+        private void OnResetCodes()
+        {
+            FusionPreferences.ClientSettings.RecentServerCodes = null;
+            CreateRecentlyJoinedMenu(_manualJoiningCategory);
+        }
+
+        private void OnClickJoinCode0()
+        {
+            string code = FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[0];
+            ConnectToServer(code);
+        }
+
+        private void OnClickJoinCode1()
+        {
+            string code = FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[1];
+            ConnectToServer(code);
+        }
+
+        private void OnClickJoinCode2()
+        {
+            string code = FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[2];
+            ConnectToServer(code);
+        }
+
+        private void OnClickJoinCode3()
+        {
+            string code = FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[3];
+            ConnectToServer(code);
         }
 
         private void OnClickCodeError()
@@ -533,7 +579,7 @@ namespace LabFusion.Network
                         message = $"No server code has been put in FusionPreferences!",
                         popupLength = 5f,
                     });
-                }
+                } else
                 {
                     string decodedIP = IPSafety.IPSafety.DecodeIPAddress(serverCode);
                     _targetServerIP = decodedIP;
