@@ -38,6 +38,7 @@ using LabFusion.SDK.Gamemodes;
 using Steamworks;
 using BoneLib;
 using System.Windows.Forms.DataVisualization.Charting;
+using JetBrains.Annotations;
 
 namespace LabFusion.Network
 {
@@ -447,7 +448,10 @@ namespace LabFusion.Network
                     category.CreateFunctionElement($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode}", Color.green, OnClickJoinServer);
                 }
             }
-            CreateRecentlyJoinedMenu(category);
+            if (HelperMethods.IsAndroid())
+            {
+                CreateRecentlyJoinedMenu(category);
+            }
         }
 
         private void CreateRecentlyJoinedMenu(MenuCategory category)
@@ -629,6 +633,44 @@ namespace LabFusion.Network
             if (!HelperMethods.IsAndroid())
             {
                 ConnectToServer(_targetServerIP);
+            } else
+            {
+                string serverCode = FusionPreferences.ClientSettings.ServerCode;
+                if (serverCode.Contains("."))
+                {
+                    ConnectToServer(serverCode);
+                } else
+                {
+                    // Set to recent server codes
+                    int nullCodes = 0;
+                    int i = 0;
+                    bool setRecentCode = false;
+                    string[] codes = FusionPreferences.ClientSettings.RecentServerCodes.GetValue();
+                    for (; i < codes.Length | setRecentCode == false; i++) 
+                    {
+                        if (codes[i] == null)
+                        {
+                            codes[i] = serverCode;
+                            setRecentCode = true;
+                        } else
+                        {
+                            nullCodes++;
+                        }
+                    }
+                    if (nullCodes == 4)
+                    {
+                        codes[3] = codes[2];
+                        codes[2] = codes[1];
+                        codes[1] = codes[0];
+                        codes[0] = serverCode;
+                    }
+                    FusionPreferences.ClientSettings.RecentServerCodes.SetValue(codes);
+
+
+                    // Connect to code
+                    string decodedIP = IPSafety.IPSafety.DecodeIPAddress(serverCode);
+                    ConnectToServer(decodedIP);
+                }
             }
         }
 
