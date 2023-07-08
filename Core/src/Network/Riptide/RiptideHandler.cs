@@ -70,9 +70,48 @@ namespace LabFusion.Network
         // Recieving Messages WIP
         // This needs to handle a riptide message, which is its own thing
         [MessageHandler(0)]
-        private static void ServerToClient(Message message)
+        public static Client.MessageHandler RiptideClientMessageHandler(Riptide.Message message)
         {
+            try
+            {
+                unsafe
+                {
+                    int messageLength = message.WrittenLength;
 
+                    byte[] buffer = new byte[255];
+                    fixed (byte* messageBuffer = buffer)
+                    {
+                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength, false);
+                    }
+                }
+            } catch (Exception e)
+            {
+                FusionLogger.Error($"Failed reading message from socket server with reason: {e.Message}");
+            }
+            return null;
+        }
+
+        [MessageHandler(0)]
+        public static Server.MessageHandler RiptideServerMessageHandler(Riptide.Message message)
+        {
+            try
+            {
+                unsafe
+                {
+                    int messageLength = message.WrittenLength;
+
+                    byte[] buffer = new byte[255];
+                    fixed (byte* messageBuffer = buffer)
+                    {
+                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength, true);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                FusionLogger.Error($"Failed reading message from socket server with reason: {e.Message}");
+            }
+            return null;
         }
     }
     
