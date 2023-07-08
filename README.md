@@ -3,7 +3,7 @@ This mod is a port of FUSION to Quest, although it should support both Quest and
 
 ## Progress on The Mod
 You can see all progress on the mod at: 
-https://trello.com/b/IEXzs0C2/quest-fusion-progress
+[https://trello.com/b/IEXzs0C2/quest-fusion-progress](https://trello.com/b/IEXzs0C2/tidefusion-progress)
 
 ## Networking
 This mod utilizes Riptide Networking in order to be usable on quest and Steam Networking (Which is only available on PCVR).
