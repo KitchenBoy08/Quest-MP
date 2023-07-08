@@ -86,7 +86,7 @@ namespace LabFusion.Network
                 }
             } catch (Exception e)
             {
-                FusionLogger.Error($"Failed reading message from socket server with reason: {e.Message}");
+                FusionLogger.Error($"Failed reading message from Riptide server with reason: {e.Message}");
             }
             return null;
         }
@@ -109,7 +109,7 @@ namespace LabFusion.Network
             }
             catch (Exception e)
             {
-                FusionLogger.Error($"Failed reading message from socket server with reason: {e.Message}");
+                FusionLogger.Error($"Failed reading message from Riptide client with reason: {e.Message}");
             }
             return null;
         }
