@@ -70,8 +70,24 @@ namespace LabFusion.Network
         // Recieving Messages WIP
         // This needs to handle a riptide message, which is its own thing
         [MessageHandler(0)]
-        public static void OnP2PMessageRecieved() /// Ill work on this later. Not really sure how to do this
+        public static void OnP2PMessageRecieved(Riptide.Message riptideMessage)
         {
+            try {
+                unsafe
+                {
+                    byte[] buffer = riptideMessage.GetBytes();
+
+                    int messageLength = riptideMessage.WrittenLength;
+
+                    fixed (byte* messageBuffer = buffer)
+                    {
+                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength);
+                    }
+                }
+            } catch (Exception e)
+            {
+                FusionLogger.Log($"Failed to read Riptide Message with error: {e}");
+            }
 
         }
     }
