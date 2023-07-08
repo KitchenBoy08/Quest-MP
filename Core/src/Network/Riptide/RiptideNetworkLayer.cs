@@ -165,7 +165,7 @@ namespace LabFusion.Network
         /// <returns></returns>
         internal override bool IsFriend(ulong userId)
         {
-            //Currently there's no Friend system in Place and probably isn't needed, so we always return false
+            // Currently there's no Friend system in Place and probably isn't needed, so we always return false
             return false;
         }
 
@@ -177,12 +177,12 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
         {
-            Riptide.Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
+            Riptide.Message riptideMessage = RiptideHandler.PrepareMessage(message, channel);
             var id = PlayerIdManager.GetPlayerId(userId);
             if (id != null)
             {
                 ushort riptideid = (ushort)id;
-                currentserver.Send(riptidemessage, riptideid);
+                currentserver.Send(riptideMessage, riptideid);
             }
 
         }
@@ -197,10 +197,10 @@ namespace LabFusion.Network
         {
             if (IsServer)
             {
-                Riptide.Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
-                //this should determine user riptide id from fusion player metadata
+                Riptide.Message riptideMessage = RiptideHandler.PrepareMessage(message, channel);
+                // This should determine user riptide id from fusion player metadata
                 ushort riptideid = (ushort)userId;
-                currentserver.Send(riptidemessage, riptideid);
+                currentserver.Send(riptideMessage, riptideid);
             }
         }
 
