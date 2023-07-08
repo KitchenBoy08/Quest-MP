@@ -78,7 +78,7 @@ namespace LabFusion.Network
                 {
                     int messageLength = message.WrittenLength;
 
-                    byte[] buffer = new byte[255];
+                    byte[] buffer = message.GetBytes();
                     fixed (byte* messageBuffer = buffer)
                     {
                         FusionMessageHandler.ReadMessage(messageBuffer, messageLength, false);
@@ -100,7 +100,7 @@ namespace LabFusion.Network
                 {
                     int messageLength = message.WrittenLength;
 
-                    byte[] buffer = new byte[255];
+                    byte[] buffer = message.GetBytes(); 
                     fixed (byte* messageBuffer = buffer)
                     {
                         FusionMessageHandler.ReadMessage(messageBuffer, messageLength, true);
