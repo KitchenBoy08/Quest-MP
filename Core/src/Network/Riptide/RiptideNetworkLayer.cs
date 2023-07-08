@@ -588,6 +588,9 @@ namespace LabFusion.Network
                 if (serverCode.Contains("."))
                 {
                     _targetServerIP = serverCode;
+
+                    string decodedIP = IPSafety.IPSafety.EncodeIPAddress(_targetServerIP);
+                    _targetServerElement.SetName($"Server ID: {decodedIP}");
                 } else if (serverCode == "PASTE SERVER CODE HERE")
                 {
                     FusionNotifier.Send(new FusionNotification()
