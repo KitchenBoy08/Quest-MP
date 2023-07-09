@@ -315,7 +315,7 @@ namespace LabFusion.Network
 
         internal override void OnUpdateLayer()
         {
-            if (currentserver != null)
+            if (!IsServer)
             {
                 currentserver.Update();
             }
