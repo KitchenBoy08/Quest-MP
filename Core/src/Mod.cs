@@ -165,7 +165,6 @@ namespace LabFusion
             
 #if DEBUG
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
-            FusionLogger.Log($"Networking layer is {NetworkLayerDeterminer.GetLoadedType()}");
 #endif
             // Fix random static grips in the scene
             StaticGripFixer.OnMainSceneInitialized();

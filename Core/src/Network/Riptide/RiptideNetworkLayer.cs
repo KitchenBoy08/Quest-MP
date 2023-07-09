@@ -39,6 +39,8 @@ using Steamworks;
 using BoneLib;
 using System.Windows.Forms.DataVisualization.Charting;
 using JetBrains.Annotations;
+using Il2CppSystem.Threading;
+using System.Threading;
 
 namespace LabFusion.Network
 {
@@ -53,8 +55,8 @@ namespace LabFusion.Network
         // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
         public const bool AsyncCallbacks = false;
 
-        Server currentserver { get; set; }
-        Client currentclient { get; set; }
+        public Server currentserver { get; set; }
+        public Client currentclient { get; set; }
 
         /// <summary>
         /// Returns true if this layer is hosting a server.
@@ -117,7 +119,7 @@ namespace LabFusion.Network
 
             currentclient.Connect("127.0.0.1:7777");
 
-            //Update player id here just to be safe
+            // Update player id here just to be safe
             PlayerIdManager.SetLongId(currentclient.Id);
             if (FusionPreferences.ClientSettings.Nickname != null)
             {
@@ -166,7 +168,6 @@ namespace LabFusion.Network
         /// (Not in this method, it should be done upon connection)
         internal override string GetUsername(ulong userId)
         {
-            // Find a way to get nickname, this will do for testing
             string Username = ("Player" + userId);
             return Username;
         }
@@ -267,7 +268,6 @@ namespace LabFusion.Network
         internal override void OnInitializeLayer()
         {
             // Initialize RiptideLogger
-            // If possible, switch this out for Fusion logger
             RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
 
             // Initialize currentclient only if it is null
@@ -278,7 +278,6 @@ namespace LabFusion.Network
 
             ulong playerId = currentclient.Id;
             PlayerIdManager.SetLongId(playerId);
-
             if (playerId == 0)
             {
                 FusionLogger.Warn("Player Long Id is 0 and something is probably wrong");
@@ -288,13 +287,13 @@ namespace LabFusion.Network
                 FusionLogger.Log($"Player Long Id is {playerId}");
             }
 
-            if (FusionPreferences.ClientSettings.Nickname != null)
+            if (FusionPreferences.ClientSettings.Nickname != "")
             {
                 PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
             }
             else
             {
-                PlayerIdManager.SetUsername("Player" + playerId);
+                PlayerIdManager.SetUsername("Player " + playerId);
             }
 
             FusionLogger.Log("Initialized Riptide Layer");
@@ -354,7 +353,18 @@ namespace LabFusion.Network
             {
                 PlayerIdManager.SetUsername("Player" + currentclient.Id);
             }
-            ConnectionSender.SendConnectionRequest();
+            currentclient.Connected += OnConnected;
+        }
+
+        private void OnConnected(object sender, EventArgs e)
+        {
+            try
+            {
+                ConnectionSender.SendConnectionRequest();
+            } catch (Exception ex)
+            {
+                FusionLogger.Error($"Failed to send connection request with error: {ex}");
+            }
         }
 
         private void UnHookRiptideEvents()
@@ -398,9 +408,13 @@ namespace LabFusion.Network
                 return;
 
             if (!_IsClient())
+            {
                 _createServerElement.SetName("Create Server");
+            }
             else
+            {
                 _createServerElement.SetName("Disconnect from Server");
+            }
         }
 
         private void OnGamemodeChanged(Gamemode gamemode)
@@ -588,6 +602,9 @@ namespace LabFusion.Network
                 if (serverCode.Contains("."))
                 {
                     _targetServerIP = serverCode;
+
+                    string decodedIP = IPSafety.IPSafety.EncodeIPAddress(_targetServerIP);
+                    _targetServerElement.SetName($"Server ID: {decodedIP}");
                 } else if (serverCode == "PASTE SERVER CODE HERE")
                 {
                     FusionNotifier.Send(new FusionNotification()
@@ -699,13 +716,14 @@ namespace LabFusion.Network
 
         private void OnClickCreateServer()
         {
-            // Is a server already running? Disconnect then create server.
-            if (IsClient)
+            // Is a server already running? Disconnect.
+            if (IsClient || IsServer)
             {
                 NetworkHelper.Disconnect();
+            } else
+            {
+                NetworkHelper.StartServer();
             }
-            NetworkHelper.StartServer();
-
         }
     }
 }

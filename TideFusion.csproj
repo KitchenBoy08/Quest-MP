@@ -3,6 +3,8 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <LangVersion>9.0</LangVersion>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -181,35 +183,6 @@
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\SteamInterface.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utf8String.cs" />
     <Compile Include="Core\dependencies\Facepunch.Steamworks\Utility\Utility.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Client.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Connection.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\EventArgs.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Exceptions.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\IMessageSerializable.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Message.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\MessageHandlerAttribute.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\MessageRelayFilter.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Peer.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\PendingMessage.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Server.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Transports\EventArgs.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Transports\IClient.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Transports\IPeer.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Transports\IServer.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Transports\Tcp\TcpClient.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Transports\Tcp\TcpConnection.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Transports\Tcp\TcpPeer.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Transports\Tcp\TcpServer.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Transports\Udp\UdpClient.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Transports\Udp\UdpConnection.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Transports\Udp\UdpPeer.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Transports\Udp\UdpServer.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Utils\Converter.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Utils\DelayedEvents.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Utils\Extensions.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Utils\Helper.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Utils\PriorityQueue.cs" />
-    <Compile Include="Core\dependencies\RiptideNetworking\RiptideNetworking\Utils\RiptideLogger.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\Entangled\EntangledProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\GamemodeEndEvent.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Gamemodes\GamemodeStartEvent.cs" />
@@ -750,6 +723,9 @@
     </Reference>
     <Reference Include="OpenTK.GLControl, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>packages\OpenTK.GLControl.3.0.1\lib\net20\OpenTK.GLControl.dll</HintPath>
+    </Reference>
+    <Reference Include="RiptideNetworking %281%29">
+      <HintPath>..\..\RiptideNetworking (1).dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -1312,9 +1288,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Core\dependencies\RiptideNetworking\.gitignore" />
-    <Content Include="Core\dependencies\RiptideNetworking\package-icon.png" />
-    <Content Include="Core\dependencies\RiptideNetworking\RiptideNetworking.sln" />
     <Content Include="packages\OpenTK.3.0.1\lib\net20\OpenTK.dll" />
     <Content Include="packages\OpenTK.3.0.1\lib\net20\OpenTK.pdb" />
     <Content Include="packages\OpenTK.3.0.1\lib\net20\OpenTK.xml" />
@@ -1373,9 +1346,6 @@
     <Content Include="packages\System.Threading.Tasks.Extensions.4.5.4\version.txt" />
     <EmbeddedResource Include="Core\resources\raw_changelog.txt" />
     <EmbeddedResource Include="Core\resources\lib\Any\RiptideNetworking.dll" />
-    <None Include="Core\dependencies\RiptideNetworking\.editorconfig" />
-    <None Include="Core\dependencies\RiptideNetworking\nuget-readme.md" />
-    <None Include="Core\dependencies\RiptideNetworking\RiptideNetworking\RiptideNetworking.csproj" />
     <None Include="Core\resources\lib\Any\RiptideNetworking.xml" />
     <Content Include="Core\src\AssemblyInfo.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -1442,4 +1412,11 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets'))" />
+  </Target>
 </Project>
