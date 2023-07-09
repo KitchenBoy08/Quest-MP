@@ -168,7 +168,6 @@ namespace LabFusion.Network
         /// (Not in this method, it should be done upon connection)
         internal override string GetUsername(ulong userId)
         {
-
             string Username = ("Player" + userId);
             return Username;
         }
@@ -269,7 +268,6 @@ namespace LabFusion.Network
         internal override void OnInitializeLayer()
         {
             // Initialize RiptideLogger
-            // If possible, switch this out for Fusion logger
             RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
 
             // Initialize currentclient only if it is null
@@ -280,7 +278,6 @@ namespace LabFusion.Network
 
             ulong playerId = currentclient.Id;
             PlayerIdManager.SetLongId(playerId);
-
             if (playerId == 0)
             {
                 FusionLogger.Warn("Player Long Id is 0 and something is probably wrong");
@@ -290,13 +287,13 @@ namespace LabFusion.Network
                 FusionLogger.Log($"Player Long Id is {playerId}");
             }
 
-            if (FusionPreferences.ClientSettings.Nickname != null)
+            if (FusionPreferences.ClientSettings.Nickname != "")
             {
                 PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
             }
             else
             {
-                PlayerIdManager.SetUsername("Player" + playerId);
+                PlayerIdManager.SetUsername("Player " + playerId);
             }
 
             FusionLogger.Log("Initialized Riptide Layer");
@@ -356,9 +353,19 @@ namespace LabFusion.Network
             {
                 PlayerIdManager.SetUsername("Player" + currentclient.Id);
             }
-            ConnectionSender.SendConnectionRequest();
+            currentclient.Connected += OnConnected;
         }
 
+        private void OnConnected(object sender, EventArgs e)
+        {
+            try
+            {
+                ConnectionSender.SendConnectionRequest();
+            } catch (Exception ex)
+            {
+                FusionLogger.Error($"Failed to send connection request with error: {ex}");
+            }
+        }
 
         private void UnHookRiptideEvents()
         {
@@ -401,9 +408,13 @@ namespace LabFusion.Network
                 return;
 
             if (!_IsClient())
+            {
                 _createServerElement.SetName("Create Server");
+            }
             else
+            {
                 _createServerElement.SetName("Disconnect from Server");
+            }
         }
 
         private void OnGamemodeChanged(Gamemode gamemode)
@@ -705,13 +716,14 @@ namespace LabFusion.Network
 
         private void OnClickCreateServer()
         {
-            // Is a server already running? Disconnect then create server.
-            if (IsClient)
+            // Is a server already running? Disconnect.
+            if (IsClient || IsServer)
             {
                 NetworkHelper.Disconnect();
+            } else
+            {
+                NetworkHelper.StartServer();
             }
-            NetworkHelper.StartServer();
-
         }
     }
 }

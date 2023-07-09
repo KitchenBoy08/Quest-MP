@@ -71,7 +71,7 @@ namespace LabFusion.Network
         // Recieving Messages WIP
         // This needs to handle a riptide message, which is its own thing
         [MessageHandler(0)]
-        public static void HandleSomeMessageToServer(Riptide.Message message)
+        public static void HandleSomeMessageFromServer(Riptide.Message message)
         {
             try
             {
@@ -92,14 +92,16 @@ namespace LabFusion.Network
         }
 
         [MessageHandler(0)]
-        private static void HandleSomeMessageToClient(ushort riptideID, Message message)
+        private static void HandleSomeMessageFromClient(ushort riptideID, Message message)
         {
             try
             {
                 unsafe
                 {
                     var layer = new RiptideNetworkLayer();
+
                     int messageLength = message.WrittenLength;
+
                     byte[] buffer = message.GetBytes();
                     fixed (byte* messageBuffer = buffer)
                     {
