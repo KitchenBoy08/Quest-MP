@@ -98,22 +98,12 @@ namespace LabFusion.Network
             {
                 unsafe
                 {
-                    var layer = new RiptideNetworkLayer();
-
                     int messageLength = message.WrittenLength;
 
                     byte[] buffer = message.GetBytes();
                     fixed (byte* messageBuffer = buffer)
                     {
-                        if (riptideID == layer.currentclient.Id)
-                        {
                             FusionMessageHandler.ReadMessage(messageBuffer, messageLength, true);
-                        } else
-                        {
-#if DEBUG
-                            FusionLogger.Log("Tried to handle message, but the current client ID didn't match!");
-#endif
-                        }
                     }
                 }
             } catch (Exception e)
