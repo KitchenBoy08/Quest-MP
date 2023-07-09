@@ -39,6 +39,8 @@ using Steamworks;
 using BoneLib;
 using System.Windows.Forms.DataVisualization.Charting;
 using JetBrains.Annotations;
+using Il2CppSystem.Threading;
+using System.Threading;
 
 namespace LabFusion.Network
 {
@@ -53,8 +55,8 @@ namespace LabFusion.Network
         // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
         public const bool AsyncCallbacks = false;
 
-        Server currentserver { get; set; }
-        Client currentclient { get; set; }
+        public Server currentserver { get; set; }
+        public Client currentclient { get; set; }
 
         /// <summary>
         /// Returns true if this layer is hosting a server.
@@ -117,7 +119,7 @@ namespace LabFusion.Network
 
             currentclient.Connect("127.0.0.1:7777");
 
-            //Update player id here just to be safe
+            // Update player id here just to be safe
             PlayerIdManager.SetLongId(currentclient.Id);
             if (FusionPreferences.ClientSettings.Nickname != null)
             {
@@ -166,7 +168,7 @@ namespace LabFusion.Network
         /// (Not in this method, it should be done upon connection)
         internal override string GetUsername(ulong userId)
         {
-            // Find a way to get nickname, this will do for testing
+
             string Username = ("Player" + userId);
             return Username;
         }
@@ -356,6 +358,7 @@ namespace LabFusion.Network
             }
             ConnectionSender.SendConnectionRequest();
         }
+
 
         private void UnHookRiptideEvents()
         {

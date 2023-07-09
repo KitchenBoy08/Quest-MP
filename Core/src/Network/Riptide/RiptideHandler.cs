@@ -15,7 +15,8 @@ using Riptide.Transports;
 
 using UnityEngine;
 using System.Runtime.CompilerServices;
-
+using Harmony;
+using HarmonyLib;
 
 namespace LabFusion.Network
 {
@@ -70,7 +71,7 @@ namespace LabFusion.Network
         // Recieving Messages WIP
         // This needs to handle a riptide message, which is its own thing
         [MessageHandler(0)]
-        public static Client.MessageHandler RiptideClientMessageHandler(Riptide.Message message)
+        public static void HandleSomeMessageToServer(Riptide.Message message)
         {
             try
             {
@@ -81,37 +82,42 @@ namespace LabFusion.Network
                     byte[] buffer = message.GetBytes();
                     fixed (byte* messageBuffer = buffer)
                     {
-                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength, false);
+                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength);
                     }
                 }
             } catch (Exception e)
             {
                 FusionLogger.Error($"Failed reading message from Riptide server with reason: {e.Message}");
             }
-            return null;
         }
 
         [MessageHandler(0)]
-        public static Server.MessageHandler RiptideServerMessageHandler(Riptide.Message message)
+        private static void HandleSomeMessageToClient(ushort riptideID, Message message)
         {
             try
             {
                 unsafe
                 {
+                    var layer = new RiptideNetworkLayer();
                     int messageLength = message.WrittenLength;
-
-                    byte[] buffer = message.GetBytes(); 
+                    byte[] buffer = message.GetBytes();
                     fixed (byte* messageBuffer = buffer)
                     {
-                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength, true);
+                        if (riptideID == layer.currentclient.Id)
+                        {
+                            FusionMessageHandler.ReadMessage(messageBuffer, messageLength, true);
+                        } else
+                        {
+#if DEBUG
+                            FusionLogger.Log("Tried to handle message, but the current client ID didn't match!");
+#endif
+                        }
                     }
                 }
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
-                FusionLogger.Error($"Failed reading message from Riptide client with reason: {e.Message}");
+                FusionLogger.Error($"Failed reading message from Riptide server with reason: {e.Message}");
             }
-            return null;
         }
     }
     
