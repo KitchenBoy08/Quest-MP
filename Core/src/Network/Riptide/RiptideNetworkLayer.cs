@@ -41,12 +41,13 @@ using System.Windows.Forms.DataVisualization.Charting;
 using JetBrains.Annotations;
 using Il2CppSystem.Threading;
 using System.Threading;
+using System.Xaml;
+using UnityEngine.ProBuilder.MeshOperations;
 
 namespace LabFusion.Network
 {
     public class RiptideNetworkLayer : NetworkLayer
     {
-
         private FunctionElement _createServerElement;
 
         protected string _targetServerIP;
@@ -65,11 +66,12 @@ namespace LabFusion.Network
 
         protected bool _IsServer()
         {
-            switch (currentserver)
+            if (currentserver != null)
             {
-                case not null:
-                    return true;
-                default: return false;
+                return true;
+            } else
+            {
+                return false;
             }
         }
         /// <summary>
@@ -79,21 +81,18 @@ namespace LabFusion.Network
 
         protected bool _IsClient()
         {
-            if (currentclient != null && currentclient.Connection != null)
+            switch (currentclient.IsConnected, currentserver.IsRunning)
             {
-                switch (_IsServer(), currentclient.Connection.IsNotConnected)
-                {
-                    case (true, false):
-                        return true;
-                    case (false, true):
-                        return true;
-                    case (true, true):
-                        return true;
-                    default:
-                        return false;
-                }
+                case (true, false):
+                    return true;
+                case (false, true):
+                    return true;
+                case (true, true): 
+                    return true;
+                default: 
+                    return false;
+
             }
-            return false;
         }
 
 
@@ -115,12 +114,16 @@ namespace LabFusion.Network
             currentserver = new Server();
             currentclient = new Client();
 
-            currentserver.Start(7777, 10);
+            // Get max players
+            ushort maxPlayers = Convert.ToUInt16(FusionPreferences.ServerSettings.CreateMelonPrefs().MaxPlayers);
+
+            currentserver.Start(7777, maxPlayers);
 
             currentclient.Connect("127.0.0.1:7777");
 
             // Update player id here just to be safe
             PlayerIdManager.SetLongId(currentclient.Id);
+            
             if (FusionPreferences.ClientSettings.Nickname != null)
             {
                 if (HelperMethods.IsAndroid())
@@ -191,12 +194,14 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
         {
-            Riptide.Message riptideMessage = RiptideHandler.PrepareMessage(message, channel);
             var id = PlayerIdManager.GetPlayerId(userId);
             if (id != null)
             {
-                ushort riptideid = (ushort)id;
-                currentserver.Send(riptideMessage, riptideid);
+                ulong riptideid = (ushort)id;
+                SendFromServer(riptideid, channel, message);
+            } else
+            {
+                FusionLogger.Error("Failed to send message to client: RiptideID is null!");
             }
 
         }
@@ -382,7 +387,7 @@ namespace LabFusion.Network
             // Add server hooks
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
-            MultiplayerHooking.OnPlayerJoin += OnUserJoin;
+            MultiplayerHooking.OnPlayerJoin += OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
         }
@@ -405,15 +410,22 @@ namespace LabFusion.Network
         private void OnUpdateCreateServerText()
         {
             if (FusionSceneManager.IsDelayedLoading())
+            {
+#if DEBUG
+                FusionLogger.Error("Failed OnUpdateCreateServerText!");
+#endif      
                 return;
+            }
+            
 
-            if (!_IsClient())
+            if (IsClient || IsServer)
+            {
+                _createServerElement.SetName("Disconnect");
+                _createServerElement.SetColor(Color.red);
+            } else
             {
                 _createServerElement.SetName("Create Server");
-            }
-            else
-            {
-                _createServerElement.SetName("Disconnect from Server");
+                _createServerElement.SetColor(Color.white);
             }
         }
 
@@ -649,7 +661,7 @@ namespace LabFusion.Network
                 isMenuItem = false,
                 isPopup = true,
                 message = $"Code: {encodedIP}",
-                popupLength = 20f,
+                popupLength = 10f,
             });
         }
 
