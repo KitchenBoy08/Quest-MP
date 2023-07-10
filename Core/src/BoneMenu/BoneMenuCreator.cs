@@ -102,18 +102,7 @@ namespace LabFusion.BoneMenu
                     
                     if (HelperMethods.IsAndroid())
                     {
-                        string serverCode = FusionPreferences.ClientSettings.ServerCode;
-                        if (serverCode.Contains("."))
-                        {
-                            pref.SetValue(serverCode);
-                        }
-                        else
-                        {
-                            string encodedIP = IPSafety.IPSafety.EncodeIPAddress(serverCode);
-                            string decodedIP = IPSafety.IPSafety.DecodeIPAddress(encodedIP);
-
-                            pref.SetValue(decodedIP);
-                        }
+                        pref.SetValue(FusionPreferences.ClientSettings.Nickname);
                     }
                     else
                     {
@@ -123,23 +112,7 @@ namespace LabFusion.BoneMenu
                         {
                             var text = System.Windows.Forms.Clipboard.GetText();
                             text = text.LimitLength(maxLength);
-                            if (NetworkLayerDeterminer.LoadedType == NetworkLayerType.RIPTIDE)
-                            {
-                                if (text.Contains("."))
-                                {
-                                    pref.SetValue(text);
-                                }
-                                else
-                                {
-                                    string decodedIP = IPSafety.IPSafety.DecodeIPAddress(text);
-
-                                    pref.SetValue(decodedIP);
-                                }
-                            } 
-                            else
-                            {
-                                pref.SetValue(text);
-                            }
+                            pref.SetValue(text);
                         }
                     }
                 }
