@@ -81,17 +81,23 @@ namespace LabFusion.Network
 
         protected bool _IsClient()
         {
-            switch (currentclient.IsConnected, currentserver.IsRunning)
+            if (currentclient != null) 
             {
-                case (true, false):
-                    return true;
-                case (false, true):
-                    return true;
-                case (true, true): 
-                    return true;
-                default: 
-                    return false;
+                switch (currentclient.IsConnected, currentserver.IsRunning)
+                {
+                    case (true, false):
+                        return true;
+                    case (false, true):
+                        return true;
+                    case (true, true):
+                        return true;
+                    default:
+                        return false;
 
+                }
+            } else
+            {
+                return false;
             }
         }
 

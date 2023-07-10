@@ -12,8 +12,7 @@ using LabFusion.Preferences;
 namespace LabFusion.Representation
 {
     public static class PlayerIdManager {
-        // I increased the MaxNameLength value just incase of someone getting an ID in Riptide that is too large
-        public const int MaxNameLength = 50;
+        public const int MaxNameLength = 40;
 
         public static readonly List<PlayerId> PlayerIds = new List<PlayerId>();
         public static int PlayerCount => PlayerIds.Count;
