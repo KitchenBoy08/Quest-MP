@@ -56,8 +56,8 @@ namespace LabFusion.Network
         // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
         public const bool AsyncCallbacks = false;
 
-        public Server currentserver { get; set; }
-        public Client currentclient { get; set; }
+        static Server currentserver { get; set; }
+        static Client currentclient { get; set; }
 
         /// <summary>
         /// Returns true if this layer is hosting a server.
@@ -81,19 +81,25 @@ namespace LabFusion.Network
 
         protected bool _IsClient()
         {
-            if (currentclient != null) 
+            if (currentserver != null)
             {
-                switch (currentclient.IsConnected, currentserver.IsRunning)
+                if (currentserver.IsRunning == true)
                 {
-                    case (true, false):
+                    return true;
+                }
+                else if (currentclient != null)
+                {
+                    if (currentclient.IsConnected)
+                    {
                         return true;
-                    case (false, true):
-                        return true;
-                    case (true, true):
-                        return true;
-                    default:
+                    } else
+                    {
                         return false;
-
+                    }
+                }
+                else
+                {
+                    return false;
                 }
             } else
             {
@@ -120,37 +126,11 @@ namespace LabFusion.Network
             currentserver = new Server();
             currentclient = new Client();
 
-            // Get max players
-            ushort maxPlayers = Convert.ToUInt16(FusionPreferences.ServerSettings.CreateMelonPrefs().MaxPlayers);
+            currentclient.Connected += OnInternalConnected;
 
-            currentserver.Start(7777, maxPlayers);
+            currentserver.Start(7777, 10);
 
             currentclient.Connect("127.0.0.1:7777");
-
-            // Update player id here just to be safe
-            PlayerIdManager.SetLongId(currentclient.Id);
-            
-            if (FusionPreferences.ClientSettings.Nickname != null)
-            {
-                if (HelperMethods.IsAndroid())
-                {
-                    PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname + " (Quest)");
-                } else
-                {
-                    PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname + " (PC)");
-                }
-            }
-            else
-            {
-                if (HelperMethods.IsAndroid())
-                {
-                    PlayerIdManager.SetUsername("Player" + currentclient.Id + " (Quest)");
-                } else
-                {
-                    PlayerIdManager.SetUsername("Player" + currentclient.Id + " (PC)");
-                }
-            }
-            InternalServerHelpers.OnStartServer();
         }
 
         /// <summary>
@@ -248,15 +228,20 @@ namespace LabFusion.Network
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
         {
             Riptide.Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
-            if (!IsServer)
+            if (riptidemessage != null)
             {
-                currentclient.Send(riptidemessage);
-            }
-            else
+                if (!IsServer)
+                {
+                    currentclient.Send(riptidemessage);
+                }
+                else
+                {
+                    currentserver.SendToAll(riptidemessage);
+                }
+            } else
             {
-                currentserver.SendToAll(riptidemessage);
+                FusionLogger.Error("Could not broadcast message: riptidemessage is null!");
             }
-
         }
 
         /// <summary>
@@ -281,21 +266,14 @@ namespace LabFusion.Network
             // Initialize RiptideLogger
             RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
 
-            // Initialize currentclient only if it is null
+            // Initialize currentclient and currentserver only if it is null
             if (currentclient == null)
             {
                 currentclient = new Client();
             }
-
-            ulong playerId = currentclient.Id;
-            PlayerIdManager.SetLongId(playerId);
-            if (playerId == 0)
+            if (currentserver == null)
             {
-                FusionLogger.Warn("Player Long Id is 0 and something is probably wrong");
-            }
-            else
-            {
-                FusionLogger.Log($"Player Long Id is {playerId}");
+                currentserver = new Server();
             }
 
             if (FusionPreferences.ClientSettings.Nickname != "")
@@ -304,7 +282,8 @@ namespace LabFusion.Network
             }
             else
             {
-                PlayerIdManager.SetUsername("Player " + playerId);
+                // This is ONLY for testing purposes while I try to get the ID stuff fixed
+                PlayerIdManager.SetUsername("Player");
             }
 
             FusionLogger.Log("Initialized Riptide Layer");
@@ -327,18 +306,20 @@ namespace LabFusion.Network
         {
             if (!IsServer)
             {
-                currentserver.Update();
+                if (currentserver != null)
+                {
+                    currentserver.Update();
+                }
             }
-            currentclient.Update();
+            if (currentclient != null)
+            {
+                currentclient.Update();
+            }
         }
 
         internal override void OnLateUpdateLayer() { }
 
         internal override void OnGUILayer() { }
-
-        internal override void OnVoiceChatUpdate() { }
-
-        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes) { }
 
         internal override void OnUserJoin(PlayerId id) {
             OnUpdateRiptideLobby();
@@ -346,36 +327,75 @@ namespace LabFusion.Network
 
         public void ConnectToServer(string ip)
         {
-
+            currentclient.Connected += OnExternalConnected;
             // Leave if already in lobby
             if (IsServer || IsClient)
             {
                 Disconnect();
             }
             currentclient.Connect(ip + ":7777");
+        }
 
-            // Update player id here just to be safe
+        private void OnExternalConnected(object sender, EventArgs e) 
+        {
+                PlayerIdManager.SetLongId(currentclient.Id);
+                if (FusionPreferences.ClientSettings.Nickname != null)
+                {
+                    if (HelperMethods.IsAndroid())
+                    {
+                        PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname + " (Quest)");
+                    } else
+                    {
+                        PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname + " (PC)");
+                    }
+                }
+                else
+                {
+                    if (HelperMethods.IsAndroid())
+                    {
+                        PlayerIdManager.SetUsername("Player" + currentclient.Id + " (Quest)");
+                    } else
+                    {
+                        PlayerIdManager.SetUsername("Player" + currentclient.Id + " (PC)");
+                    }
+                }
+                FusionLogger.Log($"Player Long Id is {currentclient.Id}");
+                ConnectionSender.SendConnectionRequest();
+
+            currentclient.Connected -= OnExternalConnected;
+        }
+
+        private void OnInternalConnected(object sender, EventArgs e)
+        {
+
             PlayerIdManager.SetLongId(currentclient.Id);
+            FusionLogger.Log($"Player Long Id is {currentclient.Id}");
             if (FusionPreferences.ClientSettings.Nickname != null)
             {
-                PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
+                if (HelperMethods.IsAndroid())
+                {
+                    PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname + " (Quest)");
+                }
+                else
+                {
+                    PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname + " (PC)");
+                }
             }
             else
             {
-                PlayerIdManager.SetUsername("Player" + currentclient.Id);
+                if (HelperMethods.IsAndroid())
+                {
+                    PlayerIdManager.SetUsername("Player" + currentclient.Id + " (Quest)");
+                }
+                else
+                {
+                    PlayerIdManager.SetUsername("Player" + currentclient.Id + " (PC)");
+                }
             }
-            currentclient.Connected += OnConnected;
-        }
+            InternalServerHelpers.OnStartServer();
 
-        private void OnConnected(object sender, EventArgs e)
-        {
-            try
-            {
-                ConnectionSender.SendConnectionRequest();
-            } catch (Exception ex)
-            {
-                FusionLogger.Error($"Failed to send connection request with error: {ex}");
-            }
+            OnUpdateRiptideLobby();
+            currentclient.Connected -= OnExternalConnected; 
         }
 
         private void UnHookRiptideEvents()
@@ -412,6 +432,9 @@ namespace LabFusion.Network
         {
             // Update bonemenu items
             OnUpdateCreateServerText();
+#if DEBUG
+            FusionLogger.Log("Updated Create Server Text");
+#endif
         }
         private void OnUpdateCreateServerText()
         {
@@ -424,7 +447,7 @@ namespace LabFusion.Network
             }
             
 
-            if (IsClient || IsServer)
+            if (IsClient == true || IsServer == true)
             {
                 _createServerElement.SetName("Disconnect");
                 _createServerElement.SetColor(Color.red);
@@ -552,24 +575,28 @@ namespace LabFusion.Network
         private void OnClickJoinCode0()
         {
             string code = FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[0];
+            string decodedIP = IPSafety.IPSafety.DecodeIPAddress(code);
             ConnectToServer(code);
         }
 
         private void OnClickJoinCode1()
         {
             string code = FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[1];
+            string decodedIP = IPSafety.IPSafety.DecodeIPAddress(code);
             ConnectToServer(code);
         }
 
         private void OnClickJoinCode2()
         {
             string code = FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[2];
+            string decodedIP = IPSafety.IPSafety.DecodeIPAddress(code);
             ConnectToServer(code);
         }
 
         private void OnClickJoinCode3()
         {
             string code = FusionPreferences.ClientSettings.RecentServerCodes.GetValue()[3];
+            string decodedIP = IPSafety.IPSafety.DecodeIPAddress(code);
             ConnectToServer(code);
         }
 
@@ -735,9 +762,9 @@ namespace LabFusion.Network
         private void OnClickCreateServer()
         {
             // Is a server already running? Disconnect.
-            if (IsClient || IsServer)
+            if (IsClient)
             {
-                NetworkHelper.Disconnect();
+                NetworkHelper.Disconnect("Stopped server");
             } else
             {
                 NetworkHelper.StartServer();
