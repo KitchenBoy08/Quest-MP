@@ -71,7 +71,7 @@ namespace LabFusion.Network
         // Recieving Messages WIP
         // This needs to handle a riptide message, which is its own thing
         [MessageHandler(0)]
-        public static void HandleSomeMessageFromServer(Riptide.Message message)
+        public static void HandleSomeMessageFromServer(Message message)
         {
             try
             {
