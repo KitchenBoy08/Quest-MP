@@ -83,6 +83,10 @@ namespace LabFusion.Network
         /// </summary>
         internal override void StartServer()
         {
+            if (currentserver == null)
+            {
+                currentserver = new Server();
+            }
             currentclient.Connected += OnStarted;
             currentserver.Start(7777, 10);
 
@@ -246,10 +250,7 @@ namespace LabFusion.Network
             {
                 currentclient = new Client();
             }
-            if (currentserver == null)
-            {
-                currentserver = new Server();
-            }
+            
 
             if (FusionPreferences.ClientSettings.Nickname != null)
             {
@@ -278,7 +279,7 @@ namespace LabFusion.Network
 
         internal override void OnUpdateLayer()
         {
-            if (currentserver != null)
+            if (IsServer)
             {
                 currentserver.Update();
             }
