@@ -19,16 +19,18 @@ namespace LabFusion.Data
         public static void OnLoadRiptide()
         {
             if (IsRiptideloaded) return;
-            string _libPath = Path.Combine(MelonUtils.UserLibsDirectory, "RiptideNetowrking.dll");
+            string _libPath = Path.Combine(MelonUtils.GameDirectory,"Plugins", "RiptideNetworking.dll");
+            string _subLibPath = Path.Combine(MelonUtils.GameDirectory, "Plugins", "netstandard.dll");
             //check if file is present, if it is, make riptide loaded and return
-            if (File.Exists(_libPath) )
+            if (File.Exists(_libPath) && File.Exists(_subLibPath))
             {
                 IsRiptideloaded = true;
             }
             else
             {
                 File.WriteAllBytes(_libPath, EmbeddedResource.LoadFromAssembly(FusionMod.FusionAssembly, ResourcePaths.RiptidePath));
-                FusionLogger.Error("Riptide library was not present, now quitting.");
+                File.WriteAllBytes(_libPath, EmbeddedResource.LoadFromAssembly(FusionMod.FusionAssembly, ResourcePaths.netstandardPath));
+                FusionLogger.Error("Riptide and/or netstandard library was not present, now quitting.");
                 UnityEngine.Application.Quit();
             }
                 
