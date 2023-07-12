@@ -6,7 +6,7 @@ using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.IPSafety;
-using LabFusion;
+using LabFusion.Core.src;
 
 using System;
 using System.Collections.Generic;

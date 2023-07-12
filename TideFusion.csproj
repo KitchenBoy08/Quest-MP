@@ -273,6 +273,7 @@
     <Compile Include="Core\src\Data\Files\FusionFileLoader.cs" />
     <Compile Include="Core\src\Data\Files\BanList.cs" />
     <Compile Include="Core\src\Data\Files\PermissionList.cs" />
+    <Compile Include="Core\src\Data\Files\RiptideLoader.cs" />
     <Compile Include="Core\src\Data\Files\SteamAPILoader.cs" />
     <Compile Include="Core\src\Data\Files\EmbeddedResource.cs" />
     <Compile Include="Core\src\Data\Files\PersistentData.cs" />
@@ -367,6 +368,7 @@
     <Compile Include="Core\src\Network\NetworkLayerDeterminer.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideHandler.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideNetworkLayer.cs" />
+    <Compile Include="Core\src\Network\Riptide\RiptideVoiceIdentifier.cs" />
     <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVRNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamLobby.cs" />
