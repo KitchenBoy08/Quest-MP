@@ -722,7 +722,7 @@
       <HintPath>packages\OpenTK.GLControl.3.0.1\lib\net20\OpenTK.GLControl.dll</HintPath>
     </Reference>
     <Reference Include="RiptideNetworking">
-      <HintPath>..\Utilities\RiptideNetworking.dll</HintPath>
+      <HintPath>Core\resources\lib\Any\RiptideNetworking.dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
