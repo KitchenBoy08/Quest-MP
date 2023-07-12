@@ -12,7 +12,7 @@ using LabFusion.Utilities;
 using Riptide;
 using Riptide.Utils;
 using Riptide.Transports;
-
+using MelonLoader;
 using UnityEngine;
 using System.Runtime.CompilerServices;
 
@@ -62,6 +62,9 @@ namespace LabFusion.Network
         public static Riptide.Message PrepareMessage(FusionMessage fusionMessage, NetworkChannel channel)
         {
             //Id is always 0 because a fusion message sent from riptide will always be in bytes
+#if DEBUG            
+            MelonLogger.Msg($"Prepared message of length {fusionMessage.Length}");
+#endif            
             Riptide.Message message = Riptide.Message.Create(RiptideHandler.ConvertToSendMode(channel), 0);
             message.Release();
             message.AddBytes(FusionMessageToBytes(fusionMessage));
@@ -78,7 +81,9 @@ namespace LabFusion.Network
                 unsafe
                 {
                     int messageLength = message.WrittenLength;
-
+#if DEBUG
+                    MelonLogger.Msg($"Prepared message of length {messageLength}");
+#endif
                     byte[] buffer = message.GetBytes();
                     fixed (byte* messageBuffer = buffer)
                     {
@@ -100,7 +105,9 @@ namespace LabFusion.Network
                 unsafe
                 {
                     int messageLength = message.WrittenLength;
-
+#if DEBUG
+                    MelonLogger.Msg($"Prepared message of length {messageLength}");
+#endif
                     byte[] buffer = message.GetBytes();
                     fixed (byte* messageBuffer = buffer)
                     {
