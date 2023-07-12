@@ -27,8 +27,8 @@ namespace LabFusion
 {
     public struct FusionVersion
     {
-        public const byte versionMajor = 1;
-        public const byte versionMinor = 4;
+        public const byte versionMajor = 0;
+        public const byte versionMinor = 0;
         public const short versionPatch = 1;
     }
 
@@ -165,6 +165,7 @@ namespace LabFusion
             
 #if DEBUG
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
+            FusionLogger.Log($"Networking layer is {NetworkLayerDeterminer.GetLoadedType()}");
 #endif
             // Fix random static grips in the scene
             StaticGripFixer.OnMainSceneInitialized();

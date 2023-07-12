@@ -15,8 +15,7 @@ using Riptide.Transports;
 
 using UnityEngine;
 using System.Runtime.CompilerServices;
-using Harmony;
-using HarmonyLib;
+
 
 namespace LabFusion.Network
 {
@@ -82,10 +81,11 @@ namespace LabFusion.Network
                     byte[] buffer = message.GetBytes();
                     fixed (byte* messageBuffer = buffer)
                     {
-                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength);
+                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength, false);
                     }
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 FusionLogger.Error($"Failed reading message from Riptide server with reason: {e.Message}");
             }
@@ -103,14 +103,16 @@ namespace LabFusion.Network
                     byte[] buffer = message.GetBytes();
                     fixed (byte* messageBuffer = buffer)
                     {
-                            FusionMessageHandler.ReadMessage(messageBuffer, messageLength, true);
+                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength, true);
                     }
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 FusionLogger.Error($"Failed reading message from Riptide server with reason: {e.Message}");
             }
         }
+
     }
     
 }

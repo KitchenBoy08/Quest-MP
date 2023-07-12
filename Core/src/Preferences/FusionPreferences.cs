@@ -1,6 +1,5 @@
 ﻿using BoneLib.BoneMenu;
 using BoneLib.BoneMenu.Elements;
-using Il2CppSystem.Threading.Tasks;
 using LabFusion.BoneMenu;
 using LabFusion.Data;
 using LabFusion.Network;
@@ -80,7 +79,6 @@ namespace LabFusion.Preferences {
 
             // QUEST/Riptide Code/IP
             public static FusionPref<string> ServerCode { get; internal set; }
-            public static FusionPref<string[]> RecentServerCodes { get; internal set; }
 
             // Nametag settings
             public static FusionPref<bool> NametagsEnabled { get; internal set; }
@@ -173,9 +171,8 @@ namespace LabFusion.Preferences {
             ClientSettings.NetworkLayerType = new FusionPref<NetworkLayerType>(prefCategory, "Network Layer Type", NetworkLayerDeterminer.GetDefaultType(), PrefUpdateMode.IGNORE);
 
             // QUEST/Riptide Code/IP
-            string[] codes = {"NULL", "NULL", "NULL", "NULL"};
+
             ClientSettings.ServerCode = new FusionPref<string>(prefCategory, "Server Code", $"PASTE SERVER CODE HERE", PrefUpdateMode.LOCAL_UPDATE);
-            ClientSettings.RecentServerCodes = new FusionPref<string[]>(prefCategory, "Recent Codes", codes, PrefUpdateMode.CLIENT_UPDATE);
 
             // Nametag
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);

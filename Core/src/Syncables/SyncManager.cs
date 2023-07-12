@@ -74,13 +74,18 @@ namespace LabFusion.Syncables {
         internal static void OnUpdate() {
             // Here we send over position information/etc of our syncables
             foreach (var syncable in Syncables.Values) {
-                try {
-                    syncable.OnUpdate();
-                }
-                catch (Exception e) {
+                if (syncable != null)
+                {
+                    try
+                    {
+                        syncable.OnUpdate();
+                    }
+                    catch (Exception e)
+                    {
 #if DEBUG
-                    FusionLogger.LogException("executing OnUpdate for syncable", e);
+                        FusionLogger.LogException("executing OnUpdate for syncable", e);
 #endif
+                    }
                 }
             }
         }

@@ -6,6 +6,7 @@ using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.IPSafety;
+using LabFusion.Core.src;
 
 using System;
 using System.Collections.Generic;
@@ -102,7 +103,8 @@ namespace LabFusion.BoneMenu
                     
                     if (HelperMethods.IsAndroid())
                     {
-                        pref.SetValue(FusionPreferences.ClientSettings.Nickname);
+                        string name = FusionPreferences.ClientSettings.Nickname;
+                        pref.SetValue(name);
                     }
                     else
                     {
