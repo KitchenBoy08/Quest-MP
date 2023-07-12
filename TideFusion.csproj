@@ -1287,6 +1287,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Core\resources\lib\Any\netstandard.dll" />
     <Content Include="packages\OpenTK.3.0.1\lib\net20\OpenTK.dll" />
     <Content Include="packages\OpenTK.3.0.1\lib\net20\OpenTK.pdb" />
     <Content Include="packages\OpenTK.3.0.1\lib\net20\OpenTK.xml" />
