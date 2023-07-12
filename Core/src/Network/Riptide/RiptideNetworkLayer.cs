@@ -257,17 +257,6 @@ namespace LabFusion.Network
                 currentserver = new Server();
             }
 
-            PlayerIdManager.SetLongId(currentclient.Id);
-
-            if (currentclient.Id == 0)
-            {
-                FusionLogger.Warn("Player Long Id is 0 and something is probably wrong");
-            }
-            else
-            {
-                FusionLogger.Log($"Player Long Id is {currentclient.Id}");
-            }
-
             if (FusionPreferences.ClientSettings.Nickname != null)
             {
                 PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
