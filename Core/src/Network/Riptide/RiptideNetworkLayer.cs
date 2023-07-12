@@ -96,8 +96,6 @@ namespace LabFusion.Network
             //Update player id here just to be safe
             PlayerIdManager.SetLongId(currentclient.Id);
 
-            ConnectionSender.SendConnectionRequest();
-
             // Call server setup
             InternalServerHelpers.OnStartServer();
             _isServerActive = true;
