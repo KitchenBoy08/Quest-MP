@@ -63,6 +63,7 @@ namespace LabFusion.Network
         {
             //Id is always 0 because a fusion message sent from riptide will always be in bytes
             Riptide.Message message = Riptide.Message.Create(RiptideHandler.ConvertToSendMode(channel), 0);
+            message.Release();
             message.AddBytes(FusionMessageToBytes(fusionMessage));
             return message;
         }
@@ -81,7 +82,7 @@ namespace LabFusion.Network
                     byte[] buffer = message.GetBytes();
                     fixed (byte* messageBuffer = buffer)
                     {
-                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength, false);
+                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength);
                     }
                 }
             }
@@ -103,7 +104,7 @@ namespace LabFusion.Network
                     byte[] buffer = message.GetBytes();
                     fixed (byte* messageBuffer = buffer)
                     {
-                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength, true);
+                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength);
                     }
                 }
             }
