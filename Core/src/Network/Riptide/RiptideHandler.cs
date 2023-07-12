@@ -104,7 +104,7 @@ namespace LabFusion.Network
                     byte[] buffer = message.GetBytes();
                     fixed (byte* messageBuffer = buffer)
                     {
-                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength);
+                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength, true);
                     }
                 }
             }
