@@ -72,7 +72,7 @@ namespace LabFusion.Network
         /// Returns true if the networking solution allows the server to send messages to the host (Actual Server Logic vs P2P).
         /// </summary>
         /// Riptide should be able to, consider removing this since it's already true in the inherited class
-        internal override bool ServerCanSendToHost => true; 
+        internal override bool ServerCanSendToHost => true;
 
         /// <summary>
         /// Returns the current active lobby.
@@ -83,10 +83,6 @@ namespace LabFusion.Network
         /// </summary>
         internal override void StartServer()
         {
-            if (currentserver == null)
-            {
-                currentserver = new Server();
-            }
             currentclient.Connected += OnStarted;
             currentserver.Start(7777, 10);
 
@@ -99,6 +95,8 @@ namespace LabFusion.Network
 
             //Update player id here just to be safe
             PlayerIdManager.SetLongId(currentclient.Id);
+
+            ConnectionSender.SendConnectionRequest();
 
             // Call server setup
             InternalServerHelpers.OnStartServer();
@@ -169,6 +167,9 @@ namespace LabFusion.Network
             {
                 ushort riptideid = (ushort)id;
                 SendFromServer(riptideid, channel, message);
+#if DEBUG
+                FusionLogger.Log("SentFromServerMethod1");
+#endif
             }
 
         }
@@ -187,6 +188,9 @@ namespace LabFusion.Network
                 // This should determine user riptide id from fusion player metadata
                 ushort riptideid = (ushort)userId;
                 currentserver.Send(riptideMessage, riptideid);
+#if DEBUG
+                FusionLogger.Log("SentFromServerMethod2");
+#endif
             }
         }
 
@@ -250,7 +254,21 @@ namespace LabFusion.Network
             {
                 currentclient = new Client();
             }
-            
+            if (currentserver == null)
+            {
+                currentserver = new Server();
+            }
+
+            PlayerIdManager.SetLongId(currentclient.Id);
+
+            if (currentclient.Id == 0)
+            {
+                FusionLogger.Warn("Player Long Id is 0 and something is probably wrong");
+            }
+            else
+            {
+                FusionLogger.Log($"Player Long Id is {currentclient.Id}");
+            }
 
             if (FusionPreferences.ClientSettings.Nickname != null)
             {
@@ -279,7 +297,7 @@ namespace LabFusion.Network
 
         internal override void OnUpdateLayer()
         {
-            if (IsServer)
+            if (currentserver != null)
             {
                 currentserver.Update();
             }
@@ -326,7 +344,6 @@ namespace LabFusion.Network
         private void UnHookRiptideEvents()
         {
             // Remove server hooks
-            currentserver.ClientDisconnected -= OnRiptideClientConnected;
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
@@ -337,7 +354,6 @@ namespace LabFusion.Network
         private void HookRiptideEvents()
         {
             // Add server hooks
-            currentserver.ClientDisconnected += OnRiptideClientConnected;
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin += OnUserJoin;
@@ -345,15 +361,11 @@ namespace LabFusion.Network
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
         }
 
-        private void OnRiptideClientConnected(object sender, EventArgs s)
-        {
-
-        }
-
         private void OnPlayerLeave(PlayerId id)
         {
-            PlayerRepManager.TryGetPlayerRep(id, out PlayerRep rep);
-            PlayerRepManager.Internal_RemovePlayerRep(rep);
+            /*
+            RiptideVoiceIdentifier.RemoveVoiceIdentifier(id);
+            */
             OnUpdateRiptideLobby();
         }
 
