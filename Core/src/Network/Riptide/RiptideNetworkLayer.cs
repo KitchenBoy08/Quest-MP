@@ -164,15 +164,11 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
         {
-            if (IsServer)
+            if (currentserver.IsRunning)
             {
-                Riptide.Message riptideMessage = RiptideHandler.PrepareMessage(message, channel);
-                // This should determine user riptide id from fusion player metadata
-                ushort riptideid = (ushort)userId;
-                currentserver.Send(riptideMessage, riptideid);
-#if DEBUG
-                FusionLogger.Log("SentFromServerMethod1");
-#endif
+                var id = PlayerIdManager.GetPlayerId(userId);
+                if (id != null)
+                    SendFromServer(id, channel, message);
             }
 
         }
@@ -185,16 +181,15 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         internal override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
         {
-            if (IsServer)
+            for (int i = 1; i < currentserver.ClientCount; i++)
             {
-                Riptide.Message riptideMessage = RiptideHandler.PrepareMessage(message, channel);
-                // This should determine user riptide id from fusion player metadata
-                ushort riptideid = (ushort)userId;
-                currentserver.Send(riptideMessage, riptideid);
-#if DEBUG
-                FusionLogger.Log("SentFromServerMethod2");
-#endif
+                Connection client;
+                if (currentserver.TryGetClient((ushort)i, out client))
+                {
+                    SendToServer(channel, message);
+                }
             }
+                
         }
 
         /// <summary>
@@ -204,8 +199,8 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         internal override void SendToServer(NetworkChannel channel, FusionMessage message)
         {
-            Riptide.Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
-            currentclient.Send(riptidemessage);
+            Riptide.Message riptideMessage = RiptideHandler.PrepareMessage(message, channel);
+            currentclient.Send(riptideMessage);
         }
 
         /// <summary>
@@ -215,14 +210,14 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
         {
-            Riptide.Message riptidemessage = RiptideHandler.PrepareMessage(message, channel);
-            if (!IsServer)
+            if (!currentserver.IsRunning)
             {
-                currentclient.Send(riptidemessage);
+                SendToServer(channel, message);
             }
             else
             {
-                BroadcastToClients(riptidemessage);
+                Riptide.Message riptideMessage = RiptideHandler.PrepareMessage(message, channel);
+                BroadcastToClients(riptideMessage);
             }
 
         }
