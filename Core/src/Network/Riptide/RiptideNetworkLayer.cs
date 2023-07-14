@@ -121,8 +121,6 @@ namespace LabFusion.Network
             if (!IsClient)
                 return;
 
-            currentclient.Disconnect();
-
             if (IsServer)
             {
                 currentserver.Stop();
@@ -130,6 +128,8 @@ namespace LabFusion.Network
 
             InternalServerHelpers.OnDisconnect(reason);
             OnUpdateRiptideLobby();
+
+            currentclient.Disconnect();
 
             _isServerActive = false;
             _isConnectionActive = false;
@@ -301,6 +301,11 @@ namespace LabFusion.Network
 
         internal override void OnCleanupLayer()
         {
+            if (IsServer)
+            {
+                currentserver.Stop();
+            }
+
             Disconnect();
 
             UnHookRiptideEvents();
@@ -355,7 +360,7 @@ namespace LabFusion.Network
         private void UnHookRiptideEvents()
         {
             // Remove server hooks
-            currentclient.ClientDisconnected -= OnClientDisconnect;
+            currentserver.ClientDisconnected -= OnClientDisconnect;
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
@@ -363,31 +368,28 @@ namespace LabFusion.Network
             MultiplayerHooking.OnServerSettingsChanged -= OnUpdateRiptideLobby;
         }
 
+        private void OnClientDisconnect(object sender, ServerDisconnectedEventArgs client)
+        {
+            // Make sure the user hasn't previously disconnected
+            if (PlayerIdManager.HasPlayerId(client.Client.Id))
+            {
+                // Update the mod so it knows this user has left
+                InternalServerHelpers.OnUserLeave(client.Client.Id);
+
+                var playerId = PlayerIdManager.GetPlayerId(client.Client.Id);
+                PlayerIdManager.PlayerIds.Remove(playerId);
+            }
+        }
+
         private void HookRiptideEvents()
         {
             // Add server hooks
-            currentclient.ClientDisconnected += OnClientDisconnect;
+            currentserver.ClientDisconnected += OnClientDisconnect;
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin += OnUserJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
-        }
-
-        private void OnClientDisconnect(object sender, ClientDisconnectedEventArgs client)
-        {
-            // Make sure the user hasn't previously disconnected
-            if (PlayerIdManager.HasPlayerId(client.Id))
-            {
-                // Update the mod so it knows this user has left
-                InternalServerHelpers.OnUserLeave(client.Id);
-
-                // Send disconnect notif to everyone
-                ConnectionSender.SendDisconnect(client.Id);
-
-                var playerId = PlayerIdManager.GetPlayerId(client.Id);
-                PlayerIdManager.PlayerIds.Remove(playerId);
-            }
         }
 
         private void OnPlayerLeave(PlayerId id)
@@ -602,11 +604,11 @@ namespace LabFusion.Network
             // Is a server already running? Disconnect then create server.
             if (currentclient.IsConnected)
             {
-                NetworkHelper.Disconnect();
+                Disconnect();
             }
             else
             {
-                NetworkHelper.StartServer();
+                StartServer();
             }
 
         }
