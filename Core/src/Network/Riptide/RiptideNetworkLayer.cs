@@ -350,7 +350,6 @@ namespace LabFusion.Network
         private void UnHookRiptideEvents()
         {
             // Remove server hooks
-            MultiplayerHooking.OnPlayerRepCreated -= OnPlayerRig;
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
@@ -362,7 +361,6 @@ namespace LabFusion.Network
         private void HookRiptideEvents()
         {
             // Add server hooks
-            MultiplayerHooking.OnPlayerRepCreated += OnPlayerRig;
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin += OnUserJoin;
@@ -380,23 +378,6 @@ namespace LabFusion.Network
                     PlayerRepManager.Internal_RemovePlayerRep(PlayerRepManager.PlayerReps[i]);
                 }
             }
-        }
-
-        private void CheckPlayerRigs()
-        {
-            var playerIds = PlayerIdManager.PlayerIds;
-            for (byte i = 0; i < PlayerRepManager.PlayerReps.Count; i++)
-            {
-                if (PlayerRepManager.PlayerReps[i].PlayerId.SmallId != playerIds[i] && !PlayerRepManager.PlayerReps[i].PlayerId.IsSelf)
-                {
-                    PlayerRepManager.Internal_RemovePlayerRep(PlayerRepManager.IDLookup[i]);
-                }
-            }
-        }
-
-        private void OnPlayerRig(RigManager rig)
-        {
-            CheckPlayerRigs();
         }
 
         private void OnPlayerLeave(PlayerId id)
