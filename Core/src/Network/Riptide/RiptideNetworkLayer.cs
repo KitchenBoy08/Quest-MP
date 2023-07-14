@@ -83,12 +83,11 @@ namespace LabFusion.Network
         /// </summary>
         internal override void StartServer()
         {
-            currentclient = new Client();
+            currentclient =  new Client();
             currentserver = new Server();
 
             currentclient.Connected += OnStarted;
             currentserver.Start(7777, 10);
-            OnUpdateRiptideLobby();
 
             currentclient.Connect("127.0.0.1:7777");
         }
@@ -103,6 +102,8 @@ namespace LabFusion.Network
             _isServerActive = true;
             _isConnectionActive = true;
 
+            OnUpdateRiptideLobby();
+
             // Call server setup
             InternalServerHelpers.OnStartServer();
 
@@ -114,7 +115,11 @@ namespace LabFusion.Network
         /// </summary>
         internal override void Disconnect(string reason = "")
         {
+            if (!IsClient)
+                return;
+
             currentclient.Disconnect();
+
             if (IsServer)
             {
                 currentserver.Stop();
@@ -129,7 +134,7 @@ namespace LabFusion.Network
             FusionLogger.Log($"Disconnected from server because: {reason}");
         }
 
-        
+
 
         /// <summary>
         /// Returns the username of the player with id userId.
@@ -164,12 +169,9 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message)
         {
-            if (currentserver.IsRunning)
-            {
-                var id = PlayerIdManager.GetPlayerId(userId);
-                if (id != null)
-                    SendFromServer(id, channel, message);
-            }
+            var id = PlayerIdManager.GetPlayerId(userId);
+            if (id != null)
+                SendFromServer(id.LongId, channel, message);
 
         }
 
@@ -181,15 +183,17 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         internal override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message)
         {
-            for (int i = 1; i < currentserver.ClientCount; i++)
+            if (IsServer)
             {
-                Connection client;
-                if (currentserver.TryGetClient((ushort)i, out client))
+                foreach (Connection value in currentserver.Clients)
                 {
-                    SendToServer(channel, message);
+                    if (value.Id == userId)
+                    {
+                        Riptide.Message riptideMessage = RiptideHandler.PrepareMessage(message, channel);
+                        currentserver.Send(riptideMessage, value.Id);
+                    }
                 }
             }
-                
         }
 
         /// <summary>
@@ -199,6 +203,7 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         internal override void SendToServer(NetworkChannel channel, FusionMessage message)
         {
+
             Riptide.Message riptideMessage = RiptideHandler.PrepareMessage(message, channel);
             currentclient.Send(riptideMessage);
         }
@@ -210,23 +215,13 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message)
         {
-            if (!currentserver.IsRunning)
+            if (IsServer)
             {
-                SendToServer(channel, message);
+                currentserver.SendToAll(RiptideHandler.PrepareMessage(message, channel));
             }
             else
             {
-                Riptide.Message riptideMessage = RiptideHandler.PrepareMessage(message, channel);
-                BroadcastToClients(riptideMessage);
-            }
-
-        }
-
-        public void BroadcastToClients(Riptide.Message message)
-        {
-            for (var i = 1; i < currentserver.ClientCount + 1; i++)
-            {
-                currentserver.Send(message, Convert.ToUInt16(i));
+                currentclient.Send(RiptideHandler.PrepareMessage(message, channel));
             }
         }
 
@@ -238,7 +233,7 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         internal override void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
         {
-            for (var i = 1; i < PlayerIdManager.PlayerIds.Count; i++)
+            for (var i = 0; i < PlayerIdManager.PlayerIds.Count; i++)
             {
                 var id = PlayerIdManager.PlayerIds[i];
 
@@ -249,6 +244,8 @@ namespace LabFusion.Network
 
         internal override void OnInitializeLayer()
         {
+            currentclient = new Client();
+            currentserver = new Server();
 
             // Initialize RiptideLogger
 #if DEBUG
@@ -266,18 +263,20 @@ namespace LabFusion.Network
                     FusionPreferences.ClientSettings.Nickname.SetValue($"{FusionPreferences.ClientSettings.Nickname.GetValue()} (Quest)");
                     PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
                 }
-                else 
+                else
                 {
                     FusionPreferences.ClientSettings.Nickname.SetValue($"{FusionPreferences.ClientSettings.Nickname.GetValue()} (PC)");
                     PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
                 }
-            } else
+            }
+            else
             {
                 if (HelperMethods.IsAndroid())
                 {
                     FusionPreferences.ClientSettings.Nickname.SetValue("Player (Quest)");
                     PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
-                } else
+                }
+                else
                 {
                     FusionPreferences.ClientSettings.Nickname.SetValue("Player  (PC)");
                     PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
@@ -288,7 +287,8 @@ namespace LabFusion.Network
         }
 
         // Probably nothing to do here
-        internal override void OnLateInitializeLayer() {
+        internal override void OnLateInitializeLayer()
+        {
             HookRiptideEvents();
         }
 
@@ -322,8 +322,6 @@ namespace LabFusion.Network
 
         public void ConnectToServer(string ip)
         {
-            currentclient = new Client();
-            currentserver = new Server();
 
             currentclient.Connected += OnConnect;
             // Leave existing server
@@ -344,7 +342,7 @@ namespace LabFusion.Network
             ConnectionSender.SendConnectionRequest();
 
             OnUpdateRiptideLobby();
-            
+
             currentclient.Connected -= OnConnect;
         }
 
@@ -450,7 +448,8 @@ namespace LabFusion.Network
                 if (FusionPreferences.ClientSettings.ServerCode == "PASTE SERVER CODE HERE")
                 {
                     category.CreateFunctionElement("ERROR: CLICK ME", Color.red, OnClickCodeError);
-                } else
+                }
+                else
                 {
                     category.CreateFunctionElement($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode}", Color.green, OnClickJoinServer);
                 }
@@ -495,7 +494,8 @@ namespace LabFusion.Network
                         _targetServerElement.SetName($"Server ID: {encodedIP}");
                     }
                 }
-            } else
+            }
+            else
             {
 
                 string serverCode = FusionPreferences.ClientSettings.ServerCode;
@@ -503,7 +503,8 @@ namespace LabFusion.Network
                 if (serverCode.Contains("."))
                 {
                     _targetServerIP = serverCode;
-                } else if (serverCode == "PASTE SERVER CODE HERE")
+                }
+                else if (serverCode == "PASTE SERVER CODE HERE")
                 {
                     FusionNotifier.Send(new FusionNotification()
                     {
@@ -570,12 +571,13 @@ namespace LabFusion.Network
         private void OnClickCreateServer()
         {
             // Is a server already running? Disconnect then create server.
-            if (IsClient)
+            if (currentclient.IsConnected)
             {
-                Disconnect();
-            } else
+                NetworkHelper.Disconnect();
+            }
+            else
             {
-                StartServer();
+                NetworkHelper.StartServer();
             }
 
         }

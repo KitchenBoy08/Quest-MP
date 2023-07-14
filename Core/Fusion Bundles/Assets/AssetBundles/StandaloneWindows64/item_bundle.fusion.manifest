@@ -1,0 +1,125 @@
+ManifestFileVersion: 0
+CRC: 2368237513
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 9aca8b41bdc7417327fb52bceae5e060
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: b2acec81c12d36d9bad810fac5bb74ba
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 74
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 96
+  Script: {instanceID: 0}
+- Class: 137
+  Script: {instanceID: 0}
+- Class: 198
+  Script: {instanceID: 0}
+- Class: 199
+  Script: {instanceID: 0}
+- Class: 205
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Point Items/Cosmetics/AdventureHat/preview_AdventureHat.png
+- Assets/Point Items/Cosmetics/The Beacon/preview_TheBeacon.png
+- Assets/Point Items/Cosmetics/Waist Ring/item_WaistRing.prefab
+- Assets/Point Items/Cosmetics/Monocle/preview_Monocle.png
+- Assets/Point Items/Cosmetics/Cardboard Disguise/item_CardboardDisguise.prefab
+- Assets/Point Items/Cosmetics/Piece Of Resistance/preview_PieceOfResistance.png
+- Assets/Point Items/Cosmetics/Cheese Hat/item_CheeseHat.prefab
+- Assets/Point Items/Cosmetics/Cooler/item_Cooler.prefab
+- Assets/Point Items/Cosmetics/Piece Of Resistance/item_PieceOfResistance.prefab
+- Assets/Point Items/Cosmetics/Firework/preview_Firework.png
+- Assets/Point Items/Cosmetics/Gemstone/item_Gemstone.prefab
+- Assets/Point Items/Cosmetics/Construction Hat/item_ConstructionHat.prefab
+- Assets/Point Items/Cosmetics/Lightning Head/item_LightningHead.prefab
+- Assets/Point Items/Cosmetics/Stormy Head/preview_StormyHead.png
+- Assets/Point Items/Passive/Bit Miner/preview_BitMiner.png
+- Assets/Point Items/Cosmetics/Stormy Head/item_StormyHead.prefab
+- Assets/Point Items/Cosmetics/Layton Hat/preview_LaytonHat.png
+- Assets/Point Items/Cosmetics/Fez/preview_Fez.png
+- Assets/Point Items/Cosmetics/Rubix Cube/preview_RubixCube.png
+- Assets/Point Items/Cosmetics/Rubix Cube/item_RubixCube.prefab
+- Assets/Point Items/Cosmetics/Lightning Head/preview_LightningHead.png
+- Assets/Point Items/Cosmetics/Cardboard Tophat/preview_CardboardTophat.png
+- Assets/Point Items/Cosmetics/Gloop Trail/preview_GloopTrail.png
+- Assets/Point Items/Cosmetics/BritishHelm/preview_BritishHelm.png
+- Assets/Point Items/Cosmetics/Sorcerer Hat/preview_SorcererHat.png
+- Assets/Point Items/Cosmetics/Cat Beanie/preview_CatBeanie.png
+- Assets/Point Items/Cosmetics/Test Item/preview_TestItem.png
+- Assets/Point Items/Cosmetics/Kick Me Sign/item_KickMeSign.prefab
+- Assets/Point Items/Cosmetics/Knoll Hat/preview_KnollHat.png
+- Assets/Point Items/Cosmetics/Cheese Hat/preview_CheeseHat.png
+- Assets/Point Items/Cosmetics/Bits Trail/item_BitsTrail.prefab
+- Assets/Point Items/Cosmetics/Lego Head/item_LegoHead.prefab
+- Assets/Point Items/Cosmetics/Ena Hat/preview_EnaHat.png
+- Assets/Point Items/Cosmetics/Weird Shades/item_WeirdShades.prefab
+- Assets/Point Items/Cosmetics/Junk-tion/item_Junktion.prefab
+- Assets/Point Items/Cosmetics/Gemstone/preview_Gemstone.png
+- Assets/Point Items/Cosmetics/The Beacon/item_TheBeacon.prefab
+- Assets/Point Items/Cosmetics/3D Glasses/preview_Glasses3D.png
+- Assets/Point Items/Cosmetics/Waist Ring/preview_WaistRing.png
+- Assets/Point Items/Cosmetics/Guard Helmet/preview_GuardHelmet.png
+- Assets/Point Items/Cosmetics/Sorcerer Hat/item_SorcererHat.prefab
+- Assets/Point Items/Cosmetics/BodyPillow/preview_BodyPillow.png
+- Assets/Point Items/Cosmetics/Fren/preview_Fren.png
+- Assets/Point Items/Cosmetics/FryCook Hat/preview_FryCookHat.png
+- Assets/Point Items/Cosmetics/Layton Hat/item_LaytonHat.prefab
+- Assets/Point Items/Cosmetics/Nyan Trail/preview_NyanTrail.png
+- Assets/Point Items/Cosmetics/Party Hat/item_PartyHat.prefab
+- Assets/Point Items/Cosmetics/BritishHelm/item_BritishHelm.prefab
+- Assets/Point Items/Cosmetics/Monocle/item_Monocle.prefab
+- Assets/Point Items/Cosmetics/Pulsating Mass/item_PulsatingMass.prefab
+- Assets/Point Items/Cosmetics/Lego Head/preview_LegoHead.png
+- Assets/Point Items/Cosmetics/Fez/item_Fez.prefab
+- Assets/Point Items/Cosmetics/Nyan Trail/item_NyanTrail.prefab
+- Assets/Point Items/Cosmetics/Cardboard Disguise/preview_CardboardDisguise.png
+- Assets/Point Items/Cosmetics/3D Glasses/item_Glasses3D.prefab
+- Assets/Point Items/Cosmetics/Kick Me Sign/preview_KickMeSign.png
+- Assets/Point Items/Cosmetics/Junk-tion/preview_Junktion.png
+- Assets/Point Items/Cosmetics/Party Hat/preview_PartyHat.png
+- Assets/Point Items/Cosmetics/Guard Helmet/item_GuardHelmet.prefab
+- Assets/Point Items/Cosmetics/Construction Hat/preview_ConstructionHat.png
+- Assets/Point Items/Cosmetics/BodyPillow/item_BodyPillow.prefab
+- Assets/Point Items/Cosmetics/AdventureHat/item_AdventureHat.prefab
+- Assets/Point Items/Cosmetics/Test Item/item_TestItem.prefab
+- Assets/Point Items/Cosmetics/Knoll Hat/item_KnollHat.prefab
+- Assets/Point Items/Cosmetics/Weird Shades/preview_WeirdShades.png
+- Assets/Point Items/Cosmetics/Cooler/preview_Cooler.png
+- Assets/Point Items/Cosmetics/Ena Hat/item_EnaHat.prefab
+- Assets/Point Items/Cosmetics/Gloop Trail/item_GloopTrail.prefab
+- Assets/Point Items/Cosmetics/Bits Trail/preview_BitsTrail.png
+- Assets/Point Items/Cosmetics/Elton Glasses/preview_EltonGlasses.png
+- Assets/Point Items/Cosmetics/Cat Beanie/item_CatBeanie.prefab
+- Assets/Point Items/Cosmetics/Cardboard Tophat/item_CardboardTophat.prefab
+- Assets/Point Items/Cosmetics/Gearhead/item_Gearhead.prefab
+- Assets/Point Items/Cosmetics/Elton Glasses/item_EltonGlasses.prefab
+- Assets/Point Items/Cosmetics/Fren/item_Fren.prefab
+- Assets/Point Items/Cosmetics/Gearhead/preview_Gearhead.png
+- Assets/Point Items/Cosmetics/Firework/item_Firework.prefab
+- Assets/Point Items/Cosmetics/Pulsating Mass/preview_PulsatingMass.png
+- Assets/Point Items/Cosmetics/FryCook Hat/item_FryCookHat.prefab
+Dependencies: []
