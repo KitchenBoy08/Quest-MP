@@ -53,6 +53,9 @@ namespace LabFusion.Network
         }
 
         public static ConnectionRequestData Create(ulong longId, Version version, string avatarBarcode, SerializedAvatarStats stats) {
+#if DEBUG
+            FusionLogger.Log("Creating connection request...");
+#endif
             return new ConnectionRequestData() {
                 longId = longId,
                 version = version,
@@ -74,6 +77,10 @@ namespace LabFusion.Network
                     var data = reader.ReadFusionSerializable<ConnectionRequestData>();
                     var newSmallId = PlayerIdManager.GetUnusedPlayerId();
 
+#if DEBUG
+                    FusionLogger.Log("Handling connection request...");
+#endif
+
                     if (PlayerIdManager.GetPlayerId(data.longId) == null && newSmallId.HasValue) {
                         // If the connection request is invalid, deny it
                         if (!data.IsValid) {
@@ -92,7 +99,7 @@ namespace LabFusion.Network
                             ConnectionSender.SendConnectionDeny(data.longId, "Host is loading.");
                             return;
                         }
-
+                        
                         // Verify joining
                         bool isVerified = NetworkVerification.IsClientApproved(data.longId);
 

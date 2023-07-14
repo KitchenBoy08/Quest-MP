@@ -38,6 +38,7 @@ using LabFusion.SDK.Gamemodes;
 using Steamworks;
 using BoneLib;
 using System.Windows.Forms.DataVisualization.Charting;
+using LabFusion.Patching;
 
 namespace LabFusion.Network
 {
@@ -349,37 +350,63 @@ namespace LabFusion.Network
         private void UnHookRiptideEvents()
         {
             // Remove server hooks
+            MultiplayerHooking.OnPlayerRepCreated -= OnPlayerRig;
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged -= OnUpdateRiptideLobby;
+            MultiplayerHooking.OnDisconnect -= OnDisconnect;
         }
 
         private void HookRiptideEvents()
         {
             // Add server hooks
+            MultiplayerHooking.OnPlayerRepCreated += OnPlayerRig;
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin += OnUserJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
+            MultiplayerHooking.OnDisconnect += OnDisconnect;
+        }
+
+        private void OnDisconnect()
+        {
+            for (int i = 0; i < PlayerIdManager.PlayerCount; i++)
+            {
+                if (i != PlayerIdManager.LocalId)
+                {
+                    PlayerRepManager.Internal_RemovePlayerRep(PlayerRepManager.PlayerReps[i]);
+                }
+            }
+        }
+
+        private void CheckPlayerRigs()
+        {
+            var playerIds = PlayerIdManager.PlayerIds;
+            for (byte i = 0; i < PlayerRepManager.PlayerReps.Count; i++)
+            {
+                if (PlayerRepManager.PlayerReps[i].PlayerId.SmallId != playerIds[i] && !PlayerRepManager.PlayerReps[i].PlayerId.IsSelf)
+                {
+                    PlayerRepManager.Internal_RemovePlayerRep(PlayerRepManager.IDLookup[i]);
+                }
+            }
+        }
+
+        private void OnPlayerRig(RigManager rig)
+        {
+            CheckPlayerRigs();
         }
 
         private void OnPlayerLeave(PlayerId id)
         {
-            /*
-            RiptideVoiceIdentifier.RemoveVoiceIdentifier(id);
-            */
+            PlayerRepManager.Internal_RemovePlayerRep(PlayerRepManager.PlayerReps[id]);
             OnUpdateRiptideLobby();
         }
 
         private void OnPlayerJoin(PlayerId id)
         {
-            /*
-            if (!id.IsSelf)
-                RiptideVoiceIdentifier.GetVoiceIdentifier(id);
-            */
             OnUpdateRiptideLobby();
         }
 
@@ -565,6 +592,17 @@ namespace LabFusion.Network
             if (!HelperMethods.IsAndroid())
             {
                 ConnectToServer(_targetServerIP);
+            } else
+            {
+                string code = FusionPreferences.ClientSettings.ServerCode;
+                if (code.Contains("."))
+                {
+                    ConnectToServer(code);
+                } else
+                {
+                    string decodedIp = IPSafety.IPSafety.DecodeIPAddress(code);
+                    ConnectToServer(decodedIp);
+                }
             }
         }
 
