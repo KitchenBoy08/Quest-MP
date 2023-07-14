@@ -39,6 +39,8 @@ using Steamworks;
 using BoneLib;
 using System.Windows.Forms.DataVisualization.Charting;
 using LabFusion.Patching;
+using System.Web.UI.WebControls;
+using System.Web.UI;
 
 namespace LabFusion.Network
 {
@@ -142,13 +144,17 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        /// This should maybe return a username determined from a Melonpreference or oculus platform, sent over the net
-        /// (Not in this method, it should be done upon connection)
         internal override string GetUsername(ulong userId)
         {
-            // Find a way to get nickname, this will do for testing
-            string Username = ("Player" + userId);
-            return Username;
+            string username;
+            if (HelperMethods.IsAndroid())
+            {
+                username = $"Player {userId} (Quest)";
+            } else
+            {
+                username = $"Player {userId} (PC)";
+            }  
+            return username;
         }
 
         /// <summary>
@@ -337,7 +343,6 @@ namespace LabFusion.Network
             _isServerActive = false;
             _isConnectionActive = true;
 
-            //Update player id here just to be safe
             PlayerIdManager.SetLongId(currentclient.Id);
 
             ConnectionSender.SendConnectionRequest();
@@ -350,33 +355,38 @@ namespace LabFusion.Network
         private void UnHookRiptideEvents()
         {
             // Remove server hooks
+            currentclient.ClientDisconnected -= OnClientDisconnect;
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged -= OnUpdateRiptideLobby;
-            MultiplayerHooking.OnDisconnect -= OnDisconnect;
         }
 
         private void HookRiptideEvents()
         {
             // Add server hooks
+            currentclient.ClientDisconnected += OnClientDisconnect;
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin += OnUserJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
-            MultiplayerHooking.OnDisconnect += OnDisconnect;
         }
 
-        private void OnDisconnect()
+        private void OnClientDisconnect(object sender, ClientDisconnectedEventArgs client)
         {
-            for (int i = 0; i < PlayerIdManager.PlayerCount; i++)
+            // Make sure the user hasn't previously disconnected
+            if (PlayerIdManager.HasPlayerId(client.Id))
             {
-                if (i != PlayerIdManager.LocalId)
-                {
-                    PlayerRepManager.Internal_RemovePlayerRep(PlayerRepManager.PlayerReps[i]);
-                }
+                // Update the mod so it knows this user has left
+                InternalServerHelpers.OnUserLeave(client.Id);
+
+                // Send disconnect notif to everyone
+                ConnectionSender.SendDisconnect(client.Id);
+
+                var playerId = PlayerIdManager.GetPlayerId(client.Id);
+                PlayerIdManager.PlayerIds.Remove(playerId);
             }
         }
 
