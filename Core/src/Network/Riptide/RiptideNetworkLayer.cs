@@ -39,6 +39,8 @@ using Steamworks;
 using BoneLib;
 using System.Windows.Forms.DataVisualization.Charting;
 using LabFusion.Patching;
+using System.Drawing;
+using JetBrains.Annotations;
 
 namespace LabFusion.Network
 {
@@ -111,27 +113,31 @@ namespace LabFusion.Network
             currentclient.Connected -= OnStarted;
         }
 
+        public string disconnectReason;
         /// <summary>
         /// Disconnects the client from the connection and/or server.
         /// </summary>
         internal override void Disconnect(string reason = "")
         {
+            currentclient.Disconnected += OnDisconnected;
 
-            if (currentclient.IsConnected)
-                    currentclient.Disconnect();
+            currentclient.Disconnect();
 
+            disconnectReason = reason;
+        }
+
+        private void OnDisconnected(object sender, Riptide.DisconnectedEventArgs e)
+        {
             if (currentserver.IsRunning)
-                    currentserver.Stop();
+                currentserver.Stop();
 
             _isServerActive = false;
             _isConnectionActive = false;
 
-            InternalServerHelpers.OnDisconnect(reason);
+            InternalServerHelpers.OnDisconnect(disconnectReason);
 
             OnUpdateRiptideLobby();
         }
-
-
 
         /// <summary>
         /// Returns the username of the player with id userId.
@@ -360,15 +366,11 @@ namespace LabFusion.Network
 
         private void OnCLientDisconnect(object sender, ServerDisconnectedEventArgs client)
         {
-            // Make sure the user hasn't previously disconnected
-            if (PlayerIdManager.HasPlayerId(client.Client.Id))
-            {
-                // Update the mod so it knows this user has left
-                InternalServerHelpers.OnUserLeave(client.Client.Id);
+            // Update the mod so it knows this user has left
+            InternalServerHelpers.OnUserLeave(client.Client.Id);
 
-                // Send disconnect notif to everyone
-                ConnectionSender.SendDisconnect(client.Client.Id);
-            }
+            // Send disconnect notif to everyone
+            ConnectionSender.SendDisconnect(client.Client.Id);
         }
 
         private void HookRiptideEvents()
