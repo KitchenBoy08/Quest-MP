@@ -109,6 +109,7 @@ namespace LabFusion.Network
             UnHookSteamEvents();
         }
 
+        public int updateWait = 0;
         internal override void OnUpdateLayer() {
             // Push lobby updates
             if (Time.realtimeSinceStartup - _lastLobbyUpdate >= 30f) {
@@ -124,11 +125,34 @@ namespace LabFusion.Network
 
             // Receive any needed messages
             try {
-                if (SteamSocket != null) {
-                    SteamSocket.Receive(ReceiveBufferSize);
+                if (FusionPreferences.ClientSettings.PerformanceMode == false)
+                {
+                    if (SteamSocket != null)
+                    {
+                        SteamSocket.Receive(ReceiveBufferSize);
+                    }
+                    if (SteamConnection != null)
+                    {
+                        SteamConnection.Receive(ReceiveBufferSize);
+                    }
                 }
-                if (SteamConnection != null) {
-                    SteamConnection.Receive(ReceiveBufferSize);
+                else
+                {
+                    // Performance Mode Stuff
+                    updateWait++;
+                    if (updateWait == 3)
+                    {
+                        if (SteamSocket != null)
+                        {
+                            SteamSocket.Receive(ReceiveBufferSize);
+                        }
+
+                        if (SteamConnection != null)
+                        {
+                            SteamConnection.Receive(ReceiveBufferSize);
+                        }
+                        updateWait = 0;
+                    }
                 }
             }
             catch (Exception e) {
