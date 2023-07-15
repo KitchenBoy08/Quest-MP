@@ -81,6 +81,11 @@ namespace LabFusion.BoneMenu
 
         private static void CreateClientSettingsMenu(MenuCategory category)
         {
+            // Performance Mode
+            var performanceSettings = category.CreateCategory("Performance Settings", Color.white);
+
+            CreateBoolPreference(performanceSettings, "Performance Mode", FusionPreferences.ClientSettings.PerformanceMode);
+
             // Nametags enabled
             var nametagCategory = category.CreateCategory("Nametag Settings", Color.white);
 
@@ -103,10 +108,6 @@ namespace LabFusion.BoneMenu
                     PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.NicknameKey, v);
             });
 
-            if (NetworkLayerDeterminer.GetDefaultType() == NetworkLayerType.RIPTIDE)
-            {
-                CreateBoolPreference(category, "Performance Mode", FusionPreferences.ClientSettings.PerformanceMode);
-            }
 
             // Voice chat
             var voiceChatCategory = category.CreateCategory("Voice Chat", Color.white);
