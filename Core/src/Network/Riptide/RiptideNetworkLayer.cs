@@ -396,7 +396,6 @@ namespace LabFusion.Network
 
         private void OnPlayerLeave(PlayerId id)
         {
-            PlayerRepManager.Internal_RemovePlayerRep(PlayerRepManager.PlayerReps[id]);
             OnUpdateRiptideLobby();
         }
 
@@ -606,11 +605,11 @@ namespace LabFusion.Network
             // Is a server already running? Disconnect then create server.
             if (currentclient.IsConnected)
             {
-                NetworkHelper.Disconnect();
+                Disconnect();
             }
             else
             {
-                NetworkHelper.StartServer();
+                StartServer();
             }
 
         }

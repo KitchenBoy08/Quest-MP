@@ -67,9 +67,6 @@ namespace LabFusion.Network
             Riptide.Message message = Riptide.Message.Create(RiptideHandler.ConvertToSendMode(channel), 0);
             message.Release();
             message.AddBytes(FusionMessageToBytes(fusionMessage));
-#if DEBUG
-            FusionLogger.Log($"Prepared message of size: {message.WrittenLength}");
-#endif
             return message;
         }
 
@@ -108,9 +105,6 @@ namespace LabFusion.Network
                 unsafe
                 {
                     int messageLength = message.WrittenLength;
-#if DEBUG
-                    FusionLogger.Log($"Handled message of size: {messageLength}");
-#endif
 
                     byte[] buffer = message.GetBytes();
                     fixed (byte* messageBuffer = buffer)
