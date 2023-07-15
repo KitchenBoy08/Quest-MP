@@ -116,6 +116,7 @@ namespace LabFusion.Network
         /// </summary>
         internal override void Disconnect(string reason = "")
         {
+            // Make sure we are currently in a server
             if (!IsClient)
                 return;
 
@@ -124,15 +125,25 @@ namespace LabFusion.Network
                 currentserver.Stop();
             }
 
-            currentclient.Disconnect();
+            try
+            {
+                if (currentclient != null)
+                    currentclient.Disconnect();
 
-            InternalServerHelpers.OnDisconnect(reason);
-            OnUpdateRiptideLobby();
+                if (currentserver != null)
+                    currentserver.Stop();
+            }
+            catch
+            {
+                FusionLogger.Log("Error closing Riptide server!");
+            }
 
             _isServerActive = false;
             _isConnectionActive = false;
 
-            FusionLogger.Log($"Disconnected from server because: {reason}");
+            InternalServerHelpers.OnDisconnect(reason);
+
+            OnUpdateRiptideLobby();
         }
 
 

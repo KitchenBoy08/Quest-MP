@@ -80,9 +80,6 @@ namespace LabFusion.Network
                 unsafe
                 {
                     int messageLength = message.WrittenLength;
-#if DEBUG
-                    FusionLogger.Log($"Handled message of size: {messageLength}");
-#endif
 
                     byte[] buffer = message.GetBytes();
                     fixed (byte* messageBuffer = buffer)
