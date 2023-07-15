@@ -117,7 +117,7 @@ namespace LabFusion.Network
         internal override void Disconnect(string reason = "")
         {
             // Make sure we are currently in a server
-            if (!currentclient.IsConnected)
+            if (!currentclient.IsConnected || !currentserver.IsRunning)
                 return;
 
             try
@@ -192,14 +192,13 @@ namespace LabFusion.Network
         {
             if (IsServer)
             {
-                foreach (Connection value in currentserver.Clients)
-                {
-                    if (value.Id == userId)
-                    {
-                        Riptide.Message riptideMessage = RiptideHandler.PrepareMessage(message, channel);
-                        currentserver.Send(riptideMessage, value.Id);
-                    }
-                }
+                Connection client;
+                ushort localClient = PlayerIdManager.LocalId;
+                Riptide.Message riptideMessage = RiptideHandler.PrepareMessage(message, channel);
+                if (currentserver.TryGetClient((ushort)userId, out client))
+                    currentserver.Send(riptideMessage, client);
+                else if (userId == PlayerIdManager.LocalLongId)
+                    currentserver.Send(riptideMessage, localClient);
             }
         }
 
@@ -229,23 +228,6 @@ namespace LabFusion.Network
             else
             {
                 currentclient.Send(RiptideHandler.PrepareMessage(message, channel));
-            }
-        }
-
-        /// <summary>
-        /// If this is a server, sends this message back to all users except for the provided id.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="channel"></param>
-        /// <param name="message"></param>
-        internal override void BroadcastMessageExcept(byte userId, NetworkChannel channel, FusionMessage message, bool ignoreHost = true)
-        {
-            for (var i = 0; i < PlayerIdManager.PlayerIds.Count; i++)
-            {
-                var id = PlayerIdManager.PlayerIds[i];
-
-                if (id.SmallId != userId && (id.SmallId != 0 || !ignoreHost))
-                    SendFromServer(id.SmallId, channel, message);
             }
         }
 
