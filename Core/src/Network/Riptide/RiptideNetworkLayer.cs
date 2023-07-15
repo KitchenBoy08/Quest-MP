@@ -289,15 +289,37 @@ namespace LabFusion.Network
             // Clean up lobbies here once that is implemented 
         }
 
+        public int updateWait = 0;
         internal override void OnUpdateLayer()
         {
-            if (currentserver != null)
+            if (FusionPreferences.ClientSettings.PerformanceMode == false)
             {
-                currentserver.Update();
-            }
-            if (currentclient != null)
+                if (currentserver != null)
+                {
+                    currentserver.Update();
+                }
+                if (currentclient != null)
+                {
+                    currentclient.Update();
+                }
+            } else
             {
-                currentclient.Update();
+                // Performance Mode Stuff
+                updateWait++;
+
+                if (currentserver != null)
+                {
+                    currentserver.Update();
+                }
+
+                if (updateWait == 2)
+                {
+                    if (currentclient != null)
+                    {
+                        currentclient.Update();
+                    }
+                    updateWait = 0;
+                }
             }
         }
 

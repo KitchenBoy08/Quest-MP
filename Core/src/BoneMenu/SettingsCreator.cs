@@ -103,6 +103,11 @@ namespace LabFusion.BoneMenu
                     PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.NicknameKey, v);
             });
 
+            if (NetworkLayerDeterminer.GetDefaultType() == NetworkLayerType.RIPTIDE)
+            {
+                CreateBoolPreference(category, "Performance Mode", FusionPreferences.ClientSettings.PerformanceMode);
+            }
+
             // Voice chat
             var voiceChatCategory = category.CreateCategory("Voice Chat", Color.white);
 
