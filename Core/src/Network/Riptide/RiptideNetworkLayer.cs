@@ -116,22 +116,12 @@ namespace LabFusion.Network
         /// </summary>
         internal override void Disconnect(string reason = "")
         {
-            // Make sure we are currently in a server
-            if (!currentclient.IsConnected || !currentserver.IsRunning)
-                return;
 
-            try
-            {
-                if (currentclient != null)
+            if (currentclient.IsConnected)
                     currentclient.Disconnect();
 
-                if (currentserver != null)
+            if (currentserver.IsRunning)
                     currentserver.Stop();
-            }
-            catch
-            {
-                FusionLogger.Log("Error closing Riptide server!");
-            }
 
             _isServerActive = false;
             _isConnectionActive = false;
@@ -209,7 +199,6 @@ namespace LabFusion.Network
         /// <param name="message"></param>
         internal override void SendToServer(NetworkChannel channel, FusionMessage message)
         {
-
             Riptide.Message riptideMessage = RiptideHandler.PrepareMessage(message, channel);
             currentclient.Send(riptideMessage);
         }
@@ -312,7 +301,7 @@ namespace LabFusion.Network
                     currentserver.Update();
                 }
 
-                if (updateWait == 2)
+                if (updateWait == 3)
                 {
                     if (currentclient != null)
                     {
@@ -422,7 +411,7 @@ namespace LabFusion.Network
         private void OnUpdateCreateServerText()
         {
             if (currentclient.IsConnected)
-                _createServerElement.SetName("Disconnect from Server");
+                _createServerElement.SetName("Disconnect");
             else if (currentclient.IsConnected == false)
                 _createServerElement.SetName("Create Server");
         }
