@@ -39,8 +39,6 @@ using Steamworks;
 using BoneLib;
 using System.Windows.Forms.DataVisualization.Charting;
 using LabFusion.Patching;
-using System.Web.UI.WebControls;
-using System.Web.UI;
 
 namespace LabFusion.Network
 {
@@ -121,6 +119,8 @@ namespace LabFusion.Network
             if (!IsClient)
                 return;
 
+            currentclient.Disconnect();
+
             if (IsServer)
             {
                 currentserver.Stop();
@@ -128,8 +128,6 @@ namespace LabFusion.Network
 
             InternalServerHelpers.OnDisconnect(reason);
             OnUpdateRiptideLobby();
-
-            currentclient.Disconnect();
 
             _isServerActive = false;
             _isConnectionActive = false;
@@ -144,17 +142,13 @@ namespace LabFusion.Network
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
+        /// This should maybe return a username determined from a Melonpreference or oculus platform, sent over the net
+        /// (Not in this method, it should be done upon connection)
         internal override string GetUsername(ulong userId)
         {
-            string username;
-            if (HelperMethods.IsAndroid())
-            {
-                username = $"Player {userId} (Quest)";
-            } else
-            {
-                username = $"Player {userId} (PC)";
-            }  
-            return username;
+            // Find a way to get nickname, this will do for testing
+            string Username = ("Player" + userId);
+            return Username;
         }
 
         /// <summary>
@@ -301,11 +295,6 @@ namespace LabFusion.Network
 
         internal override void OnCleanupLayer()
         {
-            if (IsServer)
-            {
-                currentserver.Stop();
-            }
-
             Disconnect();
 
             UnHookRiptideEvents();
@@ -348,6 +337,7 @@ namespace LabFusion.Network
             _isServerActive = false;
             _isConnectionActive = true;
 
+            //Update player id here just to be safe
             PlayerIdManager.SetLongId(currentclient.Id);
 
             ConnectionSender.SendConnectionRequest();
@@ -360,36 +350,34 @@ namespace LabFusion.Network
         private void UnHookRiptideEvents()
         {
             // Remove server hooks
-            currentserver.ClientDisconnected -= OnClientDisconnect;
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged -= OnUpdateRiptideLobby;
-        }
-
-        private void OnClientDisconnect(object sender, ServerDisconnectedEventArgs client)
-        {
-            // Make sure the user hasn't previously disconnected
-            if (PlayerIdManager.HasPlayerId(client.Client.Id))
-            {
-                // Update the mod so it knows this user has left
-                InternalServerHelpers.OnUserLeave(client.Client.Id);
-
-                var playerId = PlayerIdManager.GetPlayerId(client.Client.Id);
-                PlayerIdManager.PlayerIds.Remove(playerId);
-            }
+            MultiplayerHooking.OnDisconnect -= OnDisconnect;
         }
 
         private void HookRiptideEvents()
         {
             // Add server hooks
-            currentserver.ClientDisconnected += OnClientDisconnect;
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin += OnUserJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
+            MultiplayerHooking.OnDisconnect += OnDisconnect;
+        }
+
+        private void OnDisconnect()
+        {
+            for (int i = 0; i < PlayerIdManager.PlayerCount; i++)
+            {
+                if (i != PlayerIdManager.LocalId)
+                {
+                    PlayerRepManager.Internal_RemovePlayerRep(PlayerRepManager.PlayerReps[i]);
+                }
+            }
         }
 
         private void OnPlayerLeave(PlayerId id)
@@ -604,11 +592,11 @@ namespace LabFusion.Network
             // Is a server already running? Disconnect then create server.
             if (currentclient.IsConnected)
             {
-                Disconnect();
+                NetworkHelper.Disconnect();
             }
             else
             {
-                StartServer();
+                NetworkHelper.StartServer();
             }
 
         }

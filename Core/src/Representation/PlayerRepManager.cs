@@ -34,12 +34,8 @@ namespace LabFusion.Representation {
         }
 
         internal static void Internal_InsertPlayerRep(PlayerRep rep) {
-            List<PlayerRep> playerReps = PlayerRepManager.PlayerReps;
-            if (!playerReps.Contains(rep))
-            {
-                PlayerReps.Add(rep);
-                IDLookup.Add(rep.PlayerId.SmallId, rep);
-            }
+            PlayerReps.Add(rep);
+            IDLookup.Add(rep.PlayerId.SmallId, rep);
         }
 
         internal static void Internal_RemovePlayerRep(PlayerRep rep) {
