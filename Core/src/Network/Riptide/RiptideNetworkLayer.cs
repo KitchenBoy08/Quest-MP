@@ -117,13 +117,8 @@ namespace LabFusion.Network
         internal override void Disconnect(string reason = "")
         {
             // Make sure we are currently in a server
-            if (!IsClient)
+            if (!currentclient.IsConnected)
                 return;
-
-            if (IsServer)
-            {
-                currentserver.Stop();
-            }
 
             try
             {
