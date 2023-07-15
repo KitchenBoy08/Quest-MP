@@ -359,6 +359,7 @@ namespace LabFusion.Network
         private void OnCLientDisconnect(object sender, ServerDisconnectedEventArgs client)
         {
             // Update the mod so it knows this user has left
+            FusionLogger.Log("Client Disconnected");
             InternalServerHelpers.OnUserLeave(client.Client.Id);
 
             // Send disconnect notif to everyone
