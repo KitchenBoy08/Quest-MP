@@ -113,28 +113,21 @@ namespace LabFusion.Network
             currentclient.Connected -= OnStarted;
         }
 
-        public string disconnectReason;
         /// <summary>
         /// Disconnects the client from the connection and/or server.
         /// </summary>
         internal override void Disconnect(string reason = "")
         {
-            currentclient.Disconnected += OnDisconnected;
+            if (currentclient.IsConnected) 
+                currentclient.Disconnect();
 
-            currentclient.Disconnect();
-
-            disconnectReason = reason;
-        }
-
-        private void OnDisconnected(object sender, Riptide.DisconnectedEventArgs e)
-        {
             if (currentserver.IsRunning)
                 currentserver.Stop();
 
             _isServerActive = false;
             _isConnectionActive = false;
 
-            InternalServerHelpers.OnDisconnect(disconnectReason);
+            InternalServerHelpers.OnDisconnect(reason);
 
             OnUpdateRiptideLobby();
         }
@@ -361,7 +354,6 @@ namespace LabFusion.Network
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged -= OnUpdateRiptideLobby;
-            MultiplayerHooking.OnDisconnect -= OnDisconnect;
         }
 
         private void OnCLientDisconnect(object sender, ServerDisconnectedEventArgs client)
@@ -376,23 +368,12 @@ namespace LabFusion.Network
         private void HookRiptideEvents()
         {
             // Add server hooks
+            currentserver.ClientDisconnected -= OnCLientDisconnect;
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin += OnUserJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
-            MultiplayerHooking.OnDisconnect += OnDisconnect;
-        }
-
-        private void OnDisconnect()
-        {
-            for (int i = 0; i < PlayerIdManager.PlayerCount; i++)
-            {
-                if (i != PlayerIdManager.LocalId)
-                {
-                    PlayerRepManager.Internal_RemovePlayerRep(PlayerRepManager.PlayerReps[i]);
-                }
-            }
         }
 
         private void OnPlayerLeave(PlayerId id)
