@@ -51,8 +51,14 @@ namespace LabFusion.Network
 #if DEBUG
                         FusionLogger.Log($"Received level load for {data.levelBarcode}!");
 #endif
-
-                        FusionSceneManager.SetTargetScene(data.levelBarcode);
+                        if (!FusionSceneManager.IsLoading())
+                        {
+                            FusionSceneManager.SetTargetScene(data.levelBarcode);
+                        }
+                        else
+                        {
+                            FusionLogger.Error("Recieved level load while loading!");
+                        }
                     }
                 }
             }

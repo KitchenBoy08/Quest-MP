@@ -313,14 +313,6 @@ namespace LabFusion.Network
             }
         }
 
-        internal override void OnLateUpdateLayer() { }
-
-        internal override void OnGUILayer() { }
-
-        internal override void OnVoiceChatUpdate() { }
-
-        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes) { }
-
         public void ConnectToServer(string ip)
         {
 
@@ -360,8 +352,6 @@ namespace LabFusion.Network
         private void OnClientDisconnect(object sender, ServerDisconnectedEventArgs client)
         {
             // Update the mod so it knows this user has left
-            FusionLogger.Log("Client Disconnected");
-
             InternalServerHelpers.OnUserLeave(client.Client.Id);
 
             // Send disconnect notif to everyone
