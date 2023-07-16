@@ -231,35 +231,12 @@ namespace LabFusion.Network
             RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
 #endif
 
-            if (FusionPreferences.ClientSettings.Nickname != null && FusionPreferences.ClientSettings.Nickname.ToString().Contains("(Quest)") || FusionPreferences.ClientSettings.Nickname.ToString().Contains("(PC)"))
+            if (FusionPreferences.ClientSettings.Nickname == null && HelperMethods.IsAndroid())
             {
-                PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
-            }
-            else if (FusionPreferences.ClientSettings.Nickname != null && !FusionPreferences.ClientSettings.Nickname.ToString().Contains("(Quest)") && !FusionPreferences.ClientSettings.Nickname.ToString().Contains("(PC)"))
+                FusionPreferences.ClientSettings.Nickname.SetValue("Player (Quest)");
+            } else if (FusionPreferences.ClientSettings.Nickname == null && !HelperMethods.IsAndroid())
             {
-                if (HelperMethods.IsAndroid())
-                {
-                    FusionPreferences.ClientSettings.Nickname.SetValue($"{FusionPreferences.ClientSettings.Nickname.GetValue()} (Quest)");
-                    PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
-                }
-                else
-                {
-                    FusionPreferences.ClientSettings.Nickname.SetValue($"{FusionPreferences.ClientSettings.Nickname.GetValue()} (PC)");
-                    PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
-                }
-            }
-            else
-            {
-                if (HelperMethods.IsAndroid())
-                {
-                    FusionPreferences.ClientSettings.Nickname.SetValue("Player (Quest)");
-                    PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
-                }
-                else
-                {
-                    FusionPreferences.ClientSettings.Nickname.SetValue("Player  (PC)");
-                    PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
-                }
+                FusionPreferences.ClientSettings.Nickname.SetValue("Player (PC)");
             }
 
             FusionLogger.Log("Initialized Riptide Layer");
