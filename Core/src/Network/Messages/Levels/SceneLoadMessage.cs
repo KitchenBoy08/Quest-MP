@@ -1,4 +1,5 @@
-﻿using LabFusion.Data;
+﻿using BoneLib;
+using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Patching;
 using LabFusion.Representation;
@@ -42,6 +43,7 @@ namespace LabFusion.Network
     public class SceneLoadMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.SceneLoad;
+        public bool canLoadScene = true;
 
         public override void HandleMessage(byte[] bytes, bool isServerHandled = false)
         {
@@ -51,17 +53,26 @@ namespace LabFusion.Network
 #if DEBUG
                         FusionLogger.Log($"Received level load for {data.levelBarcode}!");
 #endif
-                        if (!FusionSceneManager.IsLoading())
+                        BoneLib.Hooking.OnLevelInitialized += OnLevelInitialized;
+                        
+                        if (canLoadScene)
                         {
                             FusionSceneManager.SetTargetScene(data.levelBarcode);
-                        }
-                        else
+                            canLoadScene = false;
+                        } else
                         {
-                            FusionLogger.Error("Recieved level load while loading!");
+                            FusionLogger.Error("Recieved level load, but we are already loading!");
                         }
                     }
                 }
             }
+        }
+
+        private void OnLevelInitialized(LevelInfo info)
+        {
+            canLoadScene = true;
+
+            BoneLib.Hooking.OnLevelInitialized -= OnLevelInitialized;
         }
     }
 }
