@@ -81,10 +81,9 @@ namespace LabFusion.BoneMenu
 
         private static void CreateClientSettingsMenu(MenuCategory category)
         {
-            // Performance Mode
+            // Performance Settings
+            /// TODO
             var performanceSettings = category.CreateCategory("Performance Settings", Color.white);
-
-            CreateBoolPreference(performanceSettings, "Performance Mode", FusionPreferences.ClientSettings.PerformanceMode);
 
             // Nametags enabled
             var nametagCategory = category.CreateCategory("Nametag Settings", Color.white);

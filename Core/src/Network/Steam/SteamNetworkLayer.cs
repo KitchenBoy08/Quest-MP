@@ -125,34 +125,13 @@ namespace LabFusion.Network
 
             // Receive any needed messages
             try {
-                if (FusionPreferences.ClientSettings.PerformanceMode == false)
+                if (SteamSocket != null)
                 {
-                    if (SteamSocket != null)
-                    {
-                        SteamSocket.Receive(ReceiveBufferSize);
-                    }
-                    if (SteamConnection != null)
-                    {
-                        SteamConnection.Receive(ReceiveBufferSize);
-                    }
+                    SteamSocket.Receive(ReceiveBufferSize);
                 }
-                else
+                if (SteamConnection != null)
                 {
-                    // Performance Mode Stuff
-                    updateWait++;
-                    if (updateWait == 3)
-                    {
-                        if (SteamSocket != null)
-                        {
-                            SteamSocket.Receive(ReceiveBufferSize);
-                        }
-
-                        if (SteamConnection != null)
-                        {
-                            SteamConnection.Receive(ReceiveBufferSize);
-                        }
-                        updateWait = 0;
-                    }
+                    SteamConnection.Receive(ReceiveBufferSize);
                 }
             }
             catch (Exception e) {
