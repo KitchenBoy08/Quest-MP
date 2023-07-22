@@ -1,12 +1,15 @@
 # BONELAB TideFusion
-This mod is a port of FUSION to Quest, although it should support both Quest and PCVR Crossplay upon release
+This mod is a fork of Fusion with the inclusion of a new networking layer, Riptide!
+Whilst official Fusion on Quest uses a proxy in order to have steam networking on the quest, not all of the networking is done natively. Riptide uses straight Peer to Peer networking in order to be fully native on the Quest!
 
 ## Progress on The Mod
 You can see all progress on the mod at: 
 https://trello.com/b/IEXzs0C2/quest-fusion-progress
 
 ## Networking
-This mod utilizes Riptide Networking in order to be usable on quest and Steam Networking (Which is only available on PCVR).
+Available networking systems:
+- Steam networking
+- Riptide networking (Peer to Peer)
 
 ## Modules
 Fusion supports a system called "Modules". This allows other code mods to addon and sync their own events in Fusion.
