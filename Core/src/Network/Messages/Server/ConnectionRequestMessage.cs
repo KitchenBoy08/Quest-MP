@@ -12,7 +12,6 @@ using System.Collections;
 using System.Linq;
 
 using MelonLoader;
-using SLZ.Rig;
 
 namespace LabFusion.Network
 {
@@ -54,9 +53,6 @@ namespace LabFusion.Network
         }
 
         public static ConnectionRequestData Create(ulong longId, Version version, string avatarBarcode, SerializedAvatarStats stats) {
-#if DEBUG
-            FusionLogger.Log("Creating connection request...");
-#endif
             return new ConnectionRequestData() {
                 longId = longId,
                 version = version,
@@ -71,52 +67,28 @@ namespace LabFusion.Network
     public class ConnectionRequestMessage : FusionMessageHandler
     {
         public override byte? Tag => NativeMessageTag.ConnectionRequest;
-        public bool canHandleConnectionRequest = true;
-        public bool canSendLevelInfo = true;
-        public bool canSendPlayers = true;
-        public bool canSendPlayer = true;
-        public bool canSendDynamicData = true;
-        public bool canSendCatchup = true;
-        public bool canSendServerSettings = true;
-        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
-            MultiplayerHooking.OnPlayerRepCreated += PlayerJoined;
 
-            if (NetworkInfo.IsServer)
-            {
-                using (FusionReader reader = FusionReader.Create(bytes))
-                {
+        public override void HandleMessage(byte[] bytes, bool isServerHandled = false) {
+            if (NetworkInfo.IsServer) {
+                using (FusionReader reader = FusionReader.Create(bytes)) {
                     var data = reader.ReadFusionSerializable<ConnectionRequestData>();
                     var newSmallId = PlayerIdManager.GetUnusedPlayerId();
 
-#if DEBUG
-                    FusionLogger.Log("Handling connection request...");
-#endif
-
-                    if (PlayerIdManager.GetPlayerId(data.longId) == null && newSmallId.HasValue)
-                    {
-                        if (!canHandleConnectionRequest)
-                        {
-                            ConnectionSender.SendConnectionDeny(data.longId, "Previous connection request in progress. Wait until the player has fully joined!");
-                            return;
-                        }
-
-                            // If the connection request is invalid, deny it
-                        if (!data.IsValid)
-                        {
+                    if (PlayerIdManager.GetPlayerId(data.longId) == null && newSmallId.HasValue) {
+                        // If the connection request is invalid, deny it
+                        if (!data.IsValid) {
                             ConnectionSender.SendConnectionDeny(data.longId, "Connection request was invalid. You are likely on mismatching versions.");
                             return;
                         }
 
-                            // Check if theres too many players
-                        if (PlayerIdManager.PlayerCount >= byte.MaxValue || PlayerIdManager.PlayerCount >= FusionPreferences.LocalServerSettings.MaxPlayers.GetValue())
-                        {
+                        // Check if theres too many players
+                        if (PlayerIdManager.PlayerCount >= byte.MaxValue || PlayerIdManager.PlayerCount >= FusionPreferences.LocalServerSettings.MaxPlayers.GetValue()) {
                             ConnectionSender.SendConnectionDeny(data.longId, "Server is full! Wait for someone to leave.");
                             return;
                         }
 
                         // Make sure we aren't loading
-                        if (FusionSceneManager.IsLoading())
-                        {
+                        if (FusionSceneManager.IsLoading()) {
                             ConnectionSender.SendConnectionDeny(data.longId, "Host is loading.");
                             return;
                         }
@@ -124,8 +96,7 @@ namespace LabFusion.Network
                         // Verify joining
                         bool isVerified = NetworkVerification.IsClientApproved(data.longId);
 
-                        if (!isVerified)
-                        {
+                        if (!isVerified) {
                             ConnectionSender.SendConnectionDeny(data.longId, "Server is private.");
                             return;
                         }
@@ -133,10 +104,8 @@ namespace LabFusion.Network
                         // Compare versions
                         VersionResult versionResult = NetworkVerification.CompareVersion(FusionMod.Version, data.version);
 
-                        if (versionResult != VersionResult.Ok)
-                        {
-                            switch (versionResult)
-                            {
+                        if (versionResult != VersionResult.Ok) {
+                            switch (versionResult) {
                                 default:
                                 case VersionResult.Unknown:
                                     ConnectionSender.SendConnectionDeny(data.longId, "Unknown Version Mismatch");
@@ -156,15 +125,29 @@ namespace LabFusion.Network
                         FusionPermissions.FetchPermissionLevel(data.longId, out var level, out _);
 
                         // Check for banning
-                        if (NetworkHelper.IsBanned(data.longId))
-                        {
+                        if (NetworkHelper.IsBanned(data.longId)) {
                             ConnectionSender.SendConnectionDeny(data.longId, "Banned from Server");
                             return;
                         }
 
-                        // Finally, check for dynamic connection disallowing
-                        if (!MultiplayerHooking.Internal_OnShouldAllowConnection(data.longId, out string reason))
+                        // Check if Quest user
+                        if (!FusionPreferences.LocalServerSettings.AllowQuestUsers.GetValue()
+                            && data.initialMetadata[MetadataHelper.PlatformKey] == "QUEST")
                         {
+                            ConnectionSender.SendConnectionDeny(data.longId, "Quest users are blocked from this server.");
+                            return;
+                        }
+
+                        // Check if PC user
+                        if (!FusionPreferences.LocalServerSettings.AllowQuestUsers.GetValue()
+                            && data.initialMetadata[MetadataHelper.PlatformKey] == "PC")
+                        {
+                            ConnectionSender.SendConnectionDeny(data.longId, "PC users are blocked from this server.");
+                            return;
+                        }
+
+                        // Finally, check for dynamic connection disallowing
+                        if (!MultiplayerHooking.Internal_OnShouldAllowConnection(data.longId, out string reason)) {
                             ConnectionSender.SendConnectionDeny(data.longId, reason);
                             return;
                         }
@@ -176,110 +159,58 @@ namespace LabFusion.Network
                             data.initialMetadata[MetadataHelper.PermissionKey] = level.ToString();
 
                         // First we send the new player to all existing players (and the new player so they know they exist)
-                        if (canSendPlayer)
-                        {
-                            canSendPlayer = false;
+                        ConnectionSender.SendPlayerJoin(new PlayerId(data.longId, newSmallId.Value, data.initialMetadata, data.initialEquippedItems), data.avatarBarcode, data.avatarStats);
 
-                            ConnectionSender.SendPlayerJoin(new PlayerId(data.longId, newSmallId.Value, data.initialMetadata, data.initialEquippedItems), data.avatarBarcode, data.avatarStats);
-                        }
-
-                        if (canSendPlayers)
-                        {
-                            canSendPlayers = false;
-
-                            // Now we send all of our other players to the new player
-                            foreach (var id in PlayerIdManager.PlayerIds)
-                            {
-                                var barcode = CommonBarcodes.INVALID_AVATAR_BARCODE;
-                                SerializedAvatarStats stats = new SerializedAvatarStats();
-                                if (id.SmallId == 0)
-                                {
-                                    barcode = RigData.RigAvatarId;
-                                    stats = RigData.RigAvatarStats;
-                                }
-                                else if (PlayerRepManager.TryGetPlayerRep(id.SmallId, out var rep))
-                                {
-                                    barcode = rep.avatarId;
-                                    stats = rep.avatarStats;
-                                }
-
-                                ConnectionSender.SendPlayerCatchup(data.longId, id, barcode, stats);
+                        // Now we send all of our other players to the new player
+                        foreach (var id in PlayerIdManager.PlayerIds) {
+                            var barcode = CommonBarcodes.INVALID_AVATAR_BARCODE;
+                            SerializedAvatarStats stats = new SerializedAvatarStats();
+                            if (id.SmallId == 0) {
+                                barcode = RigData.RigAvatarId;
+                                stats = RigData.RigAvatarStats;
                             }
+                            else if (PlayerRepManager.TryGetPlayerRep(id.SmallId, out var rep)) {
+                                barcode = rep.avatarId;
+                                stats = rep.avatarStats;
+                            }
+
+                            ConnectionSender.SendPlayerCatchup(data.longId, id, barcode, stats);
                         }
 
-                        if (canSendLevelInfo)
-                        {
-                            canSendLevelInfo = false;
+                        // Now, make sure the player loads into the scene
+                        LoadSender.SendLevelLoad(FusionSceneManager.Barcode, data.longId);
 
-                            // Now, make sure the player loads into the scene
-                            LoadSender.SendLevelLoad(FusionSceneManager.Barcode, data.longId);
-                        }
+                        // Send the dynamics list
+                        using (var writer = FusionWriter.Create()) {
+                            using (var assignData = DynamicsAssignData.Create()) {
+                                writer.Write(assignData);
 
-                        if (canSendDynamicData)
-                        {
-                            canSendDynamicData = false;
-
-                            // Send the dynamics list
-                            using (var writer = FusionWriter.Create())
-                            {
-                                using (var assignData = DynamicsAssignData.Create())
-                                {
-                                    writer.Write(assignData);
-
-                                    using (var message = FusionMessage.Create(NativeMessageTag.DynamicsAssignment, writer))
-                                    {
-                                        MessageSender.SendFromServer(data.longId, NetworkChannel.Reliable, message);
-                                    }
+                                using (var message = FusionMessage.Create(NativeMessageTag.DynamicsAssignment, writer)) {
+                                    MessageSender.SendFromServer(data.longId, NetworkChannel.Reliable, message);
                                 }
                             }
                         }
 
-                        if (canSendServerSettings)
-                        {
-                            canSendServerSettings = false;
+                        // Send the active server settings
+                        FusionPreferences.SendServerSettings(data.longId);
 
-                            // Send the active server settings
-                            FusionPreferences.SendServerSettings(data.longId);
-                        }
-
-                        if (canSendCatchup)
-                        {
-                            canSendCatchup = false;
-
-                            // SERVER CATCHUP
-                            // Start to catch them up on the server
-                            // Catchup the user on synced objects
-                            foreach (var syncable in SyncManager.Syncables)
-                            {
-                                try
-                                {
-                                    syncable.Value.InvokeCatchup(data.longId);
-                                }
-                                catch (Exception e)
-                                {
-                                    FusionLogger.LogException("sending catchup for syncable", e);
-                                }
+                        // SERVER CATCHUP
+                        // Start to catch them up on the server
+                        // Catchup the user on synced objects
+                        foreach (var syncable in SyncManager.Syncables) {
+                            try {
+                                syncable.Value.InvokeCatchup(data.longId);
                             }
-
-                            // Catchup hooked events
-                            MultiplayerHooking.Internal_OnPlayerCatchup(data.longId);
+                            catch (Exception e) {
+                                FusionLogger.LogException("sending catchup for syncable", e);
+                            }
                         }
+
+                        // Catchup hooked events
+                        MultiplayerHooking.Internal_OnPlayerCatchup(data.longId);
                     }
                 }
             }
-        }
-
-        private void PlayerJoined(RigManager rig)
-        {
-            canHandleConnectionRequest = true;
-            canSendLevelInfo = true;
-            canSendPlayers = true;
-            canSendPlayer = true;
-            canSendDynamicData = true;
-            canSendCatchup = true;
-            canSendServerSettings = true;
-
-            MultiplayerHooking.OnPlayerRepCreated -= PlayerJoined;
         }
     }
 }

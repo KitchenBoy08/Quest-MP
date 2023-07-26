@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 using UnityEngine.UIElements;
 using System.Net;
 using MelonLoader;
+using BoneLib;
+using UnityEngine.Networking;
+using System.IO;
+
 
 //Thank GOD for ChatGPT!
 
@@ -49,19 +53,38 @@ namespace LabFusion.IPSafety
             string apiUrl = "https://api.ipify.org"; // API endpoint for retrieving public IP
             string result = string.Empty;
 
-            try
+            if (!HelperMethods.IsAndroid())
             {
-                using (WebClient client = new WebClient())
-                {
-                    result = client.DownloadString(apiUrl);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                MelonLogger.Msg("An error occurred while retrieving the public IP: " + ex.Message);
-            }
 
-            return result.Trim(); // Trim any whitespace characters
+                try
+                {
+                    using (WebClient client = new WebClient())
+                    {
+                        result = client.DownloadString(apiUrl);
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    MelonLogger.Msg("An error occurred while retrieving the public IP: " + ex.Message);
+                }
+
+                return result.Trim(); // Trim any whitespace characters
+            }
+            else
+            {
+
+                WebRequest request = WebRequest.Create(apiUrl);
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+                Stream dataStream = response.GetResponseStream();
+
+                using StreamReader reader = new StreamReader(dataStream);
+
+                var ip = reader.ReadToEnd();
+                reader.Close();
+
+                return ip;
+            }
         }
     }
 }

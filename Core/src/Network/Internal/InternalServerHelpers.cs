@@ -1,40 +1,39 @@
-﻿using LabFusion.Preferences;
-using LabFusion.Representation;
-using LabFusion.SDK.Gamemodes;
-using LabFusion.SDK.Points;
+﻿using LabFusion.Representation;
 using LabFusion.Syncables;
 using LabFusion.Utilities;
-using MelonLoader;
-using SLZ.Marrow.SceneStreaming;
+using LabFusion.Preferences;
+using LabFusion.BoneMenu;
+using LabFusion.SDK.Gamemodes;
+using LabFusion.SDK.Points;
+
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 using UnityEngine;
 
-namespace LabFusion.Network
-{
+using SLZ.Marrow.SceneStreaming;
+using LabFusion.SDK.Achievements;
+using BoneLib;
+
+namespace LabFusion.Network {
     /// <summary>
     /// Internal class used for cleaning up servers, executing events on disconnect, etc.
     /// </summary>
-    internal static class InternalServerHelpers
-    {
-        private static void DisposeUser(PlayerId id)
-        {
-            if (id != null)
-            {
+    internal static class InternalServerHelpers {
+        private static void DisposeUser(PlayerId id) {
+            if (id != null) {
                 if (PlayerRepManager.TryGetPlayerRep(id.SmallId, out var rep))
-                {
-                    rep?.Dispose();
-                }
+                    rep.Dispose();
 
                 id.Dispose();
             }
         }
 
-        private static void DisposeUsers()
-        {
-            foreach (var id in PlayerIdManager.PlayerIds?.ToList())
-            {
+        private static void DisposeUsers() {
+            foreach (var id in PlayerIdManager.PlayerIds.ToList()) {
                 DisposeUser(id);
             }
         }
@@ -42,11 +41,10 @@ namespace LabFusion.Network
         /// <summary>
         /// Initializes information about the server, such as module types.
         /// </summary>
-        internal static void OnStartServer()
-        {
+        internal static void OnStartServer() {
             // Create local id
             var id = new PlayerId(PlayerIdManager.LocalLongId, 0, GetInitialMetadata(), GetInitialEquippedItems());
-            id?.Insert();
+            id.Insert();
             PlayerIdManager.ApplyLocalId();
 
             // Register module message handlers so they can send messages
@@ -60,30 +58,19 @@ namespace LabFusion.Network
             // Update hooks
             MultiplayerHooking.Internal_OnStartServer();
 
-            // Grab IP
-            string publicIP = IPSafety.IPSafety.GetPublicIP();
-
-            // Encode IP
-            string serverCode = IPSafety.IPSafety.EncodeIPAddress(publicIP);
-
-            string startServerMessage;
-            if (NetworkLayerDeterminer.LoadedType == NetworkLayerType.RIPTIDE)
-            {
-                startServerMessage = $"Code: {serverCode}";
-            }
-            else
-            {
-                startServerMessage = "Started a server!";
-            }
-
             // Send a notification
             FusionNotifier.Send(new FusionNotification()
             {
                 title = "Started Server",
-                message = startServerMessage,
+                message = "Started a server!",
                 isMenuItem = false,
                 isPopup = true,
+                type = NotificationType.SUCCESS,
             });
+
+            // Unlock achievement
+            if (AchievementManager.TryGetAchievement<HeadOfHouse>(out var achievement))
+                achievement.IncrementTask();
 
             // Reload the scene
             SceneStreamer.Reload();
@@ -92,8 +79,7 @@ namespace LabFusion.Network
         /// <summary>
         /// Called when the user joins a server.
         /// </summary>
-        internal static void OnJoinServer()
-        {
+        internal static void OnJoinServer() {
             // Send settings
             FusionPreferences.SendClientSettings();
 
@@ -107,14 +93,18 @@ namespace LabFusion.Network
                 message = "Joined a server!",
                 isMenuItem = false,
                 isPopup = true,
+                type = NotificationType.SUCCESS,
             });
+
+            // Unlock achievement
+            if (AchievementManager.TryGetAchievement<WarmWelcome>(out var achievement))
+                achievement.IncrementTask();
         }
 
         /// <summary>
         /// Cleans up the scene from all users. ONLY call this from within a network layer!
         /// </summary>
-        internal static void OnDisconnect(string reason = "")
-        {
+        internal static void OnDisconnect(string reason = "") {
             // Cleanup gamemodes
             GamemodeRegistration.ClearGamemodeTable();
             ModuleMessageHandler.ClearHandlerTable();
@@ -131,8 +121,7 @@ namespace LabFusion.Network
             MultiplayerHooking.Internal_OnDisconnect();
 
             // Send a notification
-            if (string.IsNullOrWhiteSpace(reason))
-            {
+            if (string.IsNullOrWhiteSpace(reason)) {
                 FusionNotifier.Send(new FusionNotification()
                 {
                     title = "Disconnected from Server",
@@ -141,8 +130,7 @@ namespace LabFusion.Network
                     isPopup = true,
                 });
             }
-            else
-            {
+            else {
                 FusionNotifier.Send(new FusionNotification()
                 {
                     title = "Disconnected from Server",
@@ -150,6 +138,7 @@ namespace LabFusion.Network
                     isMenuItem = true,
                     isPopup = true,
                     popupLength = 5f,
+                    type = NotificationType.WARNING,
                 });
             }
         }
@@ -158,8 +147,7 @@ namespace LabFusion.Network
         /// Updates information about the new user.
         /// </summary>
         /// <param name="id"></param>
-        internal static void OnUserJoin(PlayerId id, bool isInitialJoin)
-        {
+        internal static void OnUserJoin(PlayerId id, bool isInitialJoin) {
             // Send client info
             FusionPreferences.SendClientSettings();
 
@@ -170,8 +158,7 @@ namespace LabFusion.Network
             MultiplayerHooking.Internal_OnPlayerJoin(id);
 
             // Send notification
-            if (isInitialJoin && id?.TryGetDisplayName(out var name) == true)
-            {
+            if (isInitialJoin && id.TryGetDisplayName(out var name)) {
                 FusionNotifier.Send(new FusionNotification()
                 {
                     title = $"{name} Join",
@@ -186,8 +173,7 @@ namespace LabFusion.Network
         /// Cleans up a single user after they have left.
         /// </summary>
         /// <param name="longId"></param>
-        internal static void OnUserLeave(ulong longId)
-        {
+        internal static void OnUserLeave(ulong longId) {
             var playerId = PlayerIdManager.GetPlayerId(longId);
 
             // Make sure the player exists in our game
@@ -195,8 +181,7 @@ namespace LabFusion.Network
                 return;
 
             // Send notification
-            if (playerId.TryGetDisplayName(out var name))
-            {
+            if (playerId.TryGetDisplayName(out var name)) {
                 FusionNotifier.Send(new FusionNotification()
                 {
                     title = $"{name} Leave",
@@ -215,8 +200,7 @@ namespace LabFusion.Network
         /// Gets the default metadata for the local player.
         /// </summary>
         /// <returns></returns>
-        internal static Dictionary<string, string> GetInitialMetadata()
-        {
+        internal static Dictionary<string, string> GetInitialMetadata() {
             // Create the dict
             var metadata = new Dictionary<string, string> {
                 // Username
@@ -226,7 +210,10 @@ namespace LabFusion.Network
                 { MetadataHelper.NicknameKey, PlayerIdManager.LocalNickname },
 
                 // Permission
-                { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() }
+                { MetadataHelper.PermissionKey, NetworkInfo.IsServer ? PermissionLevel.OWNER.ToString() : PermissionLevel.DEFAULT.ToString() },
+
+                // Platform
+                { MetadataHelper.PlatformKey, HelperMethods.IsAndroid() ? "QUEST" : "PC" }
             };
 
             return metadata;
@@ -236,13 +223,11 @@ namespace LabFusion.Network
         /// Gets the default list of equipped items.
         /// </summary>
         /// <returns></returns>
-        internal static List<string> GetInitialEquippedItems()
-        {
+        internal static List<string> GetInitialEquippedItems() {
             List<string> list = new List<string>();
 
-            foreach (var item in PointItemManager.LoadedItems)
-            {
-                if (item?.IsEquipped == true)
+            foreach (var item in PointItemManager.LoadedItems) {
+                if (item.IsEquipped)
                     list.Add(item.Barcode);
             }
 

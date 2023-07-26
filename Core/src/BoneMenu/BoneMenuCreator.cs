@@ -1,12 +1,9 @@
-﻿using BoneLib;
-using BoneLib.BoneMenu.Elements;
+﻿using BoneLib.BoneMenu.Elements;
 using LabFusion.Extensions;
 using LabFusion.Network;
 using LabFusion.Preferences;
 using LabFusion.Representation;
 using LabFusion.Senders;
-using LabFusion.IPSafety;
-using LabFusion.Core.src;
 
 using System;
 using System.Collections.Generic;
@@ -16,9 +13,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using UnityEngine;
-using UnityEngine.Playables;
-using System.Web.Services.Description;
-using Steamworks;
 
 namespace LabFusion.BoneMenu
 {
@@ -99,27 +93,12 @@ namespace LabFusion.BoneMenu
             string currentValue = pref.GetValue();
             var display = category.CreateFunctionElement(string.IsNullOrWhiteSpace(currentValue) ? $"No {name}" : $"{name}: {currentValue}", Color.white, null);
             var pasteButton = category.CreateFunctionElement($"Paste {name}", Color.white, () => {
-                {
-                    
-                    if (HelperMethods.IsAndroid())
-                    {
-                        string name = FusionPreferences.ClientSettings.Nickname;
-                        pref.SetValue(name);
-                    }
-                    else
-                    {
-                        if (!System.Windows.Forms.Clipboard.ContainsText())
-                            return;
-                        else
-                        {
-                            var text = System.Windows.Forms.Clipboard.GetText();
-                            text = text.LimitLength(maxLength);
-                            pref.SetValue(text);
-                        }
-                    }
-                }
+                if (!Clipboard.ContainsText())
+                    return;
 
-
+                var text = Clipboard.GetText();
+                text = text.LimitLength(maxLength);
+                pref.SetValue(text);
             });
             var resetButton = category.CreateFunctionElement($"Reset {name}", Color.white, () => {
                 pref.SetValue("");
@@ -131,6 +110,5 @@ namespace LabFusion.BoneMenu
                 onValueChanged?.Invoke(v);
             };
         }
-
     }
 }

@@ -24,95 +24,52 @@ namespace LabFusion.Network
         }
 
         internal static void OnLateInitializeLayer() {
-            if (CurrentNetworkLayer == null)
-            {
-            } else
-            {
+            if (CurrentNetworkLayer != null)
                 CurrentNetworkLayer.OnLateInitializeLayer();
-            }
         }
 
         internal static void OnCleanupLayer() {
-            if (CurrentNetworkLayer == null)
-            {
-            }
-            else
-            {
+            if (CurrentNetworkLayer != null)
                 CurrentNetworkLayer.OnCleanupLayer();
 
-                CurrentNetworkLayer = null;
-            }
+            CurrentNetworkLayer = null;
         }
 
         internal static void OnUpdateLayer() {
-            if (CurrentNetworkLayer == null)
-            {
-            }
-            else
-            {
+            if (CurrentNetworkLayer != null)
                 CurrentNetworkLayer.OnUpdateLayer();
-            }
         }
 
         internal static void OnLateUpdateLayer() {
-            if (CurrentNetworkLayer == null)
-            {
-            }
-            else
-            {
+            if (CurrentNetworkLayer != null)
                 CurrentNetworkLayer.OnLateUpdateLayer();
-            }
         }
 
         internal static void OnGUILayer() {
-            if (CurrentNetworkLayer == null)
-            {
-            }
-            else
-            {
+            if (CurrentNetworkLayer != null)
                 CurrentNetworkLayer.OnGUILayer();
-            }
         }
 
         internal static void OnVoiceChatUpdate()
         {
-            if (CurrentNetworkLayer == null)
-            {
-            }
-            else
-            {
+            if (CurrentNetworkLayer != null)
                 CurrentNetworkLayer.OnVoiceChatUpdate();
-            }
         }
 
         internal static void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
         {
-            if (CurrentNetworkLayer == null)
-            {
-            }
-            else
-            {
+            if (CurrentNetworkLayer != null)
                 CurrentNetworkLayer.OnVoiceBytesReceived(id, bytes);
-            }
         }
 
         internal static void OnSetupBoneMenuLayer(MenuCategory category) {
-            if (CurrentNetworkLayer == null)
-            {
-            } else
-            {
+            if (CurrentNetworkLayer != null)
                 CurrentNetworkLayer.OnSetupBoneMenu(category);
-            }
         }
 
         internal static void OnUserJoin(PlayerId id) {
-            if (CurrentNetworkLayer == null)
-            {
-            }
-            else
-            {
+            if (CurrentNetworkLayer != null)
                 CurrentNetworkLayer.OnUserJoin(id);
-            }
         }
     }
 }

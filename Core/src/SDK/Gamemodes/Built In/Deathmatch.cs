@@ -249,7 +249,7 @@ namespace LabFusion.SDK.Gamemodes {
             _oneMinuteLeft = false;
 
             // Invoke player changes on level load
-            FusionSceneManager.HookOnLevelLoad(() => {
+            FusionSceneManager.HookOnTargetLevelLoad(() => {
                 // Force mortality
                 FusionPlayer.SetMortality(true);
 
@@ -410,18 +410,6 @@ namespace LabFusion.SDK.Gamemodes {
                     int bitReward = GetRewardedBits();
 
                     if (bitReward > 0) {
-                        FusionNotifier.Send(new FusionNotification() {
-                            title = "Bits Rewarded",
-                            showTitleOnPopup = true,
-
-                            message = $"You Won {bitReward} Bits",
-
-                            popupLength = 3f,
-
-                            isMenuItem = false,
-                            isPopup = true,
-                        });
-
                         PointItemManager.RewardBits(bitReward);
                     }
                     break;

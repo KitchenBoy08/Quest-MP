@@ -20,24 +20,27 @@ using UnityEngine;
 
 using LabFusion.SDK.Gamemodes;
 using LabFusion.SDK.Points;
-using BoneLib;
-using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using LabFusion.SDK.Achievements;
+using LabFusion.Patching;
 
 namespace LabFusion
 {
     public struct FusionVersion
     {
         public const byte versionMajor = 1;
-        public const byte versionMinor = 4;
-        public const short versionPatch = 1;
+        public const byte versionMinor = 5;
+        public const short versionPatch = 0;
     }
 
     public class FusionMod : MelonMod {
         public const string Name = "TideFusion";
-        public const string Author = "Lakatrazz, EverythingOnArm and KitchenBoy";
+        public const string Author = "Everythingonarm and KitchenBoy";
         public static readonly Version Version = new(FusionVersion.versionMajor, FusionVersion.versionMinor, FusionVersion.versionPatch);
 
         public static string Changelog { get; internal set; } = null;
+
+        public static string[] Credits { get; internal set; } = null;
 
         /// <summary>
         /// The desired networking layer. Swap this out to change the networking system.
@@ -48,6 +51,8 @@ namespace LabFusion
         public static Assembly FusionAssembly { get; private set; }
 
         private static int _nextSyncableSendRate = 1;
+
+        private static bool _hasAutoUpdater = false;
 
         public override void OnEarlyInitializeMelon() {
             Instance = this;
@@ -67,6 +72,8 @@ namespace LabFusion
             PointItemManager.Internal_HookAssemblies();
 
             PlayerAdditionsHelper.OnInitializeMelon();
+
+            VoteKickHelper.Internal_OnInitializeMelon();
         }
 
         public override void OnInitializeMelon() {
@@ -86,8 +93,11 @@ namespace LabFusion
             PropExtenderManager.RegisterExtendersFromAssembly(FusionAssembly);
             GamemodeRegistration.LoadGamemodes(FusionAssembly);
             PointItemManager.LoadItems(FusionAssembly);
+            AchievementManager.LoadAchievements(FusionAssembly);
 
             SyncManager.OnInitializeMelon();
+
+            FusionPopupManager.OnInitializeMelon();
 
             // Create prefs
             FusionPreferences.OnInitializePreferences();
@@ -97,10 +107,10 @@ namespace LabFusion
 
             // Load network layer type
             ActiveNetworkingType = NetworkLayerDeterminer.GetLoadedType();
-            FusionLogger.Log($"Loaded Networking Layer: {ActiveNetworkingType.Name}");
 
             // Finally, initialize the network layer
             OnInitializeNetworking();
+
 #if DEBUG
             FusionUnityLogger.OnInitializeMelon();
 #endif
@@ -112,6 +122,24 @@ namespace LabFusion
             PersistentAssetCreator.OnLateInitializeMelon();
 
             FusionPreferences.OnCreateBoneMenu();
+
+            // Check if the auto updater is installed
+            _hasAutoUpdater = MelonPlugin.RegisteredMelons.Any((p) => p.Info.Name.Contains("LabFusion Updater"));
+
+            if (!_hasAutoUpdater && !BoneLib.HelperMethods.IsAndroid()) {
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    isMenuItem = false,
+                    isPopup = true,
+                    message = "You do not have the Fusion Autoupdater installed in your plugins folder!" +
+                    "\nIt is recommended to install it in order to stay up to date.",
+                    type = NotificationType.WARNING,
+                });
+
+#if DEBUG
+                FusionLogger.Warn("The player does not have the auto updater installed.");
+#endif
+            }
         }
 
         protected void OnInitializeNetworking() {
@@ -128,15 +156,16 @@ namespace LabFusion
             }
 
             // Create the network layer based on the selected type
-            var layer = Activator.CreateInstance(ActiveNetworkingType) as NetworkLayer;
-
             // Then, set the layer
+            var layer = Activator.CreateInstance(ActiveNetworkingType) as NetworkLayer;
             InternalLayerHelpers.SetLayer(layer);
         }
 
         public override void OnDeinitializeMelon() {
             // Cleanup networking
             InternalLayerHelpers.OnCleanupLayer();
+
+            VoteKickHelper.Internal_OnDeinitializeMelon();
 
             // Backup files
             FusionFileLoader.OnDeinitializeMelon();
@@ -165,7 +194,6 @@ namespace LabFusion
             
 #if DEBUG
             FusionLogger.Log($"Main scene {sceneName} was initialized.");
-            FusionLogger.Log($"Networking layer is {NetworkLayerDeterminer.GetLoadedType()}");
 #endif
             // Fix random static grips in the scene
             StaticGripFixer.OnMainSceneInitialized();
@@ -174,6 +202,7 @@ namespace LabFusion
             SyncManager.OnCleanup();
             RigData.OnCacheRigInfo();
             PersistentAssetCreator.OnMainSceneInitialized();
+            ConstrainerUtilities.OnMainSceneInitialized();
 
             // Create player reps
             PlayerRep.OnRecreateReps();
@@ -215,8 +244,8 @@ namespace LabFusion
             // Store rig info/update avatars
             RigData.OnRigUpdate();
 
-            // Update notifications
-            FusionNotifier.OnUpdate();
+            // Update popups
+            FusionPopupManager.OnUpdate();
 
             // Send players based on player count
             int playerSendRate = SendRateTable.GetPlayerSendRate();
@@ -249,6 +278,9 @@ namespace LabFusion
 
             // Update gamemodes
             GamemodeManager.Internal_OnUpdate();
+
+            // Update delayed events at the very end of the frame
+            DelayUtilities.Internal_OnUpdate();
         }
 
         public override void OnFixedUpdate() {

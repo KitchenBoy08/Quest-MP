@@ -1,15 +1,8 @@
-# BONELAB TideFusion
-This mod is a fork of Fusion with the inclusion of a new networking layer, Riptide!
-Whilst official Fusion on Quest uses a proxy in order to have steam networking on the quest, not all of the networking is done natively. Riptide uses straight Peer to Peer networking in order to be fully native on the Quest!
-
-## Progress on The Mod
-You can see all progress on the mod at: 
-https://trello.com/b/IEXzs0C2/quest-fusion-progress
-
+# BONELAB Fusion Release
+A multiplayer mod for BONELAB featuring support for Oculus and SteamVR.
+This is currently only for PCVR platforms. [You can view a basic installation guide here.](INSTALLATION.md)
 ## Networking
-Available networking systems:
-- Steam networking
-- Riptide networking (Peer to Peer)
+This mod is networked and built around Steam, but the networking system can be swapped out using a Networking Layer.
 
 ## Modules
 Fusion supports a system called "Modules". This allows other code mods to addon and sync their own events in Fusion.
@@ -30,9 +23,12 @@ The module example can be found here:
 https://github.com/Lakatrazz/Fusion-Module-Example
 
 ## Credits
-- EverythingOnArm: For most of the actual networking (Should get like 70% of the credit for this port).
-- Lakatrazz: For developing Fusion itself and creating an AWESOME network layer system.
-- KitchenBoy: Port lead/worked on some of the extra things like IP Encoding.
+- BoneLib AutoUpdater: https://github.com/yowchap/BoneLib
+- Testing/Development Credits In Game
+
+## Licensing
+- The source code of [Facepunch.Steamworks](https://github.com/Facepunch/Facepunch.Steamworks) is included under the MIT License. The full license can be found [here](https://github.com/Facepunch/Facepunch.Steamworks/blob/master/LICENSE).
+- The source code of [LiteNetLib](https://github.com/RevenantX/LiteNetLib) is included under the MIT License. The full license can be found [here](https://github.com/RevenantX/LiteNetLib/blob/master/LICENSE.txt).
 
 ## Setting up the Source Code
 1. Clone the git repo into a folder
@@ -43,5 +39,4 @@ https://github.com/Lakatrazz/Fusion-Module-Example
 
 ## Disclaimer
 
-#### THIS PORT IS NOT OFFICIALLY MAINTAINED BY LAKATRAZZ OR ENDORCED BY HIM, DO NOT BUG HIM ABOUT ANY ISSUES YOU MAY HAVE WITH THIS VERSION.
-#### THIS MOD IN GENERAL IS NOT AFFILIATED IN ANY WAY WITH SLZ OR ANY OTHER MOD/GAME DEVELOPERS
+#### THIS PROJECT IS NOT AFFILIATED WITH ANY OTHER MULTIPLAYER MODS OR STRESS LEVEL ZERO! This is its own standalone mod and shares no code with others, any similarities are coincidental!

@@ -231,12 +231,35 @@ namespace LabFusion.Network
             RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
 #endif
 
-            if (FusionPreferences.ClientSettings.Nickname == null && HelperMethods.IsAndroid())
+            if (FusionPreferences.ClientSettings.Nickname != null && FusionPreferences.ClientSettings.Nickname.ToString().Contains("(Quest)") || FusionPreferences.ClientSettings.Nickname.ToString().Contains("(PC)"))
             {
-                FusionPreferences.ClientSettings.Nickname.SetValue("Player (Quest)");
-            } else if (FusionPreferences.ClientSettings.Nickname == null && !HelperMethods.IsAndroid())
+                PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
+            }
+            else if (FusionPreferences.ClientSettings.Nickname != null && !FusionPreferences.ClientSettings.Nickname.ToString().Contains("(Quest)") && !FusionPreferences.ClientSettings.Nickname.ToString().Contains("(PC)"))
             {
-                FusionPreferences.ClientSettings.Nickname.SetValue("Player (PC)");
+                if (HelperMethods.IsAndroid())
+                {
+                    FusionPreferences.ClientSettings.Nickname.SetValue($"{FusionPreferences.ClientSettings.Nickname.GetValue()} (Quest)");
+                    PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
+                }
+                else
+                {
+                    FusionPreferences.ClientSettings.Nickname.SetValue($"{FusionPreferences.ClientSettings.Nickname.GetValue()} (PC)");
+                    PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
+                }
+            }
+            else
+            {
+                if (HelperMethods.IsAndroid())
+                {
+                    FusionPreferences.ClientSettings.Nickname.SetValue("Player (Quest)");
+                    PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
+                }
+                else
+                {
+                    FusionPreferences.ClientSettings.Nickname.SetValue("Player  (PC)");
+                    PlayerIdManager.SetUsername(FusionPreferences.ClientSettings.Nickname);
+                }
             }
 
             FusionLogger.Log("Initialized Riptide Layer");
@@ -271,43 +294,13 @@ namespace LabFusion.Network
 
         public void ConnectToServer(string ip)
         {
-            if (ip.Contains("."))
-            {
-                currentclient.Connected += OnConnect;
-                // Leave existing server
-                if (IsClient || IsServer)
-                    Disconnect();
 
-                currentclient.Connect(ip + ":7777");
+            currentclient.Connected += OnConnect;
+            // Leave existing server
+            if (IsClient || IsServer)
+                Disconnect();
 
-                string encodedIp = IPSafety.IPSafety.EncodeIPAddress(ip);
-
-                List<string> currentCodes = FusionPreferences.ClientSettings.RecentCodes.GetValue();
-                if (!currentCodes.Contains(ip))
-                {
-                    currentCodes.Add(ip);
-
-                    FusionPreferences.ClientSettings.RecentCodes.SetValue(currentCodes);
-                }
-            } else
-            {
-                string decodedIp = IPSafety.IPSafety.DecodeIPAddress(ip);
-
-                currentclient.Connected += OnConnect;
-                // Leave existing server
-                if (IsClient || IsServer)
-                    Disconnect();
-
-                currentclient.Connect(decodedIp + ":7777");
-
-                List<string> currentCodes = FusionPreferences.ClientSettings.RecentCodes.GetValue();
-                if (!currentCodes.Contains(ip))
-                {
-                    currentCodes.Add(ip);
-
-                    FusionPreferences.ClientSettings.RecentCodes.SetValue(currentCodes);
-                }
-            }
+            currentclient.Connect(ip + ":7777");
         }
 
         private void OnConnect(object sender, EventArgs e)
@@ -400,7 +393,6 @@ namespace LabFusion.Network
         // Matchmaking menu
         private MenuCategory _serverInfoCategory;
         private MenuCategory _manualJoiningCategory;
-        private MenuCategory _recentCodeMenu;
 
         private void CreateMatchmakingMenu(MenuCategory category)
         {
@@ -414,10 +406,6 @@ namespace LabFusion.Network
             // Manual joining
             _manualJoiningCategory = matchmaking.CreateCategory("Manual Joining", Color.white);
             CreateManualJoiningMenu(_manualJoiningCategory);
-
-            // Recent Joined Menu
-            _recentCodeMenu = matchmaking.CreateCategory("Recent Servers", Color.white);
-            CreateServerCodeMenu(_recentCodeMenu);
         }
 
         private FunctionElement _targetServerElement;
@@ -440,57 +428,6 @@ namespace LabFusion.Network
                     category.CreateFunctionElement($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode.GetValue()}", Color.green, OnClickJoinServer);
                 }
             }
-        }
-
-        public string _selectedServerCode;
-        private void CreateServerCodeMenu(MenuCategory category)
-        {
-            category.CreateFunctionElement("Clear Codes", Color.red, OnResetCodes);
-
-            if (_selectedServerCode != null)
-            {
-                category.CreateFunctionElement($"Join Code: {_selectedServerCode}", Color.green, OnJoinCode);
-            } else
-            {
-                category.CreateSubPanel("Select a Code!", Color.red);
-            }
-
-            for (int i = 0; i < FusionPreferences.ClientSettings.RecentCodes.GetValue().Count; i++)
-            {
-                category.CreateFunctionElement($"Select Code: {FusionPreferences.ClientSettings.RecentCodes.GetValue()[i]}", Color.white, () => OnSelectCode(FusionPreferences.ClientSettings.RecentCodes.GetValue()[i]));
-            }
-        }
-
-        private void OnJoinCode()
-        {
-            if (_selectedServerCode != null)
-            {
-                ConnectToServer(_selectedServerCode);
-            } else
-            {
-                FusionNotifier.Send(new FusionNotification()
-                {
-                    title = "Code is Null",
-                    showTitleOnPopup = true,
-                    isMenuItem = false,
-                    isPopup = true,
-                    message = $"No code selected!",
-                    popupLength = 5f,
-                });
-            }
-        }
-
-        private void OnSelectCode(string serverCode)
-        {
-            _selectedServerCode = serverCode;
-
-            CreateServerCodeMenu(_recentCodeMenu);
-        }
-
-        private void OnResetCodes()
-        {
-            FusionPreferences.ClientSettings.RecentCodes.SetValue(null);
-            CreateServerCodeMenu(_recentCodeMenu);
         }
 
         private void OnClickCodeError()

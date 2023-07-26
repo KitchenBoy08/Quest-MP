@@ -63,6 +63,13 @@ namespace LabFusion.Representation
             return id == null || !id.IsValid;
         }
 
+        public bool HasEquipped(PointItem item) {
+            if (IsSelf)
+                return item.IsEquipped;
+            else
+                return EquippedItems.Contains(item.Barcode);
+        }
+
         public bool TrySetMetadata(string key, string value) {
             // If we are the server, we just accept the request
             // Otherwise, we make sure this is our PlayerId
@@ -75,11 +82,11 @@ namespace LabFusion.Representation
         }
 
         public bool TryGetMetadata(string key, out string value) {
-            return _internalMetadata.TryGetValue(key, out value);
+            return _internalMetadata.TryGetValueC(key, out value);
         }
 
         public string GetMetadata(string key) {
-            if (_internalMetadata.TryGetValue(key, out string value))
+            if (_internalMetadata.TryGetValueC(key, out string value))
                 return value;
 
             return null;

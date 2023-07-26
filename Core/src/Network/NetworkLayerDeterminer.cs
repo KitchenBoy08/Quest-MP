@@ -16,8 +16,10 @@ namespace LabFusion.Network {
     public enum NetworkLayerType {
         STEAM_VR = 0,
         SPACEWAR = 1,
-        RIPTIDE = 2,
-        EMPTY = 3,
+        EMPTY = 2,
+        PROXY_STEAM_VR = 3,
+        PROXY_SPACEWAR = 4,
+        RIPTIDE = 5,
     }
 
     public static class NetworkLayerDeterminer {
@@ -25,12 +27,9 @@ namespace LabFusion.Network {
 
         public static NetworkLayerType GetDefaultType() {
             if (HelperMethods.IsAndroid())
-            {
                 return NetworkLayerType.RIPTIDE;
-            } else
-            {
-                return NetworkLayerType.STEAM_VR;
-            }
+
+            return NetworkLayerType.STEAM_VR;
         }
 
         public static NetworkLayerType VerifyType(NetworkLayerType type) {
@@ -46,10 +45,14 @@ namespace LabFusion.Network {
                         return VerifyType(NetworkLayerType.EMPTY);
                     else
                         return NetworkLayerType.SPACEWAR;
-                case NetworkLayerType.RIPTIDE:
-                    return NetworkLayerType.RIPTIDE;
                 case NetworkLayerType.EMPTY:
                     return NetworkLayerType.EMPTY;
+                case NetworkLayerType.PROXY_STEAM_VR:
+                    return NetworkLayerType.PROXY_STEAM_VR;
+                case NetworkLayerType.PROXY_SPACEWAR:
+                    return NetworkLayerType.PROXY_SPACEWAR;
+                case NetworkLayerType.RIPTIDE:
+                    return NetworkLayerType.RIPTIDE;
             }
         }
 
@@ -60,15 +63,18 @@ namespace LabFusion.Network {
             LoadedType = type;
 
             switch (type) {
-                default: 
+                default:
                 case NetworkLayerType.STEAM_VR:
                     return typeof(SteamVRNetworkLayer);
                 case NetworkLayerType.SPACEWAR:
                     return typeof(SpacewarNetworkLayer);
-                case NetworkLayerType.RIPTIDE:
-                    return typeof(RiptideNetworkLayer);
                 case NetworkLayerType.EMPTY:
                     return typeof(EmptyNetworkLayer);
+                case NetworkLayerType.PROXY_STEAM_VR:
+                case NetworkLayerType.PROXY_SPACEWAR:
+                    return typeof(ProxyNetworkLayer);
+                case NetworkLayerType.RIPTIDE:
+                    return typeof(RiptideNetworkLayer);
             }
         }
     }
