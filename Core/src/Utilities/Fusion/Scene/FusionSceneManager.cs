@@ -1,4 +1,6 @@
-﻿using LabFusion.Network;
+﻿using BoneLib;
+using JetBrains.Annotations;
+using LabFusion.Network;
 using LabFusion.Patching;
 using LabFusion.Representation;
 using LabFusion.Senders;
@@ -61,7 +63,14 @@ namespace LabFusion.Utilities {
                 _isLoading = false;
 
                 FusionMod.OnMainSceneInitialized();
-                _prevLevelBarcode = Barcode;
+                if (Barcode != null)
+                {
+                    _prevLevelBarcode = Barcode;
+                } else
+                {
+                    LevelInfo levelInfo = new LevelInfo();
+                    _prevLevelBarcode = levelInfo.barcode;
+                }
 
                 LoadSender.SendLoadingState(false);
 

@@ -16,10 +16,10 @@ namespace LabFusion.Network {
     public enum NetworkLayerType {
         STEAM_VR = 0,
         SPACEWAR = 1,
-        EMPTY = 2,
-        PROXY_STEAM_VR = 3,
-        PROXY_SPACEWAR = 4,
-        RIPTIDE = 5,
+        PROXY_STEAM_VR = 2,
+        PROXY_SPACEWAR = 3,
+        RIPTIDE = 4,
+        EMPTY = 5,
     }
 
     public static class NetworkLayerDeterminer {

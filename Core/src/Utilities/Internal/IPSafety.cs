@@ -72,18 +72,7 @@ namespace LabFusion.IPSafety
             }
             else
             {
-
-                WebRequest request = WebRequest.Create(apiUrl);
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-                Stream dataStream = response.GetResponseStream();
-
-                using StreamReader reader = new StreamReader(dataStream);
-
-                var ip = reader.ReadToEnd();
-                reader.Close();
-
-                return ip;
+                return null;
             }
         }
     }

@@ -94,7 +94,7 @@ namespace LabFusion.Preferences {
             public static FusionPref<NetworkLayerType> NetworkLayerType { get; internal set; }
             public static FusionPref<int> ProxyPort { get; internal set; }
 
-            // QUEST/Riptide Code/IP
+            // QUEST/Riptide 
             public static FusionPref<string> ServerCode { get; internal set; }
 
             // Nametag settings
@@ -188,7 +188,7 @@ namespace LabFusion.Preferences {
             ClientSettings.NetworkLayerType = new FusionPref<NetworkLayerType>(prefCategory, "Network Layer Type", NetworkLayerDeterminer.GetDefaultType(), PrefUpdateMode.IGNORE);
             ClientSettings.ProxyPort = new FusionPref<int>(prefCategory, "Proxy Port", 28340, PrefUpdateMode.IGNORE);
 
-            // QUEST/Riptide Code/IP
+            // QUEST/Riptide 
             ClientSettings.ServerCode = new FusionPref<string>(prefCategory, "Server Code", $"PASTE SERVER CODE HERE", PrefUpdateMode.LOCAL_UPDATE);
 
             // Nametag
