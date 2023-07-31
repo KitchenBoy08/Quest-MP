@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 using LabFusion.Data;
 using LabFusion.Representation;
@@ -37,7 +37,7 @@ namespace LabFusion.Network
                     sendMode = MessageSendMode.Unreliable;
                     break;
                 case NetworkChannel.Reliable:
-                    sendMode = MessageSendMode.Reliable;
+                    sendMode = MessageSendMode.Unreliable;
                     break;
             }
             return sendMode;
@@ -65,58 +65,44 @@ namespace LabFusion.Network
         }
 
         //Add here some Bytes to Fusion Message thing, it'll be needed.
-        public static Riptide.Message PrepareMessage(FusionMessage fusionMessage, NetworkChannel channel)
+
+        public static Message PrepareMessage(FusionMessage fusionMessage, NetworkChannel channel)
         {
-            // Id is always 0 because a fusion message sent from riptide will always be in bytes
-            Riptide.Message message = Riptide.Message.Create(ConvertToSendMode(channel), 0);
-            message.Release();
-            message.AddBytes(FusionMessageToBytes(fusionMessage));
+            var message = Message.Create(ConvertToSendMode(channel), 0); // Create the message
+
+            message.Release(); // Make sure the message is empty before adding bytes
+
+            message.AddBytes(FusionMessageToBytes(fusionMessage)); // Add bytes
             return message;
         }
 
-        // Recieving Messages WIP
-        // This needs to handle a riptide message, which is its own thing
         [MessageHandler(0)]
         public static void HandleSomeMessageFromServer(Message message)
         {
-            try
+            unsafe
             {
-                unsafe
-                {
-                    int messageLength = message.WrittenLength;
+                int messageLength = message.WrittenLength;
 
-                    byte[] buffer = message.GetBytes();
-                    fixed (byte* messageBuffer = buffer)
-                    {
-                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength, false);
-                    }
+                byte[] buffer = message.GetBytes();
+                fixed (byte* messageBuffer = buffer)
+                {
+                    FusionMessageHandler.ReadMessage(messageBuffer, messageLength, false);
                 }
-            }
-            catch (Exception e)
-            {
-                FusionLogger.Error($"Failed reading message from Riptide Client with reason: {e.Message}");
             }
         }
 
         [MessageHandler(0)]
         private static void HandleSomeMessageFromClient(ushort riptideID, Message message)
         {
-            try
+            unsafe
             {
-                unsafe
-                {
-                    int messageLength = message.WrittenLength;
+                int messageLength = message.WrittenLength;
 
-                    byte[] buffer = message.GetBytes();
-                    fixed (byte* messageBuffer = buffer)
-                    {
-                        FusionMessageHandler.ReadMessage(messageBuffer, messageLength, true);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                FusionLogger.Error($"Failed reading message from Riptide Server with reason: {e.Message}");
+                byte[] buffer = message.GetBytes();
+                fixed (byte* messageBuffer = buffer)
+                {
+                    FusionMessageHandler.ReadMessage(messageBuffer, messageLength, true);
+               }
             }
         }
     }

@@ -55,8 +55,8 @@ namespace LabFusion.Network
         // AsyncCallbacks are bad!
         // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
         public const bool AsyncCallbacks = false;
-        Server currentserver { get; set; }
-        Client currentclient { get; set; }
+        public static Server currentserver { get; set; }
+        public static Client currentclient { get; set; }
         public static string publicIp;
 
         internal override bool IsServer => _isServerActive;
@@ -79,6 +79,7 @@ namespace LabFusion.Network
             RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
 #endif
             IPGetter.GetExternalIP(OnExternalIPAddressRetrieved);
+            PlayerIdManager.SetUsername("Riptide Enjoyer");
 
             FusionLogger.Log("Initialized Riptide Layer");
         }
@@ -168,7 +169,6 @@ namespace LabFusion.Network
 #if DEBUG
             FusionLogger.Log("SERVER START HOOKED");
 #endif
-
             //Update player id here just to be safe
             PlayerIdManager.SetLongId(currentclient.Id);
 
