@@ -47,33 +47,5 @@ namespace LabFusion.IPSafety
 
             return $"{part1}.{part2}.{part3}.{part4}";
         }
-
-        public static string GetPublicIP()
-        {
-            string apiUrl = "https://api.ipify.org"; // API endpoint for retrieving public IP
-            string result = string.Empty;
-
-            if (!HelperMethods.IsAndroid())
-            {
-
-                try
-                {
-                    using (WebClient client = new WebClient())
-                    {
-                        result = client.DownloadString(apiUrl);
-                    }
-                }
-                catch (System.Exception ex)
-                {
-                    MelonLogger.Msg("An error occurred while retrieving the public IP: " + ex.Message);
-                }
-
-                return result.Trim(); // Trim any whitespace characters
-            }
-            else
-            {
-                return null;
-            }
-        }
     }
 }

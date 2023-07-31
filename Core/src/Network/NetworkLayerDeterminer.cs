@@ -3,12 +3,13 @@
 using LabFusion.Data;
 using LabFusion.Debugging;
 using LabFusion.Preferences;
-
+using LabFusion.Utilities;
 using Steamworks;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -76,6 +77,39 @@ namespace LabFusion.Network {
                 case NetworkLayerType.RIPTIDE:
                     return typeof(RiptideNetworkLayer);
             }
+        }
+
+        public static void SetLoadedType(Type type)
+        {
+            Type activeLayer = GetLoadedType();
+            var layer = Activator.CreateInstance(activeLayer) as NetworkLayer;
+
+            var layerToLoad = Activator.CreateInstance(type) as NetworkLayer;
+
+            if (NetworkInfo.HasServer){
+                layer.Disconnect();
+            }
+
+            DeInitializeLayer(layer);
+            ReInitializeLayer(layerToLoad);
+        }
+
+        public static void DeInitializeLayer(NetworkLayer layer)
+        {
+            InternalLayerHelpers.OnCleanupLayer();
+            VoteKickHelper.Internal_OnDeinitializeMelon();
+            SteamAPILoader.OnFreeSteamAPI();
+
+            var fusionCategory = FusionPreferences.fusionCategory;
+            fusionCategory.Elements.Clear();
+        }
+
+        public static void ReInitializeLayer(NetworkLayer layer)
+        {
+            InternalLayerHelpers.SetLayer(layer);
+
+            InternalLayerHelpers.OnLateInitializeLayer();
+            InternalLayerHelpers.OnSetupBoneMenuLayer(FusionPreferences.fusionCategory);
         }
     }
 }

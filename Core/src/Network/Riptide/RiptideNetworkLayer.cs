@@ -43,6 +43,7 @@ using System.Drawing;
 using JetBrains.Annotations;
 using LabFusion.Core.src.Network.Riptide;
 using static LabFusion.IPSafety.IPSafety;
+using UnityEngine.Rendering.Universal;
 
 namespace LabFusion.Network
 {
@@ -56,6 +57,7 @@ namespace LabFusion.Network
         public const bool AsyncCallbacks = false;
         Server currentserver { get; set; }
         Client currentclient { get; set; }
+        public static string publicIp;
 
         internal override bool IsServer => _isServerActive;
 
@@ -76,22 +78,24 @@ namespace LabFusion.Network
 #if DEBUG
             RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
 #endif
+            IPGetter.GetExternalIP(OnExternalIPAddressRetrieved);
 
             FusionLogger.Log("Initialized Riptide Layer");
         }
 
-        internal override void OnLateInitializeLayer() {
-            if (HelperMethods.IsAndroid())
-                PlayerIdManager.SetUsername("Riptide User (QUEST)");
-            else
-                PlayerIdManager.SetUsername("Riptide User (PC)");
-
-            if (FusionPreferences.ClientSettings.Nickname.GetValue() == null)
+        private void OnExternalIPAddressRetrieved(string ipAddress)
+        {
+            if (!string.IsNullOrEmpty(ipAddress))
             {
-                FusionPreferences.ClientSettings.Nickname.SetValue($"Player");
+#if DEBUG
+                Debug.Log($"External IP address: {ipAddress}");
+#endif
+                publicIp = ipAddress;
             }
-
-            HookRiptideEvents();
+            else
+            {
+                Debug.LogError("Failed to retrieve external IP address.");
+            }
         }
 
         internal override void OnCleanupLayer() {
@@ -139,7 +143,6 @@ namespace LabFusion.Network
             var id = PlayerIdManager.GetPlayerId(userId);
             if (id != null)
                 SendFromServer(id.LongId, channel, message);
-
         }
 
         internal override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message) {
@@ -326,7 +329,7 @@ namespace LabFusion.Network
         }
 
         private void OnCopyServerCode() {
-            string ip = IPSafety.IPSafety.GetPublicIP();
+            string ip = publicIp;
             string encodedIP = IPSafety.IPSafety.EncodeIPAddress(ip);
 
             Clipboard.SetText(encodedIP);
@@ -338,37 +341,38 @@ namespace LabFusion.Network
             else if (currentclient.IsConnected == false)
                 _createServerElement.SetName("Create Server");
         }
-
+        public static FunctionElement _joinCodeElement;
         private FunctionElement _targetServerElement;
         private void CreateManualJoiningMenu(MenuCategory category) {
             if (!HelperMethods.IsAndroid()) {
                 category.CreateFunctionElement("Join Server", Color.green, OnClickJoinServer);
                 _targetServerElement = category.CreateFunctionElement($"Server ID: {_targetServerIP}", Color.white, null);
                 category.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerIP);
+                RiptideHelpers.CreateKeyboard(category, FusionPreferences.ClientSettings.ServerCode);
             }
             else {
                 if (FusionPreferences.ClientSettings.ServerCode == "PASTE SERVER CODE HERE") {
                     category.CreateFunctionElement("ERROR: CLICK ME", Color.red, OnClickCodeError);
                 }
                 else {
-                    category.CreateFunctionElement($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode.GetValue()}", Color.green, OnClickJoinServer);
+                    _joinCodeElement = category.CreateFunctionElement($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode.GetValue()}", Color.green, OnClickJoinServer);
                 }
+                RiptideHelpers.CreateKeyboard(category, FusionPreferences.ClientSettings.ServerCode);
             }
+        }
+        public static void OnSetCode(string code)
+        {
+            _joinCodeElement.SetName($"Join Server Code: {code}");
         }
 
         private void OnClickJoinServer() {
-            if (!HelperMethods.IsAndroid()) {
-                ConnectToServer(_targetServerIP);
+            string code = FusionPreferences.ClientSettings.ServerCode;
+            if (code.Contains(".")) {
+                ConnectToServer(code);
             }
             else {
-                string code = FusionPreferences.ClientSettings.ServerCode;
-                if (code.Contains(".")) {
-                    ConnectToServer(code);
-                }
-                else {
-                    string decodedIp = IPSafety.IPSafety.DecodeIPAddress(code);
-                    ConnectToServer(decodedIp);
-                }
+                string decodedIp = IPSafety.IPSafety.DecodeIPAddress(code);
+                ConnectToServer(decodedIp);
             }
         }
 
@@ -381,6 +385,7 @@ namespace LabFusion.Network
                     string serverCode = Clipboard.GetText();
 
                     if (serverCode.Contains(".")) {
+                        FusionPreferences.ClientSettings.ServerCode.SetValue(serverCode);
                         _targetServerIP = serverCode;
                         _targetServerElement.SetName($"Server ID: {serverCode}");
                     }
@@ -388,6 +393,7 @@ namespace LabFusion.Network
                         string decodedIP = IPSafety.IPSafety.DecodeIPAddress(serverCode);
                         _targetServerIP = decodedIP;
                         string encodedIP = IPSafety.IPSafety.EncodeIPAddress(decodedIP);
+                        FusionPreferences.ClientSettings.ServerCode.SetValue(encodedIP);
                         _targetServerElement.SetName($"Server ID: {encodedIP}");
                     }
                 }
@@ -466,7 +472,7 @@ namespace LabFusion.Network
 
         private void OnDisplayServerCode()
         {
-            string ip = IPSafety.IPSafety.GetPublicIP();
+            string ip = publicIp;
             string encodedIP = IPSafety.IPSafety.EncodeIPAddress(ip);
 
             FusionNotifier.Send(new FusionNotification()

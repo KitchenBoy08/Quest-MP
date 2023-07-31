@@ -51,15 +51,22 @@ namespace LabFusion.Senders {
                 }
             }
         }
-
         public static void SendConnectionRequest() {
             if (NetworkInfo.HasServer) {
-                using (FusionWriter writer = FusionWriter.Create()) {
-                    using (ConnectionRequestData data = ConnectionRequestData.Create(PlayerIdManager.LocalLongId, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats)) {
-                        writer.Write(data);
+                {
+                    using (FusionWriter writer = FusionWriter.Create())
+                    {
+                        using (ConnectionRequestData data = ConnectionRequestData.Create(PlayerIdManager.LocalLongId, FusionMod.Version, RigData.GetAvatarBarcode(), RigData.RigAvatarStats))
+                        {
+                            writer.Write(data);
 
-                        using (FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer)) {
-                            MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+                            using (FusionMessage message = FusionMessage.Create(NativeMessageTag.ConnectionRequest, writer))
+                            {
+                                MessageSender.BroadcastMessage(NetworkChannel.Reliable, message);
+#if DEBUG
+                                FusionLogger.Log("Sent Connection Request.");
+#endif
+                            }
                         }
                     }
                 }

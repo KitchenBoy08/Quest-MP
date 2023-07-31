@@ -17,6 +17,7 @@ using UnityEngine;
 using System.Runtime.CompilerServices;
 using Steamworks.Data;
 using Steamworks;
+using UnityEngine.UIElements;
 
 
 namespace LabFusion.Network
@@ -42,29 +43,32 @@ namespace LabFusion.Network
             return sendMode;
         }
 
-        public static byte[] FusionMessageToBytes (FusionMessage fusionMessage)
+        public unsafe static byte[] FusionMessageToBytes (FusionMessage fusionMessage)
         {
-            byte[] bytes = new byte[fusionMessage.Length];
-            try
-            {
-                for (int i = 0; i < fusionMessage.Length; i++)
-                {
-                     unsafe {bytes[i] = Marshal.ReadByte((IntPtr)fusionMessage.Buffer, i); }
-                }
-            }
-            catch (Exception e)
-            {
-                FusionLogger.Error($"Failed to convert message into bytes: {e}");
-            }
+            int length = fusionMessage.Length;
+            byte* buffer = fusionMessage.Buffer;
+
+            byte[] bytes = ConvertBytePointerToByteArray(buffer, length);
+
             return bytes;
         }
 
-        //Add here some Bytes to Fusion Message thing, it'll be needed.
+        public unsafe static byte[] ConvertBytePointerToByteArray(byte* bytePtr, int length)
+        {
+            // Create a new managed byte array
+            byte[] byteArray = new byte[length];
 
+            // Copy the data from the byte pointer to the byte array using Marshal.Copy
+            Marshal.Copy((IntPtr)bytePtr, byteArray, 0, length);
+
+            return byteArray;
+        }
+
+        //Add here some Bytes to Fusion Message thing, it'll be needed.
         public static Riptide.Message PrepareMessage(FusionMessage fusionMessage, NetworkChannel channel)
         {
-            //Id is always 0 because a fusion message sent from riptide will always be in bytes
-            Riptide.Message message = Riptide.Message.Create(RiptideHandler.ConvertToSendMode(channel), 0);
+            // Id is always 0 because a fusion message sent from riptide will always be in bytes
+            Riptide.Message message = Riptide.Message.Create(ConvertToSendMode(channel), 0);
             message.Release();
             message.AddBytes(FusionMessageToBytes(fusionMessage));
             return message;
@@ -90,7 +94,7 @@ namespace LabFusion.Network
             }
             catch (Exception e)
             {
-                FusionLogger.Error($"Failed reading message from Riptide server with reason: {e.Message}");
+                FusionLogger.Error($"Failed reading message from Riptide Client with reason: {e.Message}");
             }
         }
 
@@ -112,10 +116,8 @@ namespace LabFusion.Network
             }
             catch (Exception e)
             {
-                FusionLogger.Error($"Failed reading message from Riptide server with reason: {e.Message}");
+                FusionLogger.Error($"Failed reading message from Riptide Server with reason: {e.Message}");
             }
         }
-
     }
-    
 }
