@@ -260,6 +260,7 @@
     <Compile Include="Core\src\BoneMenu\BoneMenuCreator.cs" />
     <Compile Include="Core\src\BoneMenu\DebugCreator.cs" />
     <Compile Include="Core\src\BoneMenu\GamemodesCreator.cs" />
+    <Compile Include="Core\src\BoneMenu\KeyboardCreator.cs" />
     <Compile Include="Core\src\BoneMenu\LobbyCreator.cs" />
     <Compile Include="Core\src\BoneMenu\NotificationCreator.cs" />
     <Compile Include="Core\src\BoneMenu\BanListCreator.cs" />

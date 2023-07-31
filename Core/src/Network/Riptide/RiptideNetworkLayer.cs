@@ -42,8 +42,9 @@ using LabFusion.Patching;
 using System.Drawing;
 using JetBrains.Annotations;
 using LabFusion.Core.src.Network.Riptide;
-using static LabFusion.IPSafety.IPSafety;
+using LabFusion.IPSafety;
 using UnityEngine.Rendering.Universal;
+using LabFusion.Core.src.BoneMenu;
 
 namespace LabFusion.Network
 {
@@ -84,6 +85,13 @@ namespace LabFusion.Network
             FusionLogger.Log("Initialized Riptide Layer");
         }
 
+        internal override void OnLateInitializeLayer()
+        {
+            PlayerIdManager.SetUsername("Riptide Enjoyer");
+
+            HookRiptideEvents();
+        }
+
         private void OnExternalIPAddressRetrieved(string ipAddress)
         {
             if (!string.IsNullOrEmpty(ipAddress))
@@ -118,7 +126,7 @@ namespace LabFusion.Network
 
         internal override string GetUsername(ulong userId) {
             // Find a way to get nickname, this will do for testing
-            string Username = ("Player" + userId);
+            string Username = ("Riptide Enjoyer");
             return Username;
         }
 
@@ -199,6 +207,7 @@ namespace LabFusion.Network
 #if DEBUG
             FusionLogger.Log("SERVER CONNECT HOOKED");
 #endif
+            currentclient.Disconnected += OnClientDisconnect;
             // Update player ID here since it's determined on the Riptide Client ID
             PlayerIdManager.SetLongId(currentclient.Id);
 
@@ -210,6 +219,13 @@ namespace LabFusion.Network
             OnUpdateRiptideLobby();
 
             currentclient.Connected -= OnConnect;
+        }
+
+        private void OnClientDisconnect(object sender, Riptide.DisconnectedEventArgs disconnect)
+        {
+            Disconnect();
+
+            currentclient.Disconnected -= OnClientDisconnect;
         }
 
         internal override void Disconnect(string reason = "") {
@@ -348,7 +364,7 @@ namespace LabFusion.Network
                 category.CreateFunctionElement("Join Server", Color.green, OnClickJoinServer);
                 _targetServerElement = category.CreateFunctionElement($"Server ID: {_targetServerIP}", Color.white, null);
                 category.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerIP);
-                RiptideHelpers.CreateKeyboard(category, FusionPreferences.ClientSettings.ServerCode);
+                KeyboardCreator.CreateKeyboard(category, FusionPreferences.ClientSettings.ServerCode);
             }
             else {
                 if (FusionPreferences.ClientSettings.ServerCode == "PASTE SERVER CODE HERE") {
@@ -357,7 +373,7 @@ namespace LabFusion.Network
                 else {
                     _joinCodeElement = category.CreateFunctionElement($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode.GetValue()}", Color.green, OnClickJoinServer);
                 }
-                RiptideHelpers.CreateKeyboard(category, FusionPreferences.ClientSettings.ServerCode);
+                KeyboardCreator.CreateKeyboard(category, FusionPreferences.ClientSettings.ServerCode);
             }
         }
         public static void OnSetCode(string code)
