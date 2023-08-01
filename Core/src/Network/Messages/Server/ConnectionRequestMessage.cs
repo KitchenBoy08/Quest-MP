@@ -12,7 +12,6 @@ using System.Collections;
 using System.Linq;
 
 using MelonLoader;
-using SLZ.Rig;
 
 namespace LabFusion.Network
 {
@@ -21,7 +20,7 @@ namespace LabFusion.Network
         public Version version;
         public string avatarBarcode;
         public SerializedAvatarStats avatarStats;
-        public Dictionary<string, string> initialMetadata;
+        public FusionDictionary<string, string> initialMetadata;
         public List<string> initialEquippedItems;
 
         public bool IsValid { get; private set; } = true;
@@ -74,10 +73,6 @@ namespace LabFusion.Network
                 using (FusionReader reader = FusionReader.Create(bytes)) {
                     var data = reader.ReadFusionSerializable<ConnectionRequestData>();
                     var newSmallId = PlayerIdManager.GetUnusedPlayerId();
-
-#if DEBUG
-                    FusionLogger.Log("Handling Connection Request.");
-#endif
 
                     if (PlayerIdManager.GetPlayerId(data.longId) == null && newSmallId.HasValue) {
                         // If the connection request is invalid, deny it
@@ -177,10 +172,6 @@ namespace LabFusion.Network
                             else if (PlayerRepManager.TryGetPlayerRep(id.SmallId, out var rep)) {
                                 barcode = rep.avatarId;
                                 stats = rep.avatarStats;
-
-#if DEBUG
-                                FusionLogger.Log($"Sending Rep: {rep.Username}");
-#endif
                             }
 
                             ConnectionSender.SendPlayerCatchup(data.longId, id, barcode, stats);
@@ -188,9 +179,6 @@ namespace LabFusion.Network
 
                         // Now, make sure the player loads into the scene
                         LoadSender.SendLevelLoad(FusionSceneManager.Barcode, data.longId);
-#if DEBUG
-                        FusionLogger.Log("Sent Level Load.");
-#endif
 
                         // Send the dynamics list
                         using (var writer = FusionWriter.Create()) {

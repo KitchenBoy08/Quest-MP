@@ -50,8 +50,10 @@ namespace LabFusion.Network
 {
     public class RiptideNetworkLayer : NetworkLayer
     {
+        internal override string Title => "Riptide";
+
         // TODO: VC
-        private string chosenMic;
+        private string chosenMic = null;
 
         // AsyncCallbacks are bad!
         // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
@@ -131,7 +133,6 @@ namespace LabFusion.Network
         }
 
         internal override bool IsFriend(ulong userId) {
-            // Currently there's no Friend system in Place and probably isn't needed, so we always return false
             return false;
         }
 
@@ -364,6 +365,7 @@ namespace LabFusion.Network
                 category.CreateFunctionElement("Join Server", Color.green, OnClickJoinServer);
                 _targetServerElement = category.CreateFunctionElement($"Server ID: {_targetServerIP}", Color.white, null);
                 category.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerIP);
+
                 KeyboardCreator.CreateKeyboard(category, FusionPreferences.ClientSettings.ServerCode);
             }
             else {
@@ -376,9 +378,9 @@ namespace LabFusion.Network
                 KeyboardCreator.CreateKeyboard(category, FusionPreferences.ClientSettings.ServerCode);
             }
         }
-        public static void OnSetCode(string code)
+        public static void OnSetCode()
         {
-            _joinCodeElement.SetName($"Join Server Code: {code}");
+            _joinCodeElement.SetName($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode.GetValue()}");
         }
 
         private void OnClickJoinServer() {
@@ -500,6 +502,16 @@ namespace LabFusion.Network
                 message = $"Code: {encodedIP}",
                 popupLength = 20f,
             });
+        }
+
+        internal override bool CheckSupported()
+        {
+            return true;
+        }
+
+        internal override bool CheckValidation()
+        {
+            return true;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using LabFusion.Extensions;
+﻿using LabFusion.Data;
+using LabFusion.Extensions;
 using LabFusion.Utilities;
 using System;
 using System.Collections.Generic;
@@ -33,9 +34,11 @@ namespace LabFusion.SDK.Achievements {
                 Achievements.Add(achievement);
                 AchievementLookup.Add(achievement.Barcode, achievement);
 
-                if (AchievementSaveManager.Pointers.TryGetValueC(achievement.Barcode, out var pointer)) {
+                if (AchievementSaveManager.Pointers.TryGetValue(achievement.Barcode, out var pointer)) {
                     achievement.Unpack(XElement.Parse(pointer.data));
                 }
+
+                achievement.Register();
             }
         }
 
@@ -47,7 +50,7 @@ namespace LabFusion.SDK.Achievements {
                 return false;
             }
 
-            return AchievementLookup.TryGetValueC(barcode, out achievement);
+            return AchievementLookup.TryGetValue(barcode, out achievement);
         }
 
         public static bool TryGetAchievement<T>(out T achievement) where T : Achievement {
@@ -60,6 +63,29 @@ namespace LabFusion.SDK.Achievements {
             
             achievement = null;
             return false;
+        }
+
+        public static void IncrementAchievements<T>() where T : Achievement {
+            foreach (var achievement in GetAchievements<T>()) {
+                achievement.IncrementTask();
+            }
+        }
+
+        public static List<T> GetAchievements<T>() where T : Achievement {
+            List<T> list = new();
+
+            foreach (var found in Achievements) {
+                if (found is T result) {
+                    list.Add(result);
+                }
+            }
+
+
+            return list;
+        }
+
+        public static bool IsCompleted() {
+            return GetAchievementProgress() >= 1f;
         }
 
         public static float GetAchievementProgress() {
@@ -90,6 +116,6 @@ namespace LabFusion.SDK.Achievements {
         public static IReadOnlyList<Achievement> LoadedAchievements => Achievements;
 
         internal static readonly List<Achievement> Achievements = new();
-        internal static readonly Dictionary<string, Achievement> AchievementLookup = new();
+        internal static readonly FusionDictionary<string, Achievement> AchievementLookup = new();
     }
 }

@@ -9,6 +9,9 @@ using LabFusion.Syncables;
 using LabFusion.Grabbables;
 using LabFusion.SDK.Modules;
 using LabFusion.Preferences;
+using LabFusion.SDK.Gamemodes;
+using LabFusion.SDK.Points;
+using LabFusion.SDK.Achievements;
 
 #if DEBUG
 using LabFusion.Debugging;
@@ -18,11 +21,8 @@ using MelonLoader;
 
 using UnityEngine;
 
-using LabFusion.SDK.Gamemodes;
-using LabFusion.SDK.Points;
 using System.Linq;
-using LabFusion.SDK.Achievements;
-using LabFusion.Patching;
+using BoneLib;
 
 namespace LabFusion
 {
@@ -41,11 +41,6 @@ namespace LabFusion
         public static string Changelog { get; internal set; } = null;
 
         public static string[] Credits { get; internal set; } = null;
-
-        /// <summary>
-        /// The desired networking layer. Swap this out to change the networking system.
-        /// </summary>
-        public static Type ActiveNetworkingType { get; private set; }
 
         public static FusionMod Instance { get; private set; }
         public static Assembly FusionAssembly { get; private set; }
@@ -91,6 +86,7 @@ namespace LabFusion
             FusionMessageHandler.RegisterHandlersFromAssembly(FusionAssembly);
             GrabGroupHandler.RegisterHandlersFromAssembly(FusionAssembly);
             PropExtenderManager.RegisterExtendersFromAssembly(FusionAssembly);
+            NetworkLayer.RegisterLayersFromAssembly(FusionAssembly);
             GamemodeRegistration.LoadGamemodes(FusionAssembly);
             PointItemManager.LoadItems(FusionAssembly);
             AchievementManager.LoadAchievements(FusionAssembly);
@@ -104,9 +100,6 @@ namespace LabFusion
 
             // Initialize level loading
             FusionSceneManager.Internal_OnInitializeMelon();
-
-            // Load network layer type
-            ActiveNetworkingType = NetworkLayerDeterminer.GetLoadedType();
 
             // Finally, initialize the network layer
             OnInitializeNetworking();
@@ -126,12 +119,12 @@ namespace LabFusion
             // Check if the auto updater is installed
             _hasAutoUpdater = MelonPlugin.RegisteredMelons.Any((p) => p.Info.Name.Contains("LabFusion Updater"));
 
-            if (!_hasAutoUpdater && !BoneLib.HelperMethods.IsAndroid()) {
+            if (!_hasAutoUpdater && !HelperMethods.IsAndroid()) {
                 FusionNotifier.Send(new FusionNotification()
                 {
                     isMenuItem = false,
                     isPopup = true,
-                    message = "You do not have the Fusion Autoupdater installed in your plugins folder!" +
+                    message = "You do not have the Fusion AutoUpdater installed in your plugins folder!" +
                     "\nIt is recommended to install it in order to stay up to date.",
                     type = NotificationType.WARNING,
                 });
@@ -149,16 +142,16 @@ namespace LabFusion
                 return;
             }
 
-            // Validate the type
-            if (!ActiveNetworkingType.IsSubclassOf(typeof(NetworkLayer))) {
-                FusionLogger.Error("The target network layer type is invalid!");
+            // Validate the layer
+            NetworkLayerDeterminer.LoadLayer();
+
+            if (NetworkLayerDeterminer.LoadedLayer == null) {
+                FusionLogger.Error("The target network layer is null!");
                 return;
             }
 
-            // Create the network layer based on the selected type
-            // Then, set the layer
-            var layer = Activator.CreateInstance(ActiveNetworkingType) as NetworkLayer;
-            InternalLayerHelpers.SetLayer(layer);
+            // Finally, set the layer
+            InternalLayerHelpers.SetLayer(NetworkLayerDeterminer.LoadedLayer);
         }
 
         public override void OnDeinitializeMelon() {

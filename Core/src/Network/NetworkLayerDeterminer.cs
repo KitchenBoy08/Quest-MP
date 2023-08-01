@@ -9,107 +9,44 @@ using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace LabFusion.Network {
-    public enum NetworkLayerType {
-        STEAM_VR = 0,
-        SPACEWAR = 1,
-        PROXY_STEAM_VR = 2,
-        PROXY_SPACEWAR = 3,
-        RIPTIDE = 4,
-        EMPTY = 5,
-    }
-
     public static class NetworkLayerDeterminer {
-        public static NetworkLayerType LoadedType { get; private set; }
+        public static NetworkLayer LoadedLayer { get; private set; }
+        public static string LoadedTitle { get; private set; }
 
-        public static NetworkLayerType GetDefaultType() {
+        public static NetworkLayer GetDefaultLayer() {
             if (HelperMethods.IsAndroid())
-                return NetworkLayerType.RIPTIDE;
+                return NetworkLayer.GetLayer<RiptideNetworkLayer>();
 
-            return NetworkLayerType.STEAM_VR;
+            return NetworkLayer.GetLayer<SteamVRNetworkLayer>();
         }
 
-        public static NetworkLayerType VerifyType(NetworkLayerType type) {
-            switch (type) {
-                default:
-                case NetworkLayerType.STEAM_VR:
-                    if (!SteamVRNetworkLayer.VerifyLayer())
-                        return VerifyType(NetworkLayerType.SPACEWAR);
-                    else
-                        return NetworkLayerType.STEAM_VR;
-                case NetworkLayerType.SPACEWAR:
-                    if (!SpacewarNetworkLayer.VerifyLayer())
-                        return VerifyType(NetworkLayerType.EMPTY);
-                    else
-                        return NetworkLayerType.SPACEWAR;
-                case NetworkLayerType.EMPTY:
-                    return NetworkLayerType.EMPTY;
-                case NetworkLayerType.PROXY_STEAM_VR:
-                    return NetworkLayerType.PROXY_STEAM_VR;
-                case NetworkLayerType.PROXY_SPACEWAR:
-                    return NetworkLayerType.PROXY_SPACEWAR;
-                case NetworkLayerType.RIPTIDE:
-                    return NetworkLayerType.RIPTIDE;
+        public static NetworkLayer VerifyLayer(NetworkLayer layer) {
+            if (layer.CheckValidation()) {
+                return layer;
+            }
+            else if (layer.TryGetFallback(out var fallback)) {
+                return VerifyLayer(fallback);
+            }
+            else {
+                return NetworkLayer.GetLayer<EmptyNetworkLayer>();
             }
         }
 
-        public static Type GetLoadedType() {
-            var type = FusionPreferences.ClientSettings.NetworkLayerType.GetValue();
-            type = VerifyType(type);
-
-            LoadedType = type;
-
-            switch (type) {
-                default:
-                case NetworkLayerType.STEAM_VR:
-                    return typeof(SteamVRNetworkLayer);
-                case NetworkLayerType.SPACEWAR:
-                    return typeof(SpacewarNetworkLayer);
-                case NetworkLayerType.EMPTY:
-                    return typeof(EmptyNetworkLayer);
-                case NetworkLayerType.PROXY_STEAM_VR:
-                case NetworkLayerType.PROXY_SPACEWAR:
-                    return typeof(ProxyNetworkLayer);
-                case NetworkLayerType.RIPTIDE:
-                    return typeof(RiptideNetworkLayer);
-            }
-        }
-
-        public static void SetLoadedType(Type type)
-        {
-            Type activeLayer = GetLoadedType();
-            var layer = Activator.CreateInstance(activeLayer) as NetworkLayer;
-
-            var layerToLoad = Activator.CreateInstance(type) as NetworkLayer;
-
-            if (NetworkInfo.HasServer){
-                layer.Disconnect();
+        public static void LoadLayer() {
+            var title = FusionPreferences.ClientSettings.NetworkLayerTitle.GetValue();
+            if (!NetworkLayer.LayerLookup.TryGetValue(title, out var layer)) {
+                layer = GetDefaultLayer();
             }
 
-            DeInitializeLayer(layer);
-            ReInitializeLayer(layerToLoad);
-        }
+            layer = VerifyLayer(layer);
 
-        public static void DeInitializeLayer(NetworkLayer layer)
-        {
-            InternalLayerHelpers.OnCleanupLayer();
-            VoteKickHelper.Internal_OnDeinitializeMelon();
-            SteamAPILoader.OnFreeSteamAPI();
-
-            var fusionCategory = FusionPreferences.fusionCategory;
-            fusionCategory.Elements.Clear();
-        }
-
-        public static void ReInitializeLayer(NetworkLayer layer)
-        {
-            InternalLayerHelpers.SetLayer(layer);
-
-            InternalLayerHelpers.OnLateInitializeLayer();
-            InternalLayerHelpers.OnSetupBoneMenuLayer(FusionPreferences.fusionCategory);
+            LoadedLayer = layer;
+            LoadedTitle = layer.Title;
         }
     }
 }

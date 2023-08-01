@@ -1,6 +1,4 @@
-﻿using BoneLib;
-using JetBrains.Annotations;
-using LabFusion.Network;
+﻿using LabFusion.Network;
 using LabFusion.Patching;
 using LabFusion.Representation;
 using LabFusion.Senders;
@@ -63,14 +61,7 @@ namespace LabFusion.Utilities {
                 _isLoading = false;
 
                 FusionMod.OnMainSceneInitialized();
-                if (Barcode != null)
-                {
-                    _prevLevelBarcode = Barcode;
-                } else
-                {
-                    LevelInfo levelInfo = new LevelInfo();
-                    _prevLevelBarcode = levelInfo.barcode;
-                }
+                _prevLevelBarcode = Barcode;
 
                 LoadSender.SendLoadingState(false);
 
@@ -104,6 +95,10 @@ namespace LabFusion.Utilities {
             {
                 _isDelayedLoading = false;
                 FusionMod.OnMainSceneInitializeDelayed();
+
+                // Invoke the level load hook
+                _onDelayedLevelLoad?.Invoke();
+                _onDelayedLevelLoad = null;
             }
         }
 

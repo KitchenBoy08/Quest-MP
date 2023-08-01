@@ -260,13 +260,13 @@
     <Compile Include="Core\src\BoneMenu\BoneMenuCreator.cs" />
     <Compile Include="Core\src\BoneMenu\DebugCreator.cs" />
     <Compile Include="Core\src\BoneMenu\GamemodesCreator.cs" />
-    <Compile Include="Core\src\BoneMenu\KeyboardCreator.cs" />
     <Compile Include="Core\src\BoneMenu\LobbyCreator.cs" />
     <Compile Include="Core\src\BoneMenu\NotificationCreator.cs" />
     <Compile Include="Core\src\BoneMenu\BanListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\AdminActionsCreator.cs" />
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
+    <Compile Include="Core\src\Data\Containers\FusionDictionary.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\MirrorData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\NeonDistrictTacTrialData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\NeonDistrictParkourData.cs" />
@@ -366,6 +366,7 @@
     <Compile Include="Core\src\Mod.cs" />
     <Compile Include="Core\src\MonoBehaviours\DestroyOnDisconnect.cs" />
     <Compile Include="Core\src\MonoBehaviours\MirrorIdentifier.cs" />
+    <Compile Include="Core\src\MonoBehaviours\NotifyOnEnable.cs" />
     <Compile Include="Core\src\MonoBehaviours\PropCollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\CollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\TimedDespawner.cs" />
@@ -431,16 +432,13 @@
     <Compile Include="Core\src\Network\Messages\Spawning\SpawnableCratePlacerMessage.cs" />
     <Compile Include="Core\src\Network\NetworkLayerDeterminer.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyLobbyManager.cs" />
+    <Compile Include="Core\src\Network\Proxy\ProxySpacewarNetworkLayer.cs" />
+    <Compile Include="Core\src\Network\Proxy\ProxySteamVRNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyNetworkLobby.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxySocketHandler.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyVoiceManager.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyVoiceHandler.cs" />
-    <Compile Include="Core\src\Network\Riptide\RiptideHandler.cs" />
-    <Compile Include="Core\src\Network\Riptide\RiptideHelpers.cs" />
-    <Compile Include="Core\src\Network\Riptide\RiptideNetworkLayer.cs" />
-    <Compile Include="Core\src\Network\Riptide\RiptideVoiceHandler.cs" />
-    <Compile Include="Core\src\Network\Riptide\RiptideVoiceManager.cs" />
     <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVoiceManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVRNetworkLayer.cs" />
@@ -492,10 +490,27 @@
     <Compile Include="Core\src\SDK\Achievements\Achievement.cs" />
     <Compile Include="Core\src\SDK\Achievements\AchievementManager.cs" />
     <Compile Include="Core\src\SDK\Achievements\AchievementSaveManager.cs" />
-    <Compile Include="Core\src\SDK\Achievements\Built In\ExperiencedExecutioner.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\Bitmart\StyleAchievement.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\Deathmatch\ExperiencedExecutioner.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\Bitmart\StyleAddict.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\Bitmart\StyleMan.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\Bitmart\StyleBaby.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\Deathmatch\KillerAchievement.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\Deathmatch\Rampage.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\Campaign\Betrayal.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\ClassStruggle.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\GuardianAngel.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\CleanupCrew.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\BouncingStrong.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\LavaGang.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\HighwayMan.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\HelloThere.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\Campaign\OneMoreTime.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\DaycareAttendant.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\AroundTheWorld.cs" />
     <Compile Include="Core\src\SDK\Achievements\Built In\WarmWelcome.cs" />
-    <Compile Include="Core\src\SDK\Achievements\Built In\MediocreMarksman.cs" />
-    <Compile Include="Core\src\SDK\Achievements\Built In\RookieAssassin.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\Deathmatch\MediocreMarksman.cs" />
+    <Compile Include="Core\src\SDK\Achievements\Built In\Deathmatch\RookieAssassin.cs" />
     <Compile Include="Core\src\SDK\Achievements\Built In\HeadOfHouse.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\Team.cs" />
     <Compile Include="Core\src\SDK\Gamemodes\TeamLogoInstance.cs" />
@@ -557,6 +572,7 @@
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\Briefcase.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\BitBackpack.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Pack 2\AncientTablet.cs" />
+    <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\AlexTheBaba\Special\VictoryTrophy.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\Wonker.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\VirtuallyInsane.cs" />
     <Compile Include="Core\src\SDK\Points\Built In\Cosmetics\Riggle\Pack 1\Smitty.cs" />
@@ -736,7 +752,6 @@
     <Compile Include="Core\src\Patching\Patches\Unity\PhysicsPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\Player\VirtualControllerPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\ZonePatches.cs" />
-    <Compile Include="Core\src\Patching\Patches\ZoneSpawnerPatches.cs" />
     <Compile Include="Core\src\Representation\PlayerId.cs" />
     <Compile Include="Core\src\Representation\PlayerIdManager.cs" />
     <Compile Include="Core\src\Representation\PlayerRep.cs" />
@@ -782,8 +797,6 @@
     <Compile Include="Core\src\Utilities\ImpactUtilities.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionBundleLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\Popups\FusionNotifier.cs" />
-    <Compile Include="Core\src\Utilities\Internal\IPGetter.cs" />
-    <Compile Include="Core\src\Utilities\Internal\IPSafety.cs" />
     <Compile Include="Core\src\Utilities\Internal\NativeUtilities.cs" />
     <Compile Include="Core\src\Utilities\Internal\PooleePusher.cs" />
     <Compile Include="Core\src\Utilities\Internal\SafeEvents.cs" />
@@ -842,10 +855,6 @@
     <Reference Include="MelonLoader, Version=0.5.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\MelonLoader.dll</HintPath>
-    </Reference>
-    <Reference Include="RiptideNetworking, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Riptide-2.0.0\RiptideNetworking\RiptideNetworking\bin\Debug\netstandard2.0\netstandard2.0\RiptideNetworking.dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
