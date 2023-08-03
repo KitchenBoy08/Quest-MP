@@ -1,6 +1,8 @@
-# BONELAB TideFusion
+# BONELAB Fusion Release
+A multiplayer mod for BONELAB featuring support for Oculus and SteamVR.
+This is currently only for PCVR platforms. [You can view a basic installation guide here.](INSTALLATION.md)
 ## Networking
-This mod utilizes both Steam and Peer 2 Peer networking and is available on both Quest and PCVR platforms.
+This mod is networked and built around Steam, but the networking system can be swapped out using a Networking Layer.
 
 ## Modules
 Fusion supports a system called "Modules". This allows other code mods to addon and sync their own events in Fusion.
@@ -21,14 +23,8 @@ The module example can be found here:
 https://github.com/Lakatrazz/Fusion-Module-Example
 
 ## Credits
-- Lakatrazz
-- Trev
-- EverythingOnArm
-
-## Licensing
-- The source code of [Facepunch.Steamworks](https://github.com/Facepunch/Facepunch.Steamworks) is included under the MIT License. The full license can be found [here](https://github.com/Facepunch/Facepunch.Steamworks/blob/master/LICENSE).
-- The source code of [LiteNetLib](https://github.com/RevenantX/LiteNetLib) is included under the MIT License. The full license can be found [here](https://github.com/RevenantX/LiteNetLib/blob/master/LICENSE.txt).
-- The source code of [RiptideNetworking](https://github.com/RiptideNetworking/Riptide) is included under the MIT License. The full license can be found [here](https://github.com/RiptideNetworking/Riptide/blob/main/LICENSE.md)
+- BoneLib AutoUpdater: https://github.com/yowchap/BoneLib
+- Testing/Development Credits In Game
 
 ## Licensing
 - The source code of [Facepunch.Steamworks](https://github.com/Facepunch/Facepunch.Steamworks) is included under the MIT License. The full license can be found [here](https://github.com/Facepunch/Facepunch.Steamworks/blob/master/LICENSE).
@@ -39,8 +35,8 @@ https://github.com/Lakatrazz/Fusion-Module-Example
 2. Setup a "managed" folder in the "Core" folder.
 3. Drag the dlls from Melonloader/Managed into the managed folder.
 4. Drag MelonLoader.dll and 0Harmony.dll into the managed folder.
-5. Reference RiptideNetworking manually.
-6. You're done!
+5. You're done!
 
 ## Disclaimer
-#### THIS PROJECT IS NOT AFFILIATED WITH SLZ, FUSION, OR ANY OTHER MULTIPLAYER MOD. DO NOT GO INTO THE FUSION DISCORD EXPECTING SUPPORT FOR ISSUES IN THE MOD.
+
+#### THIS PROJECT IS NOT AFFILIATED WITH ANY OTHER MULTIPLAYER MODS OR STRESS LEVEL ZERO! This is its own standalone mod and shares no code with others, any similarities are coincidental!
