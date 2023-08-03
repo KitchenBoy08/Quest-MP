@@ -42,9 +42,9 @@ using LabFusion.Patching;
 using System.Drawing;
 using JetBrains.Annotations;
 using LabFusion.Core.src.Network.Riptide;
-using LabFusion.IPSafety;
 using UnityEngine.Rendering.Universal;
 using LabFusion.Core.src.BoneMenu;
+using System.Net;
 
 namespace LabFusion.Network
 {
@@ -53,7 +53,8 @@ namespace LabFusion.Network
         internal override string Title => "Riptide";
 
         // TODO: VC
-        private string chosenMic = null;
+        private AudioClip clip;
+        private float[] samplesBuffer;
 
         // AsyncCallbacks are bad!
         // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
@@ -164,22 +165,49 @@ namespace LabFusion.Network
             }
         }
 
-        internal override void StartServer() {
-            currentclient = new Client();
-            currentserver = new Server();
+        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
+        {
+            // If we are deafened, no need to deal with voice chat
+            if (VoiceHelper.IsDeafened)
+                return;
 
-            currentclient.Connected += OnStarted;
-            currentserver.Start(7777, 10);
-
-            currentclient.Connect("127.0.0.1:7777");
+            var handler = VoiceManager.GetVoiceHandler(id);
+            handler?.OnVoiceBytesReceived(bytes);
         }
 
+        internal override void StartServer() {
+            if (FusionPreferences.ClientSettings.ChosenMic.GetValue() != "")
+            {
+                currentclient = new Client();
+                currentserver = new Server();
+
+                currentclient.Connected += OnStarted;
+                currentserver.Start(7777, 10);
+
+                currentclient.Connect("127.0.0.1:7777");
+            } else
+            {
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    title = "No Microphone Set",
+                    showTitleOnPopup = true,
+                    isMenuItem = false,
+                    isPopup = true,
+                    message = $"Go to Microphone Settings and choose the microphone you want to use!",
+                    popupLength = 5f,
+                });
+            }
+        }
+
+        private GameObject voiceManager;
         private void OnStarted(object sender, EventArgs e) {
 #if DEBUG
             FusionLogger.Log("SERVER START HOOKED");
 #endif
-            //Update player id here just to be safe
+
+            // Update player ID here since it's determined on the Riptide Client ID
             PlayerIdManager.SetLongId(currentclient.Id);
+            PlayerIdManager.SetUsername($"Riptide Enjoyer {currentclient.Id}");
 
             _isServerActive = true;
             _isConnectionActive = true;
@@ -208,9 +236,11 @@ namespace LabFusion.Network
 #if DEBUG
             FusionLogger.Log("SERVER CONNECT HOOKED");
 #endif
+
             currentclient.Disconnected += OnClientDisconnect;
             // Update player ID here since it's determined on the Riptide Client ID
             PlayerIdManager.SetLongId(currentclient.Id);
+            PlayerIdManager.SetUsername($"Riptide Enjoyer {currentclient.Id}");
 
             _isServerActive = false;
             _isConnectionActive = true;
@@ -331,8 +361,7 @@ namespace LabFusion.Network
             }
             category.CreateFunctionElement("Display Server Code", Color.white, OnDisplayServerCode);
 
-            BoneMenuCreator.CreatePlayerListMenu(category);
-            BoneMenuCreator.CreateAdminActionsMenu(category);
+            BoneMenuCreator.PopulateServerInfo(category);
         }
 
         private void OnClickCreateServer() {
@@ -472,7 +501,7 @@ namespace LabFusion.Network
 
         private void SetMicrophone(string micName)
         {
-            chosenMic = micName;
+            FusionPreferences.ClientSettings.ChosenMic.SetValue(micName);
         }
 
         private void OnClickCodeError()

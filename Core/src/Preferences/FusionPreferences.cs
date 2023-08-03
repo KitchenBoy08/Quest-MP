@@ -96,6 +96,7 @@ namespace LabFusion.Preferences {
 
             // QUEST/Riptide 
             public static FusionPref<string> ServerCode { get; internal set; }
+            public static FusionPref<string> ChosenMic { get; internal set; }
 
             // Nametag settings
             public static FusionPref<bool> NametagsEnabled { get; internal set; }
@@ -186,13 +187,14 @@ namespace LabFusion.Preferences {
 
             // QUEST/Riptide 
             ClientSettings.ServerCode = new FusionPref<string>(prefCategory, "Server Code", $"PASTE SERVER CODE HERE", PrefUpdateMode.LOCAL_UPDATE);
+            ClientSettings.ChosenMic = new FusionPref<string>(prefCategory, "Chosen Microphone", "", PrefUpdateMode.LOCAL_UPDATE);
 
             // Nametag
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);
             ClientSettings.NametagColor = new FusionPref<Color>(prefCategory, "Nametag Color", Color.white, PrefUpdateMode.CLIENT_UPDATE);
 
             // Nickname
-            ClientSettings.Nickname = new FusionPref<string>(prefCategory, "Nickname", "", PrefUpdateMode.IGNORE);
+            ClientSettings.Nickname = new FusionPref<string>(prefCategory, "Nickname", "", PrefUpdateMode.LOCAL_UPDATE);
             ClientSettings.NicknameVisibility = new FusionPref<NicknameVisibility>(prefCategory, "Nickname Visibility", NicknameVisibility.SHOW_WITH_PREFIX, PrefUpdateMode.LOCAL_UPDATE);
 
             // Voicechat

@@ -260,11 +260,13 @@
     <Compile Include="Core\src\BoneMenu\BoneMenuCreator.cs" />
     <Compile Include="Core\src\BoneMenu\DebugCreator.cs" />
     <Compile Include="Core\src\BoneMenu\GamemodesCreator.cs" />
+    <Compile Include="Core\src\BoneMenu\KeyboardCreator.cs" />
     <Compile Include="Core\src\BoneMenu\LobbyCreator.cs" />
     <Compile Include="Core\src\BoneMenu\NotificationCreator.cs" />
     <Compile Include="Core\src\BoneMenu\BanListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\AdminActionsCreator.cs" />
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
+    <Compile Include="Core\src\BoneMenu\ServerInfoCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
     <Compile Include="Core\src\Data\Containers\FusionDictionary.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\MirrorData.cs" />
@@ -439,11 +441,18 @@
     <Compile Include="Core\src\Network\Proxy\ProxySocketHandler.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyVoiceManager.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyVoiceHandler.cs" />
+    <Compile Include="Core\src\Network\Riptide\RiptideHandler.cs" />
+    <Compile Include="Core\src\Network\Riptide\RiptideHelpers.cs" />
+    <Compile Include="Core\src\Network\Riptide\RiptideNetworkLayer.cs" />
+    <Compile Include="Core\src\Network\Riptide\RiptideVoiceHandler.cs" />
+    <Compile Include="Core\src\Network\Riptide\RiptideVoiceManager.cs" />
     <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVoiceManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVRNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamLobby.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVoiceHandler.cs" />
+    <Compile Include="Core\src\Patching\CommonDelegates.cs" />
+    <Compile Include="Core\src\Patching\ManualPatcher.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\Attack_.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactPropertiesPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />
@@ -797,6 +806,8 @@
     <Compile Include="Core\src\Utilities\ImpactUtilities.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionBundleLoader.cs" />
     <Compile Include="Core\src\Utilities\Fusion\Popups\FusionNotifier.cs" />
+    <Compile Include="Core\src\Utilities\Internal\IPGetter.cs" />
+    <Compile Include="Core\src\Utilities\Internal\IPSafety.cs" />
     <Compile Include="Core\src\Utilities\Internal\NativeUtilities.cs" />
     <Compile Include="Core\src\Utilities\Internal\PooleePusher.cs" />
     <Compile Include="Core\src\Utilities\Internal\SafeEvents.cs" />
@@ -855,6 +866,9 @@
     <Reference Include="MelonLoader, Version=0.5.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\MelonLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="RiptideNetworking">
+      <HintPath>..\..\..\Riptide-2.0.0\RiptideNetworking\RiptideNetworking\bin\Debug\netstandard2.0\netstandard2.0\RiptideNetworking.dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
