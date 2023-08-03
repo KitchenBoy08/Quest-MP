@@ -20,7 +20,11 @@ namespace LabFusion.Network {
 
         public static NetworkLayer GetDefaultLayer() {
             if (HelperMethods.IsAndroid())
+<<<<<<< HEAD
+                return NetworkLayer.GetLayer<RiptideNetworkLayer>();
+=======
                 return NetworkLayer.GetLayer<ProxySteamVRNetworkLayer>();
+>>>>>>> 660a2c688948238ba1838c5e0fb439055d41a7c5
 
             return NetworkLayer.GetLayer<SteamVRNetworkLayer>();
         }
