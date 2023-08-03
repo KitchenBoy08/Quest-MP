@@ -1,6 +1,4 @@
-﻿using BoneLib;
-using BoneLib.BoneMenu.Elements;
-using LabFusion.Core.src.BoneMenu;
+﻿using BoneLib.BoneMenu.Elements;
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
@@ -13,7 +11,6 @@ using LabFusion.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Management.Instrumentation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -167,14 +164,10 @@ namespace LabFusion.BoneMenu
 
             CreateEnumPreference(nicknameCategory, "Nickname Visibility", FusionPreferences.ClientSettings.NicknameVisibility);
 
-            nicknameCategory.CreateFunctionElement($"Current Nickname: {FusionPreferences.ClientSettings.Nickname.GetValue()}", Color.cyan, null);
-            if (!HelperMethods.IsAndroid())
-            {
-                CreateStringPreference(nicknameCategory, "Nickname", FusionPreferences.ClientSettings.Nickname, (v) => {
-                    if (PlayerIdManager.LocalId != null)
-                        PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.NicknameKey, v);
-                });
-            }
+            CreateStringPreference(nicknameCategory, "Nickname", FusionPreferences.ClientSettings.Nickname, (v) => {
+                if (PlayerIdManager.LocalId != null)
+                    PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.NicknameKey, v);
+            });
 
             // Voice chat
             var voiceChatCategory = category.CreateCategory("Voice Chat", Color.white);
@@ -183,5 +176,6 @@ namespace LabFusion.BoneMenu
             CreateBoolPreference(voiceChatCategory, "Deafened", FusionPreferences.ClientSettings.Deafened);
             CreateFloatPreference(voiceChatCategory, "Global Volume", 0.1f, 0f, 10f, FusionPreferences.ClientSettings.GlobalVolume);
         }
+
     }
 }

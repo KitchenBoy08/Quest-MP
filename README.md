@@ -30,6 +30,10 @@ https://github.com/Lakatrazz/Fusion-Module-Example
 - The source code of [LiteNetLib](https://github.com/RevenantX/LiteNetLib) is included under the MIT License. The full license can be found [here](https://github.com/RevenantX/LiteNetLib/blob/master/LICENSE.txt).
 - The source code of [RiptideNetworking](https://github.com/RiptideNetworking/Riptide) is included under the MIT License. The full license can be found [here](https://github.com/RiptideNetworking/Riptide/blob/main/LICENSE.md)
 
+## Licensing
+- The source code of [Facepunch.Steamworks](https://github.com/Facepunch/Facepunch.Steamworks) is included under the MIT License. The full license can be found [here](https://github.com/Facepunch/Facepunch.Steamworks/blob/master/LICENSE).
+- The source code of [LiteNetLib](https://github.com/RevenantX/LiteNetLib) is included under the MIT License. The full license can be found [here](https://github.com/RevenantX/LiteNetLib/blob/master/LICENSE.txt).
+
 ## Setting up the Source Code
 1. Clone the git repo into a folder
 2. Setup a "managed" folder in the "Core" folder.
