@@ -94,13 +94,10 @@ namespace LabFusion.Preferences {
             public static FusionPref<string> NetworkLayerTitle { get; internal set; }
             public static FusionPref<int> ProxyPort { get; internal set; }
 
-<<<<<<< HEAD
             // QUEST/Riptide 
             public static FusionPref<string> ServerCode { get; internal set; }
             public static FusionPref<string> ChosenMic { get; internal set; }
 
-=======
->>>>>>> 660a2c688948238ba1838c5e0fb439055d41a7c5
             // Nametag settings
             public static FusionPref<bool> NametagsEnabled { get; internal set; }
             public static FusionPref<Color> NametagColor { get; internal set; }
@@ -187,13 +184,10 @@ namespace LabFusion.Preferences {
             // Client settings
             ClientSettings.NetworkLayerTitle = new FusionPref<string>(prefCategory, "Network Layer Title", NetworkLayerDeterminer.GetDefaultLayer().Title, PrefUpdateMode.IGNORE);
             ClientSettings.ProxyPort = new FusionPref<int>(prefCategory, "Proxy Port", 28340, PrefUpdateMode.IGNORE);
-<<<<<<< HEAD
 
             // QUEST/Riptide 
             ClientSettings.ServerCode = new FusionPref<string>(prefCategory, "Server Code", $"PASTE SERVER CODE HERE", PrefUpdateMode.LOCAL_UPDATE);
             ClientSettings.ChosenMic = new FusionPref<string>(prefCategory, "Chosen Microphone", "", PrefUpdateMode.LOCAL_UPDATE);
-=======
->>>>>>> 660a2c688948238ba1838c5e0fb439055d41a7c5
 
             // Nametag
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);

@@ -1,10 +1,8 @@
-<<<<<<< HEAD
+
 ﻿using BoneLib;
 using BoneLib.BoneMenu.Elements;
 using LabFusion.Core.src.BoneMenu;
-=======
 ﻿using BoneLib.BoneMenu.Elements;
->>>>>>> 660a2c688948238ba1838c5e0fb439055d41a7c5
 using LabFusion.Data;
 using LabFusion.Extensions;
 using LabFusion.Network;
