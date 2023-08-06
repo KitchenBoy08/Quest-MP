@@ -19,8 +19,7 @@ using UnityEngine;
 
 namespace LabFusion.BoneMenu
 {
-    internal static partial class BoneMenuCreator
-    {
+    internal static partial class BoneMenuCreator {
         // List of all possible tags
         private static readonly string[] _tagsList = new string[] {
             "Campaign",
@@ -50,26 +49,18 @@ namespace LabFusion.BoneMenu
             CreateClientSettingsMenu(_clientSettingsCategory);
         }
 
-<<<<<<< HEAD
-        private static void CreateServerTagsMenu(MenuCategory category)
-        {
-=======
         private static void CreateServerTagsMenu(MenuCategory category) {
->>>>>>> 8ab3726742fdda28e71c8d4b9d9032c25049e9b8
             var tagsCategory = category.CreateCategory("Server Tags", Color.white);
             tagsCategory.CreateFunctionElement("Clear Tags", Color.white, () => {
                 FusionPreferences.LocalServerSettings.ServerTags.SetValue(new List<string>());
             });
             FusionPreferences.LocalServerSettings.ServerTags.OnValueChanged += (v) => {
-                foreach (var element in _tagElements.Values)
-                {
+                foreach (var element in _tagElements.Values) {
                     element.SetValue(false);
                 }
 
-                foreach (var tag in v)
-                {
-                    if (_tagElements.TryGetValue(tag, out var element))
-                    {
+                foreach (var tag in v) {
+                    if (_tagElements.TryGetValue(tag, out var element)) {
                         element.SetValue(true);
                     }
                 }
@@ -77,23 +68,20 @@ namespace LabFusion.BoneMenu
 
             var serverTags = FusionPreferences.LocalServerSettings.ServerTags.GetValue();
 
-            foreach (var tag in _tagsList)
-            {
+            foreach (var tag in _tagsList) {
                 _tagElements.Add(tag, tagsCategory.CreateBoolElement(tag, Color.white, serverTags.Contains(tag), (v) => {
                     // Refresh
                     serverTags = FusionPreferences.LocalServerSettings.ServerTags.GetValue();
 
                     // Add tag
-                    if (v)
-                    {
+                    if (v) {
                         if (!serverTags.Contains(tag))
                             serverTags.Add(tag);
 
                         FusionPreferences.LocalServerSettings.ServerTags.SetValue(serverTags);
                     }
                     // Remove tag
-                    else
-                    {
+                    else {
                         serverTags.Remove(tag);
 
                         FusionPreferences.LocalServerSettings.ServerTags.SetValue(serverTags);
@@ -122,11 +110,7 @@ namespace LabFusion.BoneMenu
             CreateBoolPreference(generalSettingsSubPanel, "Nametags", FusionPreferences.LocalServerSettings.NametagsEnabled);
             CreateBoolPreference(generalSettingsSubPanel, "Voicechat", FusionPreferences.LocalServerSettings.VoicechatEnabled);
             CreateBoolPreference(generalSettingsSubPanel, "Vote Kicking", FusionPreferences.LocalServerSettings.VoteKickingEnabled);
-<<<<<<< HEAD
-
-=======
             
->>>>>>> 8ab3726742fdda28e71c8d4b9d9032c25049e9b8
             // Gameplay settings
             var gameplaySettingsSubPanel = category.CreateSubPanel("Gameplay Settings", Color.white);
             CreateEnumPreference(gameplaySettingsSubPanel, "Time Scale Mode", FusionPreferences.LocalServerSettings.TimeScaleMode);
@@ -137,11 +121,7 @@ namespace LabFusion.BoneMenu
                     FusionPlayer.ResetMortality();
             };
             CreateBoolPreference(gameplaySettingsSubPanel, "Player Constraining", FusionPreferences.LocalServerSettings.PlayerConstraintsEnabled);
-<<<<<<< HEAD
-
-=======
             
->>>>>>> 8ab3726742fdda28e71c8d4b9d9032c25049e9b8
             // Permissions
             var permissionSubPanel = category.CreateSubPanel("Permission Settings", Color.white);
             CreateEnumPreference(permissionSubPanel, "Dev Tools Allowed", FusionPreferences.LocalServerSettings.DevToolsAllowed);
@@ -185,27 +165,10 @@ namespace LabFusion.BoneMenu
             // Voice chat
             var voiceChatSubPanel = category.CreateSubPanel("Voice Chat Settings", Color.white);
 
-<<<<<<< HEAD
-            if (VoiceHelper.CanTalk)
-            {
-=======
-            if (VoiceHelper.CanTalk) {
->>>>>>> 8ab3726742fdda28e71c8d4b9d9032c25049e9b8
-                CreateBoolPreference(voiceChatSubPanel, "Muted", FusionPreferences.ClientSettings.Muted);
-                CreateBoolPreference(voiceChatSubPanel, "Muted Indicator", FusionPreferences.ClientSettings.MutedIndicator);
-            }
-
-<<<<<<< HEAD
-            if (VoiceHelper.CanHear)
-            {
-=======
-            if (VoiceHelper.CanHear) {
->>>>>>> 8ab3726742fdda28e71c8d4b9d9032c25049e9b8
-                CreateBoolPreference(voiceChatSubPanel, "Deafened", FusionPreferences.ClientSettings.Deafened);
-                CreateFloatPreference(voiceChatSubPanel, "Global Volume", 0.1f, 0f, 10f, FusionPreferences.ClientSettings.GlobalVolume);
-            }
-
-            RemoveEmptySubPanel(category, voiceChatSubPanel);
+            CreateBoolPreference(voiceChatSubPanel, "Muted", FusionPreferences.ClientSettings.Muted);
+            CreateBoolPreference(voiceChatSubPanel, "Muted Indicator", FusionPreferences.ClientSettings.MutedIndicator);
+            CreateBoolPreference(voiceChatSubPanel, "Deafened", FusionPreferences.ClientSettings.Deafened);
+            CreateFloatPreference(voiceChatSubPanel, "Global Volume", 0.1f, 0f, 10f, FusionPreferences.ClientSettings.GlobalVolume);
         }
 
     }

@@ -18,23 +18,10 @@ namespace LabFusion.BoneMenu
 {
     internal static partial class BoneMenuCreator
     {
-        #region REMOVAL
-<<<<<<< HEAD
-        public static void RemoveEmptyCategory(MenuCategory parent, MenuCategory child)
-        {
-=======
         public static void RemoveEmptyCategory(MenuCategory parent, MenuCategory child) {
->>>>>>> 8ab3726742fdda28e71c8d4b9d9032c25049e9b8
             if (child.Elements.Count <= 0)
                 parent.Elements.RemoveInstance(child);
         }
-
-        public static void RemoveEmptySubPanel(MenuCategory parent, SubPanelElement child)
-        {
-            if (child.Elements.Count <= 0)
-                parent.Elements.RemoveInstance(child);
-        }
-        #endregion
 
         #region MENU CATEGORIES
         public static void CreateColorPreference(MenuCategory category, IFusionPref<Color> pref)
