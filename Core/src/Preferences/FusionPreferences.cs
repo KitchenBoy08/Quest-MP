@@ -94,6 +94,10 @@ namespace LabFusion.Preferences {
             public static FusionPref<string> NetworkLayerTitle { get; internal set; }
             public static FusionPref<int> ProxyPort { get; internal set; }
 
+            // QUEST/Riptide 
+            public static FusionPref<string> ServerCode { get; internal set; }
+            public static FusionPref<string> ChosenMic { get; internal set; }
+
             // Nametag settings
             public static FusionPref<bool> NametagsEnabled { get; internal set; }
             public static FusionPref<Color> NametagColor { get; internal set; }
@@ -170,12 +174,16 @@ namespace LabFusion.Preferences {
             ClientSettings.NetworkLayerTitle = new FusionPref<string>(prefCategory, "Network Layer Title", NetworkLayerDeterminer.GetDefaultLayer().Title, PrefUpdateMode.IGNORE);
             ClientSettings.ProxyPort = new FusionPref<int>(prefCategory, "Proxy Port", 28340, PrefUpdateMode.IGNORE);
 
+            // QUEST/Riptide 
+            ClientSettings.ServerCode = new FusionPref<string>(prefCategory, "Server Code", $"PASTE SERVER CODE HERE", PrefUpdateMode.LOCAL_UPDATE);
+            ClientSettings.ChosenMic = new FusionPref<string>(prefCategory, "Chosen Microphone", "", PrefUpdateMode.LOCAL_UPDATE);
+
             // Nametag
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);
             ClientSettings.NametagColor = new FusionPref<Color>(prefCategory, "Nametag Color", Color.white, PrefUpdateMode.CLIENT_UPDATE);
 
             // Nickname
-            ClientSettings.Nickname = new FusionPref<string>(prefCategory, "Nickname", "", PrefUpdateMode.IGNORE);
+            ClientSettings.Nickname = new FusionPref<string>(prefCategory, "Nickname", "", PrefUpdateMode.LOCAL_UPDATE);
             ClientSettings.NicknameVisibility = new FusionPref<NicknameVisibility>(prefCategory, "Nickname Visibility", NicknameVisibility.SHOW_WITH_PREFIX, PrefUpdateMode.LOCAL_UPDATE);
 
             // Voicechat
