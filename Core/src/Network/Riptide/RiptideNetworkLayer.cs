@@ -45,6 +45,9 @@ using LabFusion.Core.src.Network.Riptide;
 using UnityEngine.Rendering.Universal;
 using LabFusion.Core.src.BoneMenu;
 using System.Net;
+using System.Runtime.InteropServices;
+using Il2CppSystem;
+using LabFusion.MonoBehaviours;
 
 namespace LabFusion.Network
 {
@@ -53,8 +56,8 @@ namespace LabFusion.Network
         internal override string Title => "Riptide";
 
         // TODO: VC
-        private AudioClip clip;
-        private float[] samplesBuffer;
+        public static GameObject voiceObject;
+        public static UnityVoice voiceScript;
 
         // AsyncCallbacks are bad!
         // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
@@ -129,7 +132,7 @@ namespace LabFusion.Network
 
         internal override string GetUsername(ulong userId) {
             // Find a way to get nickname, this will do for testing
-            string Username = ("Riptide Enjoyer");
+            string Username = ("Riptide Enjoyer " + userId);
             return Username;
         }
 
@@ -175,32 +178,82 @@ namespace LabFusion.Network
             handler?.OnVoiceBytesReceived(bytes);
         }
 
-        internal override void StartServer() {
-            if (FusionPreferences.ClientSettings.ChosenMic.GetValue() != "")
-            {
-                currentclient = new Client();
-                currentserver = new Server();
+        public static byte[] AudioClipToByteArray(AudioClip audioClip)
+        {
+            // Get the audio data from the AudioClip.
+            float[] samples = new float[audioClip.samples * audioClip.channels];
+            audioClip.GetData(samples, 0);
 
-                currentclient.Connected += OnStarted;
-                currentserver.Start(7777, 10);
-
-                currentclient.Connect("127.0.0.1:7777");
-            } else
+            // Convert the audio data (float[]) to bytes.
+            byte[] byteArray = new byte[samples.Length * 4]; // 4 bytes per float (32-bit float).
+            for (int i = 0; i < samples.Length; i++)
             {
-                FusionNotifier.Send(new FusionNotification()
+                byte[] temp = System.BitConverter.GetBytes(samples[i]);
+                for (int j = 0; j < temp.Length; j++)
                 {
-                    title = "No Microphone Set",
-                    showTitleOnPopup = true,
-                    isMenuItem = false,
-                    isPopup = true,
-                    message = $"Go to Microphone Settings and choose the microphone you want to use!",
-                    popupLength = 5f,
-                });
+                    byteArray[i * 4 + j] = temp[j];
+                }
             }
+
+            return byteArray;
         }
 
-        private GameObject voiceManager;
-        private void OnStarted(object sender, EventArgs e) {
+        internal override void OnVoiceChatUpdate()
+        {
+            /*if (voiceObject != null)
+            {
+                if (voiceScript != null)
+                {
+                    if (NetworkInfo.HasServer)
+                    {
+                        if (VoiceHelper.IsVoiceEnabled)
+                        {
+                            if (!voiceScript.IsMicrophoneRecording())
+                                voiceScript.StartRecording();
+
+                            if (VoiceHelper.IsVoiceEnabled && voiceScript.GetVoiceData() != null)
+                            {
+                                byte[] voiceData = voiceScript.GetVoiceData();
+
+                                if (voiceData != null)
+                                {
+                                    PlayerSender.SendPlayerVoiceChat(voiceData, true);
+                                    FusionLogger.Log($"Sent voice bytes length: {voiceData.Length}");
+                                } else
+                                {
+                                    FusionLogger.Log("Voice Bytes are null!");
+                                }
+                            }
+
+                            // Update the manager
+                            VoiceManager.Update();
+                        }
+                    }
+                    else
+                    {
+                        voiceScript.StartRecording();
+                    }
+                } else
+                {
+                    FusionLogger.Error("Tried to update Voice Chat, but voiceScript is null!");
+                }
+            } else
+            {
+                FusionLogger.Error("Tried to update Voice Chat, but voiceObject is null!");
+            }*/
+        }
+
+        internal override void StartServer() {
+            currentclient = new Client();
+            currentserver = new Server();
+
+            currentclient.Connected += OnStarted;
+            currentserver.Start(7777, 10);
+
+            currentclient.Connect("127.0.0.1:7777");
+        }
+
+        private void OnStarted(object sender, System.EventArgs e) {
 #if DEBUG
             FusionLogger.Log("SERVER START HOOKED");
 #endif
@@ -222,9 +275,14 @@ namespace LabFusion.Network
             currentclient.Connected -= OnStarted;
         }
 
+        private bool isConnecting;
         public void ConnectToServer(string ip) {
+            if (!isConnecting)
+            {
+                currentclient.Connected += OnConnect;
+            }
 
-            currentclient.Connected += OnConnect;
+            isConnecting = true;
             // Leave existing server
             if (IsClient || IsServer)
                 Disconnect();
@@ -232,10 +290,11 @@ namespace LabFusion.Network
             currentclient.Connect(ip + ":7777");
         }
 
-        private void OnConnect(object sender, EventArgs e) {
+        private void OnConnect(object sender, System.EventArgs e) {
 #if DEBUG
             FusionLogger.Log("SERVER CONNECT HOOKED");
 #endif
+            isConnecting = false;
 
             currentclient.Disconnected += OnClientDisconnect;
             // Update player ID here since it's determined on the Riptide Client ID
@@ -276,12 +335,24 @@ namespace LabFusion.Network
 
         private void HookRiptideEvents() {
             // Add server hooks
+            MultiplayerHooking.OnMainSceneInitialized += OnMainScene;
             MultiplayerHooking.OnMainSceneInitialized += OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged += OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin += OnUserJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
+        }
+
+        private void OnMainScene()
+        {
+            if (voiceObject == null)
+            {
+                voiceObject = new GameObject("UnityVoice");
+                voiceScript = voiceObject.AddComponent<UnityVoice>();
+                UnityEngine.Object.DontDestroyOnLoad(voiceObject);
+                UnityEngine.Object.DontDestroyOnLoad(voiceScript);
+            }
         }
 
         private void OnGamemodeChanged(Gamemode gamemode) {
@@ -307,6 +378,7 @@ namespace LabFusion.Network
 
         private void UnHookRiptideEvents() {
             // Remove server hooks
+            MultiplayerHooking.OnMainSceneInitialized -= OnMainScene;
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
             MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
@@ -323,7 +395,6 @@ namespace LabFusion.Network
         internal override void OnSetupBoneMenu(MenuCategory category) {
             // Create the basic options
             CreateMatchmakingMenu(category);
-            CreateMicrophoneMenu(category);
             BoneMenuCreator.CreateGamemodesMenu(category);
             BoneMenuCreator.CreateSettingsMenu(category);
             BoneMenuCreator.CreateNotificationsMenu(category);
@@ -375,8 +446,7 @@ namespace LabFusion.Network
         }
 
         private void OnCopyServerCode() {
-            string ip = publicIp;
-            string encodedIP = IPSafety.IPSafety.EncodeIPAddress(ip);
+            string encodedIP = IPSafety.IPSafety.EncodeIPAddress(publicIp);
 
             Clipboard.SetText(encodedIP);
         }
@@ -445,28 +515,6 @@ namespace LabFusion.Network
                     }
                 }
             }
-            else {
-
-                string serverCode = FusionPreferences.ClientSettings.ServerCode.GetValue();
-
-                if (serverCode.Contains(".")) {
-                    _targetServerIP = serverCode;
-                }
-                else if (serverCode == "PASTE SERVER CODE HERE") {
-                    FusionNotifier.Send(new FusionNotification()
-                    {
-                        title = "Code is Null",
-                        showTitleOnPopup = true,
-                        isMenuItem = false,
-                        isPopup = true,
-                        message = $"No server code has been put in FusionPreferences!",
-                        popupLength = 5f,
-                    });
-                } else {
-                    string decodedIP = IPSafety.IPSafety.DecodeIPAddress(serverCode);
-                    _targetServerIP = decodedIP;
-                }
-            }
         }
 
         private void OnClientDisconnect(object sender, ServerDisconnectedEventArgs client)
@@ -476,32 +524,6 @@ namespace LabFusion.Network
 
             // Send disconnect notif to everyone
             ConnectionSender.SendDisconnect(client.Client.Id, client.Reason.ToString());
-        }
-
-        // For Unity's microphone stuff. Will do later
-        private void CreateMicrophoneMenu(MenuCategory category)
-        {
-            // Root category
-            var micSettings = category.CreateCategory("Microphone Settings", Color.white);
-
-            LoadMics(micSettings);
-        }
-
-        private void LoadMics(MenuCategory category)
-        {
-            category.Elements.Clear();
-
-            category.CreateFunctionElement("Refresh Microphones", Color.yellow, () => LoadMics(category));
-
-            foreach (string mic in Microphone.devices)
-            {
-                category.CreateFunctionElement($"Set Mic: {Environment.NewLine} {mic}", Color.white, () => SetMicrophone(mic));
-            }
-        }
-
-        private void SetMicrophone(string micName)
-        {
-            FusionPreferences.ClientSettings.ChosenMic.SetValue(micName);
         }
 
         private void OnClickCodeError()

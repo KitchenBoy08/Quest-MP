@@ -10,6 +10,8 @@ namespace LabFusion.Core.src.Network.Riptide
 {
     public sealed class RiptideVoiceManager : VoiceManager
     {
+        public override bool CanTalk => false;
+
         public override VoiceHandler GetVoiceHandler(PlayerId id)
         {
             if (TryGetHandler(id, out var handler))

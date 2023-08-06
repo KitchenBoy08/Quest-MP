@@ -393,6 +393,7 @@
     <Compile Include="Core\src\MonoBehaviours\PropCollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\CollisionSyncer.cs" />
     <Compile Include="Core\src\MonoBehaviours\TimedDespawner.cs" />
+    <Compile Include="Core\src\MonoBehaviours\UnityVoice.cs" />
     <Compile Include="Core\src\Network\Fallback\EmptyNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Helpers\LobbyMetadataHelper.cs" />
     <Compile Include="Core\src\Network\Helpers\MetadataHelper.cs" />
@@ -851,6 +852,8 @@
     <Compile Include="Core\src\Utilities\ThreadingUtilities.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
     <Compile Include="Core\src\Utilities\UI\UIMachineUtilities.cs" />
+    <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
+    <Compile Include="obj\Release\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\lib\x86_64\steam_api64.dll" />
@@ -1447,6 +1450,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="obj\Release\TempPE\Core.src.AssemblyInfo.cs.dll" />
+    <Content Include="Staging\Thunderstore\icon.png" />
+    <Content Include="Staging\Thunderstore\Mods\LabFusion.dll" />
+    <Content Include="Staging\Thunderstore\Plugins\LabFusionUpdater.dll" />
     <EmbeddedResource Include="Core\resources\text\raw_changelog.txt" />
     <EmbeddedResource Include="Core\resources\text\credits\raw_credits_01.txt" />
     <EmbeddedResource Include="Core\resources\text\credits\raw_credits_02.txt" />
@@ -1470,6 +1477,12 @@
     <EmbeddedResource Include="Core\resources\bundles\Android\achievement_bundle.fusion" />
     <EmbeddedResource Include="Core\resources\bundles\Android\content_bundle.fusion" />
     <EmbeddedResource Include="Core\resources\bundles\Android\item_bundle.fusion" />
+    <None Include="obj\Release\LabFusion.csproj.AssemblyReference.cache" />
+    <None Include="Staging\GitHub\INTERNAL_NOTES.md" />
+    <None Include="Staging\GitHub\marrow-integration.unitypackage" />
+    <None Include="Staging\GitHub\RELEASE_NOTES.md" />
+    <None Include="Staging\Thunderstore\manifest.json" />
+    <None Include="Staging\Thunderstore\README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
