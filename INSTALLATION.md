@@ -13,6 +13,8 @@ Please keep in mind STANDALONE Oculus Quest (Aka running on quest with absolutel
     - Move the file "LabFusion.dll" to your MELONLOADER mods folder
     - Move the file "LabFusionUpdater.dll" to your MELONLOADER plugins folder
     - Profit
+4. Install Plugins
+    - Simply place all dlls from the plugins folder into your MELONLOADER plugins folder
 
 
 # FAQ
