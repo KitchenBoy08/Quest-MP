@@ -1450,6 +1450,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="obj\Debug\LabFusion.csproj.FileListAbsolute.txt" />
+    <Content Include="obj\Release\LabFusion.csproj.FileListAbsolute.txt" />
     <Content Include="obj\Release\TempPE\Core.src.AssemblyInfo.cs.dll" />
     <Content Include="Staging\Thunderstore\icon.png" />
     <Content Include="Staging\Thunderstore\Mods\LabFusion.dll" />
@@ -1477,7 +1479,13 @@
     <EmbeddedResource Include="Core\resources\bundles\Android\achievement_bundle.fusion" />
     <EmbeddedResource Include="Core\resources\bundles\Android\content_bundle.fusion" />
     <EmbeddedResource Include="Core\resources\bundles\Android\item_bundle.fusion" />
+    <None Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
+    <None Include="obj\Debug\LabFusion.csproj.AssemblyReference.cache" />
+    <None Include="obj\Debug\LabFusion.csproj.CoreCompileInputs.cache" />
+    <None Include="obj\Release\DesignTimeResolveAssemblyReferencesInput.cache" />
     <None Include="obj\Release\LabFusion.csproj.AssemblyReference.cache" />
+    <None Include="obj\Release\LabFusion.csproj.CopyComplete" />
+    <None Include="obj\Release\LabFusion.csproj.CoreCompileInputs.cache" />
     <None Include="Staging\GitHub\INTERNAL_NOTES.md" />
     <None Include="Staging\GitHub\marrow-integration.unitypackage" />
     <None Include="Staging\GitHub\RELEASE_NOTES.md" />
