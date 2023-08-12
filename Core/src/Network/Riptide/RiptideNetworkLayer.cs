@@ -30,6 +30,7 @@ using System.Windows.Forms;
 
 using LabFusion.Senders;
 using LabFusion.BoneMenu;
+using LabFusion.Core.src.BoneMenu;
 
 using System.IO;
 
@@ -43,7 +44,6 @@ using System.Drawing;
 using JetBrains.Annotations;
 using LabFusion.Core.src.Network.Riptide;
 using UnityEngine.Rendering.Universal;
-using LabFusion.Core.src.BoneMenu;
 using System.Net;
 using System.Runtime.InteropServices;
 using Il2CppSystem;

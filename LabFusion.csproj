@@ -238,6 +238,7 @@
     <Compile Include="Core\marrow-integration\Runtime\Misc\BitRewardProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\CrateSpawnerProxy.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\PlayerProxy.cs" />
+    <Compile Include="Core\marrow-integration\Runtime\Spawners\CupBoardPlacer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Spawners\InfoBoxPlacer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Spawners\PointShopPlacer.cs" />
     <Compile Include="Core\marrow-integration\Runtime\Misc\SyncGameObjectEnabled.cs" />
@@ -268,40 +269,40 @@
     <Compile Include="Core\src\BoneMenu\PlayerListCreator.cs" />
     <Compile Include="Core\src\BoneMenu\ServerInfoCreator.cs" />
     <Compile Include="Core\src\BoneMenu\SettingsCreator.cs" />
-    <Compile Include="Core\src\Data\Containers\FusionDictionary.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\AscentDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\BigAnomalyBDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\BigAnomalyDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\BigBoneBowlingDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\ContainerYardDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\DescentDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\DMLevelDataHandler.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\DropPitDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\DungeonWarriorDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\GunRangeDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\HalfwayParkDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\DropPitDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\HoloChamberDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\HomeDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\HubDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\LongRunDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MagmaGateDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MainMenuDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MineDiveDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MirrorDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MonogonMotorwayDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MoonBaseDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\NeonDistrictParkourDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\AscentDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\PillarClimbDMData.cs" />
-    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\RooftopsDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MonogonMotorwayDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\SprintBridgeDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\StreetPuncherDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\LongRunDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\GunRangeDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\BigAnomalyBDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MineDiveDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\BigAnomalyDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MagmaGateDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\RooftopsDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\DescentDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MoonBaseDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MainMenuDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\MirrorDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\BigBoneBowlingDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\NeonDistrictParkourDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\TunnelTipperDMData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\ContainerYardDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\TuscanyDataDM.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\HubDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\VoidG114DMData.cs" />
+    <Compile Include="Core\src\Data\Containers\FusionDictionary.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\FrameSkipper.cs" />
     <Compile Include="Core\src\Data\Containers\FusionArrayPool.cs" />
     <Compile Include="Core\src\Data\Containers\Syncables\GrabbedGripList.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\GameControllerData.cs" />
+    <Compile Include="Core\src\Data\Containers\Levels\DMSpawnPoints\HalfwayParkDMData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\HolodeckData.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\LevelDataHandler.cs" />
     <Compile Include="Core\src\Data\Containers\Levels\ResetButtonRemover.cs" />
@@ -474,7 +475,6 @@
     <Compile Include="Core\src\Network\Steam\SteamLobby.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVoiceHandler.cs" />
     <Compile Include="Core\src\Patching\CommonDelegates.cs" />
-    <Compile Include="Core\src\Patching\ManualPatcher.cs" />
     <Compile Include="Core\src\Patching\NativeStructs\Attack_.cs" />
     <Compile Include="Core\src\Patching\Patches\Attacks\ImpactPropertiesPatches.cs" />
     <Compile Include="Core\src\Patching\Patches\AvatarDicePatches.cs" />
@@ -835,6 +835,7 @@
     <Compile Include="Core\src\Utilities\Internal\SafeEvents.cs" />
     <Compile Include="Core\src\Utilities\Fusion\MultiplayerHooking.cs" />
     <Compile Include="Core\src\Preferences\FusionPref.cs" />
+    <Compile Include="Core\src\Patching\ManualPatcher.cs" />
     <Compile Include="Core\src\Utilities\Internal\BigEndianHelper.cs" />
     <Compile Include="Core\src\Utilities\Fusion\FusionLogger.cs" />
     <Compile Include="Core\src\Syncables\ISyncable.cs" />
@@ -852,8 +853,6 @@
     <Compile Include="Core\src\Utilities\ThreadingUtilities.cs" />
     <Compile Include="Core\src\Utilities\TriggerUtilities.cs" />
     <Compile Include="Core\src\Utilities\UI\UIMachineUtilities.cs" />
-    <Compile Include="obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
-    <Compile Include="obj\Release\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Core\resources\lib\x86_64\steam_api64.dll" />
@@ -891,11 +890,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\MelonLoader.dll</HintPath>
     </Reference>
-    <Reference Include="Open.Nat, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f22a6a4582336c76, processorArchitecture=MSIL">
-      <HintPath>packages\Open.NAT.2.1.0.0\lib\net45\Open.Nat.dll</HintPath>
-    </Reference>
     <Reference Include="RiptideNetworking">
-      <HintPath>..\..\..\Riptide-2.0.0\RiptideNetworking\RiptideNetworking\bin\Debug\netstandard2.0\netstandard2.0\RiptideNetworking.dll</HintPath>
+      <HintPath>..\..\OneDrive\Desktop\Riptide-2.0.0\RiptideNetworking\RiptideNetworking\bin\Debug\netstandard2.0\netstandard2.0\RiptideNetworking.dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -1453,12 +1449,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="obj\Debug\LabFusion.csproj.FileListAbsolute.txt" />
-    <Content Include="obj\Release\LabFusion.csproj.FileListAbsolute.txt" />
-    <Content Include="obj\Release\TempPE\Core.src.AssemblyInfo.cs.dll" />
-    <Content Include="Staging\Thunderstore\icon.png" />
-    <Content Include="Staging\Thunderstore\Mods\LabFusion.dll" />
-    <Content Include="Staging\Thunderstore\Plugins\LabFusionUpdater.dll" />
     <EmbeddedResource Include="Core\resources\text\raw_changelog.txt" />
     <EmbeddedResource Include="Core\resources\text\credits\raw_credits_01.txt" />
     <EmbeddedResource Include="Core\resources\text\credits\raw_credits_02.txt" />
@@ -1482,19 +1472,6 @@
     <EmbeddedResource Include="Core\resources\bundles\Android\achievement_bundle.fusion" />
     <EmbeddedResource Include="Core\resources\bundles\Android\content_bundle.fusion" />
     <EmbeddedResource Include="Core\resources\bundles\Android\item_bundle.fusion" />
-    <None Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
-    <None Include="obj\Debug\LabFusion.csproj.AssemblyReference.cache" />
-    <None Include="obj\Debug\LabFusion.csproj.CoreCompileInputs.cache" />
-    <None Include="obj\Release\DesignTimeResolveAssemblyReferencesInput.cache" />
-    <None Include="obj\Release\LabFusion.csproj.AssemblyReference.cache" />
-    <None Include="obj\Release\LabFusion.csproj.CopyComplete" />
-    <None Include="obj\Release\LabFusion.csproj.CoreCompileInputs.cache" />
-    <None Include="packages.config" />
-    <None Include="Staging\GitHub\INTERNAL_NOTES.md" />
-    <None Include="Staging\GitHub\marrow-integration.unitypackage" />
-    <None Include="Staging\GitHub\RELEASE_NOTES.md" />
-    <None Include="Staging\Thunderstore\manifest.json" />
-    <None Include="Staging\Thunderstore\README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

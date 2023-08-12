@@ -8,6 +8,8 @@ Console.WriteLine("\x1b[93mI see you're on a Mac. The Mac version of FusionHelpe
 
 #endif
 
+SteamHandler.CheckSteamRunning();
+
 NetworkHandler.Init();
 
 Thread tickThread = new(() =>
@@ -52,6 +54,13 @@ Thread commandThread = new(() =>
                 case "forcestart":
                     {
                         SteamHandler.Init(250820);
+                        break;
+                    }
+                case "quit":
+                case "exit":
+                case "stop":
+                    {
+                        Environment.Exit(0);
                         break;
                     }
                 default:

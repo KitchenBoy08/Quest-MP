@@ -18,9 +18,9 @@ Having been in development for 5 months, the long awaited multiplayer mod FUSION
 2. Install LemonLoader (latest version required).
 3. Install BoneLib.
 4. Download Fusion and drag the LabFusion.dll file into your Mods folder. Ignore the LabFusionUpdater.dll file, it does not work on Quest.
-5. Download FusionHelper on your PC (Link Here). This will wirelessly connect to your Quest.
+5. Download FusionHelper on your PC ([available here](github.com/Lakatrazz/Fusion-Helper/releases/latest)). This will wirelessly connect to your Quest.
      - Note that the PC does not need to run BONELAB, or have good specifications.
-6. Run Steam and FusionHelper.exe on your PC.
+6. Run Steam and FusionHelper on your PC.
      - Make sure to run these programs every time you play, and that your PC and Quest are on the same network.
      - Both programs are required as they handle networking the game between you and your friends.
 7. Open BONELAB on your Quest.
@@ -36,7 +36,7 @@ All of the functions of the mod can be found in BONEMENU under the tab "BONELAB 
 
 ## Physical Interactions
 Instead of players and synced props being kinematic, non-physics objects, all interactions are solved using physical forces.<br>
-This means you can pickup your friends, throw them, stand on them, push them, and more.
+This means you can pick up your friends, throw them, stand on them, push them, and more.
 
 ## Campaign Support
 The entire campaign has been ensured completable, with nearly every custom event synced, as well as optimizations made to make the experience run as smoothly as possible.
@@ -51,7 +51,7 @@ All platforms are able to crossplay together. In order to do so, you simply have
 
 # Additional Content
 ## Modules, Gamemodes, and the Bitmart
-Fusion has integrated support to allow other mods implement Fusion compatibility using "Modules". There is an SDK for Unity, allowing you to implement features while in multiplayer, as well as a code SDK in order to create unique synced features. You can find both of these on the GitHub repository linked on this page.
+Fusion has integrated support to allow other mods to implement Fusion compatibility using "Modules". There is an SDK for Unity, allowing you to implement features while in multiplayer, as well as a code SDK in order to create unique synced features. You can find both of these [here](https://github.com/Lakatrazz/BONELAB-Fusion).
 
 Besides that, Fusion also has integrated gamemodes. The current gamemodes are:
 - Deathmatch, Free-for-all fighting!
@@ -72,6 +72,7 @@ You can view the most recent changes and credits in the in game info box in Void
 ## Source
 - Fusion: https://github.com/Lakatrazz/BONELAB-Fusion
 - Fusion Module Example: https://github.com/Lakatrazz/Fusion-Module-Example
+- Fusion Helper: https://github.com/Lakatrazz/Fusion-Helper
 
 ## Soundtrack
 You can listen to the Fusion official soundtrack here:
