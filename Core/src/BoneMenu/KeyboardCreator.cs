@@ -11,33 +11,33 @@ using LabFusion.BoneMenu;
 
 namespace LabFusion.Core.src.BoneMenu
 {
-    public static class KeyboardCreator
+    public class KeyboardCreator
     {
-        public static MenuCategory keyboardCategory;
-        public static MenuCategory digitsMenu;
-        public static MenuCategory specialsMenu;
-        public static MenuCategory letterMenu;
-        public static MenuElement stringReference;
-        public static MenuElement stringReference1;
-        public  static MenuElement stringReference2;
-        public static MenuElement stringReference3;
+        MenuCategory keyboardCategory;
+        MenuCategory digitsMenu;
+        MenuCategory specialsMenu;
+        MenuCategory letterMenu;
+        MenuElement stringReference;
+        MenuElement stringReference1;
+        MenuElement stringReference2;
+        MenuElement stringReference3;
 
-        private static bool isCapital = true;
-        public static string outValue = "";
-        public static IFusionPref<string> preference;
+        bool isCapital = true;
+        string outValue = "";
+        IFusionPref<string> preference;
 
         public static string[] lowCaseLetters = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
         public static string[] upCaseLetters = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
         public static int[] digits = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         public static string[] specials = { "/", "-", "_", "=", ".", ",", ":", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "<", ">" };
-        public static void CreateKeyboard(MenuCategory cat, IFusionPref<string> pref)
+        public void CreateKeyboard(MenuCategory cat, string keyboardName, IFusionPref<string> pref)
         {
             preference = pref;
-            keyboardCategory = cat.CreateCategory("Keyboard", Color.magenta);
+            keyboardCategory = cat.CreateCategory(keyboardName, Color.cyan);
             CreateButtons();
         }
 
-        private static void CreateButtons()
+        private void CreateButtons()
         {
             stringReference = keyboardCategory.CreateFunctionElement($"Current Value:" + System.Environment.NewLine + outValue, Color.green, null);
             var setValue = keyboardCategory.CreateFunctionElement("Enter", Color.yellow, () => SetValue(outValue, preference));
@@ -51,7 +51,7 @@ namespace LabFusion.Core.src.BoneMenu
             CreateLetterMenu();
         }
 
-        public static void CreateDigitsMenu()
+        public void CreateDigitsMenu()
         {
             stringReference1 = digitsMenu.CreateFunctionElement($"Current Value:" + System.Environment.NewLine + outValue, Color.green, null);
 
@@ -62,7 +62,7 @@ namespace LabFusion.Core.src.BoneMenu
             }
         }
 
-        public static void CreateSpecialsMenu()
+        public void CreateSpecialsMenu()
         {
             stringReference2 = specialsMenu.CreateFunctionElement($"Current Value:" + System.Environment.NewLine + outValue, Color.green, null);
 
@@ -73,7 +73,7 @@ namespace LabFusion.Core.src.BoneMenu
             }
         }
 
-        public static void CreateLetterMenu()
+        public void CreateLetterMenu()
         {
             stringReference3 = letterMenu.CreateFunctionElement($"Current Value:" + System.Environment.NewLine + outValue, Color.green, null);
 
@@ -95,14 +95,14 @@ namespace LabFusion.Core.src.BoneMenu
             }
         }
 
-        private static void SetValue(string value, IFusionPref<string> pref)
+        private void SetValue(string value, IFusionPref<string> pref)
         {
             pref.SetValue(value);
             // Ill probably do proper hooking later once I feel like it, for now I'll just call a method to update text :P
-            RiptideNetworkLayer.OnSetCode();
+            RiptideNetworkLayer.OnSetValue();
         }
 
-        private static void ClearValue(IFusionPref<string> pref)
+        private void ClearValue(IFusionPref<string> pref)
         {
             outValue = "";
 
@@ -112,7 +112,7 @@ namespace LabFusion.Core.src.BoneMenu
             stringReference3.SetName($"Current Value:{System.Environment.NewLine} {outValue}");
         }
 
-        private static void OnUpdateOutValue(string value, IFusionPref<string> pref)
+        private void OnUpdateOutValue(string value, IFusionPref<string> pref)
         {
             var sb = new StringBuilder(outValue);
             sb.Append(value);
@@ -125,7 +125,7 @@ namespace LabFusion.Core.src.BoneMenu
             stringReference3.SetName($"Current Value:{System.Environment.NewLine} {outValue}");
         }
 
-        private static void OnClickCapsLock(bool obj)
+        private void OnClickCapsLock(bool obj)
         {
             if (isCapital)
             {

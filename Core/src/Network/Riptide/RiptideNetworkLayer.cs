@@ -334,6 +334,7 @@ namespace LabFusion.Network
             // Create the basic options
             CreateMatchmakingMenu(category);
             BoneMenuCreator.CreateGamemodesMenu(category);
+            CreateRiptideSettings(category);
             BoneMenuCreator.CreateSettingsMenu(category);
             BoneMenuCreator.CreateNotificationsMenu(category);
             BoneMenuCreator.CreateBanListMenu(category);
@@ -359,6 +360,24 @@ namespace LabFusion.Network
             // Manual joining
             _manualJoiningCategory = matchmaking.CreateCategory("Manual Joining", Color.white);
             CreateManualJoiningMenu(_manualJoiningCategory);
+        }
+
+        public static FunctionElement _nicknameDisplay;
+        private void CreateRiptideSettings(MenuCategory category)
+        {
+            var settings = category.CreateCategory("Riptide Settings", Color.blue);
+
+            // Create Username Menu
+            var nicknamePanel = settings.CreateCategory("Nickname", Color.white);
+            nicknamePanel.CreateFunctionElement($"Current Nickname: {FusionPreferences.ClientSettings.Nickname.GetValue()}", Color.white, null);
+
+            KeyboardCreator keyboard = new KeyboardCreator();
+            keyboard.CreateKeyboard(nicknamePanel, "Nickname Keyboard", FusionPreferences.ClientSettings.Nickname);
+
+            var nicknameInfo = nicknamePanel.CreateSubPanel("Reason for Existing", Color.red);
+            nicknameInfo.CreateFunctionElement("Yes, I know", Color.yellow, null);
+            nicknameInfo.CreateFunctionElement("`Fusion has this built in`", Color.yellow, null);
+            nicknameInfo.CreateFunctionElement("but I wanted a keyboard", Color.yellow, null);
         }
 
         private FunctionElement _createServerElement;
@@ -403,7 +422,8 @@ namespace LabFusion.Network
                 _targetServerElement = category.CreateFunctionElement($"Server ID: {_targetServerIP}", Color.white, null);
                 category.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerIP);
 
-                KeyboardCreator.CreateKeyboard(category, FusionPreferences.ClientSettings.ServerCode);
+                KeyboardCreator keyboard = new KeyboardCreator();
+                keyboard.CreateKeyboard(category, $"Server Code Keyboard", FusionPreferences.ClientSettings.ServerCode);
             }
             else {
                 if (FusionPreferences.ClientSettings.ServerCode == "PASTE SERVER CODE HERE") {
@@ -412,12 +432,16 @@ namespace LabFusion.Network
                 else {
                     _joinCodeElement = category.CreateFunctionElement($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode.GetValue()}", Color.green, OnClickJoinServer);
                 }
-                KeyboardCreator.CreateKeyboard(category, FusionPreferences.ClientSettings.ServerCode);
+
+                KeyboardCreator keyboard = new KeyboardCreator();
+                keyboard.CreateKeyboard(category, "Server Code Keyboard", FusionPreferences.ClientSettings.ServerCode);
             }
         }
-        public static void OnSetCode()
+        public static void OnSetValue()
         {
             _joinCodeElement.SetName($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode.GetValue()}");
+            _nicknameDisplay.SetName($"Current Nickname: {FusionPreferences.ClientSettings.Nickname.GetValue()}");
+            PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.NicknameKey, FusionPreferences.ClientSettings.Nickname.GetValue());
         }
 
         private void OnClickJoinServer() {

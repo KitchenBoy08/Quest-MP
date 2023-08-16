@@ -102,7 +102,7 @@ namespace LabFusion.Network
                 fixed (byte* messageBuffer = buffer)
                 {
                     FusionMessageHandler.ReadMessage(messageBuffer, messageLength, true);
-               }
+                } 
             }
         }
     }
