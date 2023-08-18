@@ -32,22 +32,11 @@ using LabFusion.Senders;
 using LabFusion.BoneMenu;
 using LabFusion.Core.src.BoneMenu;
 
-using System.IO;
-
-using UnhollowerBaseLib;
 using LabFusion.SDK.Gamemodes;
-using Steamworks;
 using BoneLib;
-using System.Windows.Forms.DataVisualization.Charting;
-using LabFusion.Patching;
-using System.Drawing;
-using JetBrains.Annotations;
-using LabFusion.Core.src.Network.Riptide;
-using UnityEngine.Rendering.Universal;
-using System.Net;
-using System.Runtime.InteropServices;
-using Il2CppSystem;
-using LabFusion.MonoBehaviours;
+using System.Runtime.CompilerServices;
+using System.Net.Sockets;
+using static LabFusion.Preferences.FusionPreferences;
 
 namespace LabFusion.Network
 {
@@ -73,6 +62,24 @@ namespace LabFusion.Network
 
         protected string _targetServerIP;
 
+        private static bool OpenUDPPort(int port)
+        {
+            try
+            {
+                using (UdpClient udpClient = new UdpClient())
+                {
+                    byte[] dummyData = new byte[1];
+                    udpClient.Send(dummyData, dummyData.Length, "127.0.0.1", port);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                FusionLogger.Log($"error opening UDP port: {ex.Message}");
+                return false;
+            }
+        }
+
         internal override void OnInitializeLayer() {
             currentclient = new Client();
             currentserver = new Server();
@@ -85,6 +92,11 @@ namespace LabFusion.Network
             PlayerIdManager.SetUsername("Riptide Enjoyer");
 
             FusionLogger.Log("Initialized Riptide Layer");
+
+            if (!HelperMethods.IsAndroid())
+            {
+                OpenUDPPort(7777);
+            }
         }
 
         internal override void OnLateInitializeLayer()
@@ -98,9 +110,6 @@ namespace LabFusion.Network
         {
             if (!string.IsNullOrEmpty(ipAddress))
             {
-#if DEBUG
-                Debug.Log($"External IP address: {ipAddress}");
-#endif
                 publicIp = ipAddress;
             }
             else
@@ -162,6 +171,11 @@ namespace LabFusion.Network
                 else if (currentserver.TryGetClient((ushort)userId, out Connection client))
                     currentserver.Send(RiptideHandler.PrepareMessage(message, channel), client);
             }
+        }
+
+        internal override void OnVoiceChatUpdate()
+        {
+            // TODO
         }
 
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
@@ -234,11 +248,22 @@ namespace LabFusion.Network
             }
 
             isConnecting = true;
+
             // Leave existing server
             if (IsClient || IsServer)
                 Disconnect();
 
-            currentclient.Connect(ip + ":7777");
+            if (ip.Contains("."))
+            {
+                currentclient.Connect(ip + ":7777");
+            }
+            else
+            {
+                string decodedIp = IPSafety.IPSafety.DecodeIPAddress(ip);
+                ConnectToServer(decodedIp);
+
+                currentclient.Connect(decodedIp + ":7777");
+            }
         }
 
         private void OnConnect(object sender, System.EventArgs e) {
@@ -360,6 +385,9 @@ namespace LabFusion.Network
             // Manual joining
             _manualJoiningCategory = matchmaking.CreateCategory("Manual Joining", Color.white);
             CreateManualJoiningMenu(_manualJoiningCategory);
+
+            // Server List
+            InitializeServerListCategory(matchmaking);
         }
 
         public static FunctionElement _nicknameDisplay;
@@ -437,7 +465,8 @@ namespace LabFusion.Network
                 keyboard.CreateKeyboard(category, "Server Code Keyboard", FusionPreferences.ClientSettings.ServerCode);
             }
         }
-        public static void OnSetValue()
+
+        public static void UpdatePreferenceValues()
         {
             _joinCodeElement.SetName($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode.GetValue()}");
             _nicknameDisplay.SetName($"Current Nickname: {FusionPreferences.ClientSettings.Nickname.GetValue()}");
@@ -513,7 +542,7 @@ namespace LabFusion.Network
                 isMenuItem = false,
                 isPopup = true,
                 message = $"Code: {encodedIP}",
-                popupLength = 20f,
+                popupLength = 10f,
             });
         }
 
@@ -525,6 +554,114 @@ namespace LabFusion.Network
         internal override bool CheckValidation()
         {
             return true;
+        }
+
+        // Server List Menu
+        private static MenuCategory _serverListCategory;
+        private static MenuCategory createMenu;
+
+        private void InitializeServerListCategory(MenuCategory category)
+        {
+            _serverListCategory = category.CreateCategory("Server List", Color.white);
+
+            CreateServerList();
+        }
+        private void CreateServerList()
+        {
+            _serverListCategory.Elements.Clear();
+
+            // Get listings
+            List<ServerListing> serverListings = new List<ServerListing>();
+            for (int i = 0; i < FusionPreferences.ClientSettings.ServerNameList.GetValue().Count; i++)
+            {
+                string listingName = FusionPreferences.ClientSettings.ServerNameList.GetValue()[i];
+                string listingCode = FusionPreferences.ClientSettings.ServerCodeList.GetValue()[i];
+
+                if (listingName != "" && listingCode != "")
+                {
+                    ServerListing listing = new ServerListing() { Name = listingName, ServerCode = listingCode };
+                    serverListings.Add(listing);
+                }
+            }
+
+            // Listing Creator Menu
+            createMenu = _serverListCategory.CreateCategory("Add Server", Color.green);
+
+            KeyboardCreator serverNameKeyboard = new KeyboardCreator();
+            serverNameKeyboard.CreateKeyboard(createMenu, "Edit Name", FusionPreferences.ClientSettings.ServerNameToAdd);
+
+            KeyboardCreator serverCodeKeyboard = new KeyboardCreator();
+            serverCodeKeyboard.CreateKeyboard(createMenu, "Edit Code", FusionPreferences.ClientSettings.ServerCodeToAdd);
+
+            createMenu.CreateFunctionElement("Add Listing", Color.green, () => CreateListing(FusionPreferences.ClientSettings.ServerNameToAdd.GetValue(), FusionPreferences.ClientSettings.ServerCodeToAdd.GetValue()));
+
+            foreach (var listing in serverListings)
+            {
+                var listingCategory = _serverListCategory.CreateCategory(listing.Name, Color.white);
+                listingCategory.CreateFunctionElement($"Code: {System.Environment.NewLine}{listing.ServerCode}", Color.green, null);
+
+                // Join Element
+                listingCategory.CreateFunctionElement("Join Server", Color.green, () => ConnectToServer(listing.ServerCode));
+
+                listingCategory.CreateFunctionElement("Remove Listing", Color.red, () => DeleteListing(listing));
+            }
+        }
+
+        private void CreateListing(string listingName, string listingCode)
+        {
+            if (listingName != "" && listingCode != "")
+            {
+                ServerListing listing = new ServerListing() { Name = listingName, ServerCode = listingCode };
+
+                FusionPreferences.ClientSettings.ServerNameToAdd.SetValue("");
+                FusionPreferences.ClientSettings.ServerCodeToAdd.SetValue("");
+
+                var serverNames = FusionPreferences.ClientSettings.ServerNameList.GetValue();
+                var serverCodes = FusionPreferences.ClientSettings.ServerCodeList.GetValue();
+
+                serverNames.Add(listing.Name);
+                serverCodes.Add(listing.ServerCode);
+
+                FusionPreferences.ClientSettings.ServerNameList.SetValue(serverNames);
+                FusionPreferences.ClientSettings.ServerCodeList.SetValue(serverCodes);
+
+                CreateServerList();
+
+                BoneLib.BoneMenu.MenuManager.SelectCategory(_serverListCategory);
+            } else
+            {
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    title = "Invalid Listing",
+                    showTitleOnPopup = true,
+                    isMenuItem = false,
+                    isPopup = true,
+                    message = $"All fields must contain a value!",
+                    popupLength = 3f,
+                });
+            }
+        }
+
+        private void DeleteListing(ServerListing listing)
+        {
+            var serverNames = FusionPreferences.ClientSettings.ServerNameList.GetValue();
+            var serverCodes = FusionPreferences.ClientSettings.ServerCodeList.GetValue();
+
+            serverNames.Remove(listing.Name);
+            serverCodes.Remove(listing.ServerCode);
+
+            FusionPreferences.ClientSettings.ServerNameList.SetValue(serverNames);
+            FusionPreferences.ClientSettings.ServerCodeList.SetValue(serverCodes);
+
+            CreateServerList();
+
+            BoneLib.BoneMenu.MenuManager.SelectCategory(_serverListCategory);
+        }
+
+        public class ServerListing()
+        {
+            public string Name;
+            public string ServerCode;
         }
     }
 }

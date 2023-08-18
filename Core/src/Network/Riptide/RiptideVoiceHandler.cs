@@ -65,7 +65,37 @@ namespace LabFusion.Core.src.Network.Riptide
 
         public override void OnVoiceBytesReceived(byte[] bytes)
         {
-            // TODO
+            if (MicrophoneDisabled)
+            {
+                return;
+            }
+
+            VerifyRep();
+
+            // Decompress the voice data
+            _compressedVoiceStream.Position = 0;
+            _compressedVoiceStream.Write(bytes, 0, bytes.Length);
+
+            _compressedVoiceStream.Position = 0;
+            _decompressedVoiceStream.Position = 0;
+
+            int numBytesWritten = 0;
+
+            _decompressedVoiceStream.Write(bytes, 0, bytes.Length);
+            numBytesWritten = bytes.Length;
+
+            _decompressedVoiceStream.Position = 0;
+
+            while (_decompressedVoiceStream.Position < numBytesWritten)
+            {
+                byte byte1 = (byte)_decompressedVoiceStream.ReadByte();
+                byte byte2 = (byte)_decompressedVoiceStream.ReadByte();
+
+                short pcmShort = (short)((byte2 << 8) | (byte1 << 0));
+                float pcmFloat = Convert.ToSingle(pcmShort) / short.MaxValue;
+
+                _streamingReadQueue.Enqueue(pcmFloat);
+            }
         }
 
         private float GetVoiceMultiplier()

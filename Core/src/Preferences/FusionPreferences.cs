@@ -97,6 +97,11 @@ namespace LabFusion.Preferences {
             // QUEST/Riptide 
             public static FusionPref<string> ServerCode { get; internal set; }
             public static FusionPref<string> ChosenMic { get; internal set; }
+            public static FusionPref<List<string>> ServerNameList { get; internal set; }
+            public static FusionPref<List<string>> ServerCodeList { get; internal set; }
+
+            public static FusionPref<string> ServerNameToAdd { get; internal set; }
+            public static FusionPref<string> ServerCodeToAdd { get; internal set; }
 
             // Nametag settings
             public static FusionPref<bool> NametagsEnabled { get; internal set; }
@@ -177,6 +182,11 @@ namespace LabFusion.Preferences {
             // QUEST/Riptide 
             ClientSettings.ServerCode = new FusionPref<string>(prefCategory, "Server Code", $"PASTE SERVER CODE HERE", PrefUpdateMode.LOCAL_UPDATE);
             ClientSettings.ChosenMic = new FusionPref<string>(prefCategory, "Chosen Microphone", "", PrefUpdateMode.LOCAL_UPDATE);
+            ClientSettings.ServerNameList = new FusionPref<List<string>>(prefCategory, "Server Name List (DO NOT CHANGE)", new List<string> { "" }, PrefUpdateMode.LOCAL_UPDATE);
+            ClientSettings.ServerCodeList = new FusionPref<List<string>>(prefCategory, "Server Code List (DO NOT CHANGE)", new List<string> { "" }, PrefUpdateMode.LOCAL_UPDATE);
+
+            ClientSettings.ServerNameToAdd = new FusionPref<string>(prefCategory, "Server Name To Add (DO NOT CHANGE)", "", PrefUpdateMode.LOCAL_UPDATE);
+            ClientSettings.ServerCodeToAdd = new FusionPref<string>(prefCategory, "Server Code To Add (DO NOT CHANGE)", "", PrefUpdateMode.LOCAL_UPDATE);
 
             // Nametag
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);

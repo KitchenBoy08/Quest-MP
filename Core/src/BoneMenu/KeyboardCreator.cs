@@ -98,8 +98,8 @@ namespace LabFusion.Core.src.BoneMenu
         private void SetValue(string value, IFusionPref<string> pref)
         {
             pref.SetValue(value);
-            // Ill probably do proper hooking later once I feel like it, for now I'll just call a method to update text :P
-            RiptideNetworkLayer.OnSetValue();
+
+            RiptideNetworkLayer.UpdatePreferenceValues();
         }
 
         private void ClearValue(IFusionPref<string> pref)
