@@ -1,23 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-using BoneLib.BoneMenu;
 using BoneLib.BoneMenu.Elements;
 
-using LabFusion.Data;
-using LabFusion.Extensions;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
 
-using SLZ.Rig;
-
 using Riptide;
-using Riptide.Transports;
 using Riptide.Utils;
 
 using UnityEngine;
@@ -34,9 +23,6 @@ using LabFusion.Core.src.BoneMenu;
 
 using LabFusion.SDK.Gamemodes;
 using BoneLib;
-using System.Runtime.CompilerServices;
-using System.Net.Sockets;
-using static LabFusion.Preferences.FusionPreferences;
 
 namespace LabFusion.Network
 {
@@ -62,24 +48,6 @@ namespace LabFusion.Network
 
         protected string _targetServerIP;
 
-        private static bool OpenUDPPort(int port)
-        {
-            try
-            {
-                using (UdpClient udpClient = new UdpClient())
-                {
-                    byte[] dummyData = new byte[1];
-                    udpClient.Send(dummyData, dummyData.Length, "127.0.0.1", port);
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                FusionLogger.Log($"error opening UDP port: {ex.Message}");
-                return false;
-            }
-        }
-
         internal override void OnInitializeLayer() {
             currentclient = new Client();
             currentserver = new Server();
@@ -92,11 +60,6 @@ namespace LabFusion.Network
             PlayerIdManager.SetUsername("Riptide Enjoyer");
 
             FusionLogger.Log("Initialized Riptide Layer");
-
-            if (!HelperMethods.IsAndroid())
-            {
-                OpenUDPPort(7777);
-            }
         }
 
         internal override void OnLateInitializeLayer()
@@ -173,11 +136,6 @@ namespace LabFusion.Network
             }
         }
 
-        internal override void OnVoiceChatUpdate()
-        {
-            // TODO
-        }
-
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
         {
             // If we are deafened, no need to deal with voice chat
@@ -186,26 +144,6 @@ namespace LabFusion.Network
 
             var handler = VoiceManager.GetVoiceHandler(id);
             handler?.OnVoiceBytesReceived(bytes);
-        }
-
-        public static byte[] AudioClipToByteArray(AudioClip audioClip)
-        {
-            // Get the audio data from the AudioClip.
-            float[] samples = new float[audioClip.samples * audioClip.channels];
-            audioClip.GetData(samples, 0);
-
-            // Convert the audio data (float[]) to bytes.
-            byte[] byteArray = new byte[samples.Length * 4]; // 4 bytes per float (32-bit float).
-            for (int i = 0; i < samples.Length; i++)
-            {
-                byte[] temp = System.BitConverter.GetBytes(samples[i]);
-                for (int j = 0; j < temp.Length; j++)
-                {
-                    byteArray[i * 4 + j] = temp[j];
-                }
-            }
-
-            return byteArray;
         }
 
         internal override void StartServer() {
@@ -397,7 +335,7 @@ namespace LabFusion.Network
 
             // Create Username Menu
             var nicknamePanel = settings.CreateCategory("Nickname", Color.white);
-            nicknamePanel.CreateFunctionElement($"Current Nickname: {FusionPreferences.ClientSettings.Nickname.GetValue()}", Color.white, null);
+            _nicknameDisplay = nicknamePanel.CreateFunctionElement($"Current Nickname: {FusionPreferences.ClientSettings.Nickname.GetValue()}", Color.white, null);
 
             KeyboardCreator keyboard = new KeyboardCreator();
             keyboard.CreateKeyboard(nicknamePanel, "Nickname Keyboard", FusionPreferences.ClientSettings.Nickname);
@@ -442,28 +380,18 @@ namespace LabFusion.Network
             else if (currentclient.IsConnected == false)
                 _createServerElement.SetName("Create Server");
         }
-        public static FunctionElement _joinCodeElement;
-        private FunctionElement _targetServerElement;
-        private void CreateManualJoiningMenu(MenuCategory category) {
-            if (!HelperMethods.IsAndroid()) {
-                category.CreateFunctionElement("Join Server", Color.green, OnClickJoinServer);
-                _targetServerElement = category.CreateFunctionElement($"Server ID: {_targetServerIP}", Color.white, null);
-                category.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerIP);
 
-                KeyboardCreator keyboard = new KeyboardCreator();
-                keyboard.CreateKeyboard(category, $"Server Code Keyboard", FusionPreferences.ClientSettings.ServerCode);
+        public static FunctionElement _joinCodeElement;
+        private void CreateManualJoiningMenu(MenuCategory category) {
+            if (FusionPreferences.ClientSettings.ServerCode == "PASTE SERVER CODE HERE") {
+                category.CreateFunctionElement("ERROR: CLICK ME", Color.red, OnClickCodeError);
             }
             else {
-                if (FusionPreferences.ClientSettings.ServerCode == "PASTE SERVER CODE HERE") {
-                    category.CreateFunctionElement("ERROR: CLICK ME", Color.red, OnClickCodeError);
-                }
-                else {
-                    _joinCodeElement = category.CreateFunctionElement($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode.GetValue()}", Color.green, OnClickJoinServer);
-                }
-
-                KeyboardCreator keyboard = new KeyboardCreator();
-                keyboard.CreateKeyboard(category, "Server Code Keyboard", FusionPreferences.ClientSettings.ServerCode);
+                _joinCodeElement = category.CreateFunctionElement($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode.GetValue()}", Color.green, OnClickJoinServer);
             }
+
+            KeyboardCreator keyboard = new KeyboardCreator();
+            keyboard.CreateKeyboard(category, "Server Code Keyboard", FusionPreferences.ClientSettings.ServerCode);
         }
 
         public static void UpdatePreferenceValues()
@@ -481,30 +409,6 @@ namespace LabFusion.Network
             else {
                 string decodedIp = IPSafety.IPSafety.DecodeIPAddress(code);
                 ConnectToServer(decodedIp);
-            }
-        }
-
-        private void OnPasteServerIP() {
-            if (!HelperMethods.IsAndroid()) {
-                if (!Clipboard.ContainsText()) {
-                    return;
-                }
-                else {
-                    string serverCode = Clipboard.GetText();
-
-                    if (serverCode.Contains(".")) {
-                        FusionPreferences.ClientSettings.ServerCode.SetValue(serverCode);
-                        _targetServerIP = serverCode;
-                        _targetServerElement.SetName($"Server ID: {serverCode}");
-                    }
-                    else {
-                        string decodedIP = IPSafety.IPSafety.DecodeIPAddress(serverCode);
-                        _targetServerIP = decodedIP;
-                        string encodedIP = IPSafety.IPSafety.EncodeIPAddress(decodedIP);
-                        FusionPreferences.ClientSettings.ServerCode.SetValue(encodedIP);
-                        _targetServerElement.SetName($"Server ID: {encodedIP}");
-                    }
-                }
             }
         }
 

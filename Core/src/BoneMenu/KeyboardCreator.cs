@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LabFusion.BoneMenu;
+using BoneLib;
+using System.Windows.Forms;
 
 namespace LabFusion.Core.src.BoneMenu
 {
@@ -18,9 +20,6 @@ namespace LabFusion.Core.src.BoneMenu
         MenuCategory specialsMenu;
         MenuCategory letterMenu;
         MenuElement stringReference;
-        MenuElement stringReference1;
-        MenuElement stringReference2;
-        MenuElement stringReference3;
 
         bool isCapital = true;
         string outValue = "";
@@ -41,7 +40,14 @@ namespace LabFusion.Core.src.BoneMenu
         {
             stringReference = keyboardCategory.CreateFunctionElement($"Current Value:" + System.Environment.NewLine + outValue, Color.green, null);
             var setValue = keyboardCategory.CreateFunctionElement("Enter", Color.yellow, () => SetValue(outValue, preference));
-            var resetButton = keyboardCategory.CreateFunctionElement("Reset Keyboard", Color.red, () => ClearValue(preference));
+
+            if (!HelperMethods.IsAndroid())
+            {
+                keyboardCategory.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerIP);
+            }
+
+            var resetButton = keyboardCategory.CreateFunctionElement("Reset Keyboard", Color.red, () => ClearValue());
+            keyboardCategory.CreateFunctionElement("Backspace", Color.white, () => BackOutValue());
             digitsMenu = keyboardCategory.CreateCategory("Digits", Color.white);
             specialsMenu = keyboardCategory.CreateCategory("Specials", Color.white);
             letterMenu = keyboardCategory.CreateCategory("Letters", Color.white);
@@ -51,46 +57,50 @@ namespace LabFusion.Core.src.BoneMenu
             CreateLetterMenu();
         }
 
+        private void OnPasteServerIP()
+        {
+            if (Clipboard.ContainsText())
+            {
+                outValue = Clipboard.GetText();
+
+                stringReference.SetName($"Current Value:" + System.Environment.NewLine + outValue);
+            }
+        }
+
         public void CreateDigitsMenu()
         {
-            stringReference1 = digitsMenu.CreateFunctionElement($"Current Value:" + System.Environment.NewLine + outValue, Color.green, null);
-
             digitsMenu.Elements.Clear();
             foreach (int number in digits)
             {
-                digitsMenu.CreateFunctionElement(number.ToString(), Color.white, () => OnUpdateOutValue(number.ToString(), preference));
+                digitsMenu.CreateFunctionElement(number.ToString(), Color.white, () => AppendOutValue(number.ToString()));
             }
         }
 
         public void CreateSpecialsMenu()
         {
-            stringReference2 = specialsMenu.CreateFunctionElement($"Current Value:" + System.Environment.NewLine + outValue, Color.green, null);
-
             specialsMenu.Elements.Clear();
             foreach (string cha in specials)
             {
-                specialsMenu.CreateFunctionElement(cha, Color.white, () => OnUpdateOutValue(cha, preference));
+                specialsMenu.CreateFunctionElement(cha, Color.white, () => AppendOutValue(cha));
             }
         }
 
         public void CreateLetterMenu()
         {
-            stringReference3 = letterMenu.CreateFunctionElement($"Current Value:" + System.Environment.NewLine + outValue, Color.green, null);
-
             letterMenu.Elements.Clear();
             var capLock = letterMenu.CreateBoolElement("Caps Lock", Color.blue, isCapital, OnClickCapsLock);
             if (isCapital)
             {
                 foreach (string letter in upCaseLetters)
                 {
-                    letterMenu.CreateFunctionElement(letter, Color.white, () => OnUpdateOutValue(letter, preference));
+                    letterMenu.CreateFunctionElement(letter, Color.white, () => AppendOutValue(letter));
                 }
             }
             else
             {
                 foreach (string letter in lowCaseLetters)
                 {
-                    letterMenu.CreateFunctionElement(letter, Color.white, () => OnUpdateOutValue(letter, preference));
+                    letterMenu.CreateFunctionElement(letter, Color.white, () => AppendOutValue(letter));
                 }
             }
         }
@@ -102,17 +112,14 @@ namespace LabFusion.Core.src.BoneMenu
             RiptideNetworkLayer.UpdatePreferenceValues();
         }
 
-        private void ClearValue(IFusionPref<string> pref)
+        private void ClearValue()
         {
             outValue = "";
 
             stringReference.SetName($"Current Value:{System.Environment.NewLine} {outValue}");
-            stringReference1.SetName($"Current Value:{System.Environment.NewLine} {outValue}");
-            stringReference2.SetName($"Current Value:{System.Environment.NewLine} {outValue}");
-            stringReference3.SetName($"Current Value:{System.Environment.NewLine} {outValue}");
         }
 
-        private void OnUpdateOutValue(string value, IFusionPref<string> pref)
+        private void AppendOutValue(string value)
         {
             var sb = new StringBuilder(outValue);
             sb.Append(value);
@@ -120,9 +127,19 @@ namespace LabFusion.Core.src.BoneMenu
             outValue = finalValue;
 
             stringReference.SetName($"Current Value:{System.Environment.NewLine} {outValue}");
-            stringReference1.SetName($"Current Value:{System.Environment.NewLine} {outValue}");
-            stringReference2.SetName($"Current Value:{System.Environment.NewLine} {outValue}");
-            stringReference3.SetName($"Current Value:{System.Environment.NewLine} {outValue}");
+        }
+
+        private void BackOutValue()
+        {
+            var sb = new StringBuilder(outValue);
+
+            int length = sb.Length;
+            sb.Remove(length - 1, 1);
+
+            string finalValue = sb.ToString();
+            outValue = finalValue;
+
+            stringReference.SetName($"Current Value:{System.Environment.NewLine} {outValue}");
         }
 
         private void OnClickCapsLock(bool obj)

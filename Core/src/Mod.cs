@@ -24,6 +24,7 @@ using UnityEngine;
 
 using System.Linq;
 using BoneLib;
+using System.Net.Sockets;
 
 namespace LabFusion
 {
@@ -49,6 +50,32 @@ namespace LabFusion
         private static int _nextSyncableSendRate = 1;
 
         private static bool _hasAutoUpdater = false;
+
+        public override void OnApplicationStart()
+        {
+            if (!HelperMethods.IsAndroid())
+            {
+                OpenUDPPort(7777);
+            }
+        }
+
+        private static bool OpenUDPPort(int port)
+        {
+            try
+            {
+                using (UdpClient udpClient = new UdpClient())
+                {
+                    byte[] dummyData = new byte[1];
+                    udpClient.Send(dummyData, dummyData.Length, "127.0.0.1", port);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                FusionLogger.Log($"Error opening UDP port: {ex.Message}");
+                return false;
+            }
+        }
 
         public override void OnEarlyInitializeMelon() {
             Instance = this;
