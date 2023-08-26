@@ -23,6 +23,12 @@ using LabFusion.Core.src.BoneMenu;
 
 using LabFusion.SDK.Gamemodes;
 using BoneLib;
+using Open.Nat;
+using System.Threading.Tasks;
+using System;
+using System.ServiceModel.Channels;
+using System.Linq;
+using System.Net.NetworkInformation;
 
 namespace LabFusion.Network
 {
@@ -65,6 +71,8 @@ namespace LabFusion.Network
         internal override void OnLateInitializeLayer()
         {
             PlayerIdManager.SetUsername("Riptide Enjoyer");
+
+            FetchAndOpenPort();
 
             HookRiptideEvents();
         }
@@ -502,7 +510,9 @@ namespace LabFusion.Network
             foreach (var listing in serverListings)
             {
                 var listingCategory = _serverListCategory.CreateCategory(listing.Name, Color.white);
-                listingCategory.CreateFunctionElement($"Code: {System.Environment.NewLine}{listing.ServerCode}", Color.green, null);
+
+                var listingHide = listingCategory.CreateSubPanel("Show Code", Color.yellow);
+                listingHide.CreateFunctionElement($"Code: {System.Environment.NewLine}{listing.ServerCode}", Color.green, null);
 
                 // Join Element
                 listingCategory.CreateFunctionElement("Join Server", Color.green, () => ConnectToServer(listing.ServerCode));
@@ -566,6 +576,89 @@ namespace LabFusion.Network
         {
             public string Name;
             public string ServerCode;
+        }
+
+        // UPNP Stuff
+        private NatDevice natDevice;
+        private async void FetchAndOpenPort()
+        {
+            try
+            {
+                var discoverer = new NatDiscoverer();
+                var cts = new System.Threading.CancellationTokenSource(5000);
+                natDevice = await discoverer.DiscoverDeviceAsync(PortMapper.Upnp, cts);
+
+                if (natDevice != null)
+                {
+                    string localIp = GetLocalIPAddress();
+
+                    if (!string.IsNullOrEmpty(localIp))
+                    {
+                        await OpenPortAsync(natDevice);
+                    }
+                    else
+                    {
+                        FusionLogger.Log("Failed to fetch Local IP.");
+                    }
+                }
+                else
+                {
+                    FusionLogger.Log("No compatible NAT device found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                FusionLogger.Error($"Error: {ex.Message}");
+            }
+        }
+        private async Task OpenPortAsync(NatDevice device)
+        {
+            try
+            {
+                //Open the port
+                var portmap = new Mapping(Protocol.Udp, 7777, 7777, "MelonLoader"); ;
+                await device.CreatePortMapAsync(portmap);
+
+                MelonLogger.Msg($"Port 7777 has been opened. Protocol: UDP");
+            }
+            catch (Exception ex)
+            {
+                MelonLogger.Error($"Error opening port: {ex.Message}");
+            }
+        }
+
+        private string GetLocalIPAddress()
+        {
+            string localIpAddress = null;
+
+            try
+            {
+                NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+                NetworkInterface activeInterface = networkInterfaces.FirstOrDefault(
+                    iface => iface.OperationalStatus == OperationalStatus.Up &&
+                             (iface.NetworkInterfaceType != NetworkInterfaceType.Loopback || iface.NetworkInterfaceType != NetworkInterfaceType.Tunnel) &&
+                             iface.GetIPProperties().UnicastAddresses.Any(
+                                 addr => addr.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork));
+
+                if (activeInterface != null)
+                {
+                    var ipProperties = activeInterface.GetIPProperties();
+                    var ipv4Address = ipProperties.UnicastAddresses.FirstOrDefault(
+                        addr => addr.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)?.Address;
+
+                    if (ipv4Address != null)
+                    {
+                        localIpAddress = ipv4Address.ToString();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MelonLogger.Error($"Error fetching local IPv4 address: {ex.Message}");
+            }
+
+            return localIpAddress;
         }
     }
 }
