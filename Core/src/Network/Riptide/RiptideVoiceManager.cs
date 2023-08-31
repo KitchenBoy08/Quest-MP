@@ -6,12 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Core.src.Network.Riptide
+namespace LabFusion.Network
 {
-    public sealed class RiptideVoiceManager : VoiceManager
-    {
-        public override bool CanTalk => true;
-
+    public sealed class RiptideVoiceManager : VoiceManager {
         public override VoiceHandler GetVoiceHandler(PlayerId id)
         {
             if (TryGetHandler(id, out var handler))

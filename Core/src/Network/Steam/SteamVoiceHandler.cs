@@ -60,31 +60,60 @@ namespace LabFusion.Network {
         }
 
         public override void OnVoiceBytesReceived(byte[] bytes) {
-            if (MicrophoneDisabled) {
+            if (ID.GetMetadata(MetadataHelper.PlatformKey) == "PC")
+            {
+                if (MicrophoneDisabled)
+                {
+                    return;
+                }
+
+                VerifyRep();
+
+                // Decompress the voice data
+                _compressedVoiceStream.Position = 0;
+                _compressedVoiceStream.Write(bytes, 0, bytes.Length);
+
+                _compressedVoiceStream.Position = 0;
+                _decompressedVoiceStream.Position = 0;
+
+                int numBytesWritten = 0;
+
+                numBytesWritten = SteamUser.DecompressVoice(_compressedVoiceStream, bytes.Length, _decompressedVoiceStream);
+
+                _decompressedVoiceStream.Position = 0;
+
+                while (_decompressedVoiceStream.Position < numBytesWritten)
+                {
+                    byte byte1 = (byte)_decompressedVoiceStream.ReadByte();
+                    byte byte2 = (byte)_decompressedVoiceStream.ReadByte();
+
+                    short pcmShort = (short)((byte2 << 8) | (byte1 << 0));
+                    float pcmFloat = Convert.ToSingle(pcmShort) / short.MaxValue;
+
+                    _streamingReadQueue.Enqueue(pcmFloat);
+                }
+            }
+            else
+            {
+                OnDecompressedVoiceBytesReceived(bytes);
+            }
+        }
+        public void OnDecompressedVoiceBytesReceived(byte[] bytes)
+        {
+            FusionLogger.Log($"Byes Recieved from Quest: {bytes.Length}");
+            if (MicrophoneDisabled)
+            {
                 return;
             }
 
             VerifyRep();
 
-            // Decompress the voice data
-            _compressedVoiceStream.Position = 0;
-            _compressedVoiceStream.Write(bytes, 0, bytes.Length);
-
-            _compressedVoiceStream.Position = 0;
             _decompressedVoiceStream.Position = 0;
 
-            int numBytesWritten = 0;
-            if (true) // TODO: quest vc stuff pt 2
-                numBytesWritten = SteamUser.DecompressVoice(_compressedVoiceStream, bytes.Length, _decompressedVoiceStream);
-            else
-            {
-                _decompressedVoiceStream.Write(bytes, 0, bytes.Length);
-                numBytesWritten = bytes.Length;
-            }
+            int length = bytes.Length;
+            _decompressedVoiceStream.Write(bytes, 0, length);
 
-            _decompressedVoiceStream.Position = 0;
-
-            while (_decompressedVoiceStream.Position < numBytesWritten)
+            while (_decompressedVoiceStream.Position < length)
             {
                 byte byte1 = (byte)_decompressedVoiceStream.ReadByte();
                 byte byte2 = (byte)_decompressedVoiceStream.ReadByte();
@@ -95,6 +124,7 @@ namespace LabFusion.Network {
                 _streamingReadQueue.Enqueue(pcmFloat);
             }
         }
+
 
         private float GetVoiceMultiplier() {
             float mult = _defaultVolumeMultiplier * FusionPreferences.ClientSettings.GlobalVolume * Volume;

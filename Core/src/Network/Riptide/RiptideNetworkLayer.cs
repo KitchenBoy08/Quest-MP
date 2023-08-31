@@ -47,6 +47,9 @@ namespace LabFusion.Network
 
         internal override bool IsClient => _isConnectionActive;
 
+        private readonly RiptideVoiceManager _voiceManager = new();
+        internal override IVoiceManager VoiceManager => _voiceManager;
+
         protected bool _isServerActive = false;
         protected bool _isConnectionActive = false;
 
@@ -72,7 +75,10 @@ namespace LabFusion.Network
         {
             PlayerIdManager.SetUsername("Riptide Enjoyer");
 
-            FetchAndOpenPort();
+            if (!HelperMethods.IsAndroid())
+            {
+                FetchAndOpenPort();
+            }
 
             HookRiptideEvents();
         }
@@ -108,7 +114,7 @@ namespace LabFusion.Network
 
         internal override string GetUsername(ulong userId) {
             // Find a way to get nickname, this will do for testing
-            string Username = ("Riptide Enjoyer " + userId);
+            string Username = ("Riptide Enjoyer");
             return Username;
         }
 
@@ -153,13 +159,16 @@ namespace LabFusion.Network
             var handler = VoiceManager.GetVoiceHandler(id);
             handler?.OnVoiceBytesReceived(bytes);
         }
+        internal override void OnVoiceChatUpdate()
+        {
+        }
 
         internal override void StartServer() {
             currentclient = new Client();
             currentserver = new Server();
 
             currentclient.Connected += OnStarted;
-            currentserver.Start(7777, 10);
+            currentserver.Start(7777, 256);
 
             currentclient.Connect("127.0.0.1:7777");
         }
@@ -391,12 +400,7 @@ namespace LabFusion.Network
 
         public static FunctionElement _joinCodeElement;
         private void CreateManualJoiningMenu(MenuCategory category) {
-            if (FusionPreferences.ClientSettings.ServerCode == "PASTE SERVER CODE HERE") {
-                category.CreateFunctionElement("ERROR: CLICK ME", Color.red, OnClickCodeError);
-            }
-            else {
-                _joinCodeElement = category.CreateFunctionElement($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode.GetValue()}", Color.green, OnClickJoinServer);
-            }
+            _joinCodeElement = category.CreateFunctionElement($"Join Server Code: {FusionPreferences.ClientSettings.ServerCode.GetValue()}", Color.green, OnClickJoinServer);
 
             KeyboardCreator keyboard = new KeyboardCreator();
             keyboard.CreateKeyboard(category, "Server Code Keyboard", FusionPreferences.ClientSettings.ServerCode);
@@ -410,7 +414,7 @@ namespace LabFusion.Network
         }
 
         private void OnClickJoinServer() {
-            string code = FusionPreferences.ClientSettings.ServerCode;
+            string code = FusionPreferences.ClientSettings.ServerCode.GetValue();
             if (code.Contains(".")) {
                 ConnectToServer(code);
             }
@@ -427,19 +431,6 @@ namespace LabFusion.Network
 
             // Send disconnect notif to everyone
             ConnectionSender.SendDisconnect(client.Client.Id, client.Reason.ToString());
-        }
-
-        private void OnClickCodeError()
-        {
-            FusionNotifier.Send(new FusionNotification()
-            {
-                title = "Code is Null",
-                showTitleOnPopup = true,
-                isMenuItem = false,
-                isPopup = true,
-                message = $"No server code has been put in FusionPreferences!",
-                popupLength = 5f,
-            });
         }
 
         private void OnDisplayServerCode()
@@ -615,7 +606,7 @@ namespace LabFusion.Network
         {
             try
             {
-                //Open the port
+                // Open the port
                 var portmap = new Mapping(Protocol.Udp, 7777, 7777, "MelonLoader"); ;
                 await device.CreatePortMapAsync(portmap);
 

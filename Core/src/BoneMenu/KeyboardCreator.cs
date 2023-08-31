@@ -43,7 +43,7 @@ namespace LabFusion.Core.src.BoneMenu
 
             if (!HelperMethods.IsAndroid())
             {
-                keyboardCategory.CreateFunctionElement("Paste Server ID from Clipboard", Color.white, OnPasteServerIP);
+                keyboardCategory.CreateFunctionElement("Paste", Color.white, OnPasteServerIP);
             }
 
             var resetButton = keyboardCategory.CreateFunctionElement("Reset Keyboard", Color.red, () => ClearValue());

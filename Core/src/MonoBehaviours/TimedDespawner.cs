@@ -43,7 +43,7 @@ namespace LabFusion.MonoBehaviours
         public void LateUpdate() {
             // If we had a syncable and it became null, destroy this
             if (_hasSyncable && (syncable == null || syncable.IsDestroyed())) {
-                GameObject.Destroy(this);
+                Destroy(this);
                 return;
             }
 

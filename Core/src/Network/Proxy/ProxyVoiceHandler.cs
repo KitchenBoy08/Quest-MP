@@ -66,7 +66,7 @@ namespace LabFusion.Network {
 
         public override void OnVoiceBytesReceived(byte[] bytes)
         {
-            if (true) // TODO: sending vc
+            if (ID.GetMetadata(MetadataHelper.PlatformKey) == "PC")
             {
                 NetDataWriter writer = ProxyNetworkLayer.NewWriter(FusionHelper.Network.MessageTypes.DecompressVoice);
                 writer.Put(_id.LongId);

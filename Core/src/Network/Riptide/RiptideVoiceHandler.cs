@@ -19,13 +19,12 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using PCMReaderCallback = UnityEngine.AudioClip.PCMReaderCallback;
 
-namespace LabFusion.Core.src.Network.Riptide
+namespace LabFusion.Network
 {
     public class RiptideVoiceHandler : VoiceHandler
     {
         private const float _defaultVolumeMultiplier = 10f;
 
-        private readonly MemoryStream _compressedVoiceStream = new();
         private MemoryStream _decompressedVoiceStream = new();
         private readonly Queue<float> _streamingReadQueue = new();
 
@@ -72,17 +71,12 @@ namespace LabFusion.Core.src.Network.Riptide
 
             VerifyRep();
 
-            // Decompress the voice data
-            _compressedVoiceStream.Position = 0;
-            _compressedVoiceStream.Write(bytes, 0, bytes.Length);
-
-            _compressedVoiceStream.Position = 0;
-            _decompressedVoiceStream.Position = 0;
-
             int numBytesWritten = 0;
-
-            _decompressedVoiceStream.Write(bytes, 0, bytes.Length);
-            numBytesWritten = bytes.Length;
+            _decompressedVoiceStream.Position = 0;
+            {
+                _decompressedVoiceStream.Write(bytes, 0, bytes.Length);
+                numBytesWritten = bytes.Length;
+            }
 
             _decompressedVoiceStream.Position = 0;
 

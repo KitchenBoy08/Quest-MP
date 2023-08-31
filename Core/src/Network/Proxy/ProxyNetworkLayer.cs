@@ -354,7 +354,7 @@ namespace LabFusion.Network
                             float[] samples = new float[diff * sendingClip.channels];
                             sendingClip.GetData(samples, lastSample);
                             byte[] ba = ToByteArray(samples);
-                            PlayerSender.SendPlayerVoiceChat(ba, false);
+                            PlayerSender.SendPlayerVoiceChat(ba);
                         }
                         lastSample = pos;
                     }
