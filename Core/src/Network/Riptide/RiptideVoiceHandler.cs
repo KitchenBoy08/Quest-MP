@@ -40,8 +40,11 @@ namespace LabFusion.Network
             // Create the audio source and clip
             CreateAudioSource();
 
-            Source.clip = AudioClip.Create("RiptideVoice", 44100,
-            1, 44100, true, (PCMReaderCallback)PcmReaderCallback);
+            _source.clip = AudioClip.Create("ProxyVoice", Convert.ToInt32(44100),
+                        1, Convert.ToInt32(44100), true, (PCMReaderCallback)PcmReaderCallback);
+
+            // Pitch fix, I don't know
+            _source.pitch = 0.5f;
 
             _source.Play();
 
@@ -64,6 +67,7 @@ namespace LabFusion.Network
 
         public override void OnVoiceBytesReceived(byte[] bytes)
         {
+            FusionLogger.Log($"Handling Voice Bytes: {bytes.Length}");
             if (MicrophoneDisabled)
             {
                 return;

@@ -152,6 +152,8 @@ namespace LabFusion.Network
 
         internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
         {
+            FusionLogger.Log($"Recieved voice bytes [{bytes.Length}] from {GetUsername(id)}");
+
             // If we are deafened, no need to deal with voice chat
             if (VoiceHelper.IsDeafened)
                 return;
@@ -159,8 +161,44 @@ namespace LabFusion.Network
             var handler = VoiceManager.GetVoiceHandler(id);
             handler?.OnVoiceBytesReceived(bytes);
         }
+
+        private byte[] voiceData;
         internal override void OnVoiceChatUpdate()
         {
+            if (NetworkInfo.HasServer)
+            {
+                bool voiceEnabled = VoiceHelper.IsVoiceEnabled;
+
+                if (voiceEnabled)
+                {
+                    if (!Microphone.IsRecording(null))
+                    {
+                        MicrophoneManager.StartMicrophone();
+                    }
+
+                    voiceData = MicrophoneManager.GetMicrophoneData();
+                } else
+                {
+                    return;
+                }
+
+                // Read voice data
+                if (voiceData != null)
+                {
+                    PlayerSender.SendPlayerVoiceChat(voiceData);
+                    FusionLogger.Log($"Sent Voice Data: {voiceData.Length}");
+                }
+
+                // Update the manager
+                VoiceManager.Update();
+            }
+            else
+            {
+                if (Microphone.IsRecording(null))
+                {
+                    MicrophoneManager.StopMicrophone();
+                }
+            }
         }
 
         internal override void StartServer() {
