@@ -9,30 +9,30 @@ Having been in development for 5 months, the long awaited multiplayer mod FUSION
 2. Install MelonLoader (0.5.7 required).
 3. Install BoneLib.
 4. Download Fusion and drag the LabFusion.dll file into your MelonLoader Mods folder. This is not to be confused with the SLZ official mods folder.
-5. Drag the LabFusionUpdater.dll file into your MelonLoader Plugins folder. This will automatically update the mod for you.
-5. Make sure you have Steam installed and running.
+5. Place the Plugins into your MelonLoader Plugins folder.
+6. Make sure you DON'T have the base Fusion Auto-Updater installed.
 6. You're done!
 
 ## How To Install (Quest)
 1. Make sure you are on BONELAB Patch 3. This is the "public beta" branch.
-2. Install LemonLoader (latest version required).
+2. Install LemonLoader (Latest version Required).
 3. Install BoneLib.
-4. Download Fusion and drag the LabFusion.dll file into your Mods folder. Ignore the LabFusionUpdater.dll file, it does not work on Quest.
-5. Download FusionHelper on your PC ([available here](https://github.com/Lakatrazz/Fusion-Helper/releases/latest)). This will wirelessly connect to your Quest.
-     - Note that the PC does not need to run BONELAB, or have good specifications.
-6. Run Steam and FusionHelper on your PC.
-     - Make sure to run these programs every time you play, and that your PC and Quest are on the same network.
-     - Both programs are required as they handle networking the game between you and your friends.
-7. Open BONELAB on your Quest.
-8. You're done!
-
-## Video Tutorials
-- PCVR: https://youtu.be/wz-ERSaz8GU
-- Quest: (Unavailable)
+4. Download Fusion and drag the LabFusion.dll file into your MelonLoader Mods folder. This is not to be confused with the SLZ official mods folder.
+5. Place the Plugins into your MelonLoader Plugins folder.
+6. You're done!
 
 # About
 ## How to Use the Mod
-All of the functions of the mod can be found in BONEMENU under the tab "BONELAB Fusion". In order to make and join servers, use the Matchmaking tab. Starting or disconnecting from a server can be found in the "Server Info" tab.
+### Keyboard:
+-Changing caps lock on or off will cause the game to freeze for a second.
+-The keyboard has a paste button
+-Make sure to press the yellow "Enter" button when you're done
+### Server Codes:
+-Server codes are just encoded IP addresses, and while it's not exactly easy to decode, I wouldn't share it with strangers that you don't trust.
+### Usernames:
+-Everyone in a server is named "Riptide Enjoyer", and in order to change that, you can either paste your name in the base Fusion nickname settings, or if you're on quest you need to use the keyboard in Riptide Settings.
+### Hosting Servers:
+-In order to properly host a server, you need to port forward. On PC this is done mostly automatically, if your router supports it. On Quest, you need to port forward manually.
 
 ## Physical Interactions
 Instead of players and synced props being kinematic, non-physics objects, all interactions are solved using physical forces.<br>
@@ -70,7 +70,7 @@ As an additional way to earn Bits, you can accomplish various tasks to complete 
 You can view the most recent changes and credits in the in game info box in VoidG114.
 
 ## Source
-- Fusion: https://github.com/Lakatrazz/BONELAB-Fusion
+- Fusion: https://github.com/KitchenBoy08/TideFusion
 - Fusion Module Example: https://github.com/Lakatrazz/Fusion-Module-Example
 - Fusion Helper: https://github.com/Lakatrazz/Fusion-Helper
 
