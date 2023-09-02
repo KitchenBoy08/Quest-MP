@@ -67,7 +67,8 @@ namespace LabFusion.Network
 
         public override void OnVoiceBytesReceived(byte[] bytes)
         {
-            FusionLogger.Log($"Handling Voice Bytes: {bytes.Length}");
+            byte[] decompressedBytes = CompressionHelper.DecompressByteArray(bytes);
+            FusionLogger.Log($"Handling Voice Bytes: {decompressedBytes.Length}");
             if (MicrophoneDisabled)
             {
                 return;
@@ -78,8 +79,8 @@ namespace LabFusion.Network
             int numBytesWritten = 0;
             _decompressedVoiceStream.Position = 0;
             {
-                _decompressedVoiceStream.Write(bytes, 0, bytes.Length);
-                numBytesWritten = bytes.Length;
+                _decompressedVoiceStream.Write(decompressedBytes, 0, decompressedBytes.Length);
+                numBytesWritten = decompressedBytes.Length;
             }
 
             _decompressedVoiceStream.Position = 0;

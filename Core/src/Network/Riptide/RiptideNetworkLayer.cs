@@ -165,18 +165,19 @@ namespace LabFusion.Network
         private byte[] voiceData;
         internal override void OnVoiceChatUpdate()
         {
-            if (NetworkInfo.HasServer)
+            /*if (NetworkInfo.HasServer)
             {
                 bool voiceEnabled = VoiceHelper.IsVoiceEnabled;
 
                 if (voiceEnabled)
                 {
-                    if (!Microphone.IsRecording(null))
+                    if (!MicrophoneManager.isRecording)
                     {
                         MicrophoneManager.StartMicrophone();
+                        return;
                     }
 
-                    voiceData = MicrophoneManager.GetMicrophoneData();
+                    voiceData = CompressionHelper.CompressByteArray(MicrophoneManager.GetMicrophoneData());
                 } else
                 {
                     return;
@@ -198,7 +199,7 @@ namespace LabFusion.Network
                 {
                     MicrophoneManager.StopMicrophone();
                 }
-            }
+            }*/
         }
 
         internal override void StartServer() {
@@ -218,7 +219,7 @@ namespace LabFusion.Network
 
             // Update player ID here since it's determined on the Riptide Client ID
             PlayerIdManager.SetLongId(currentclient.Id);
-            PlayerIdManager.SetUsername($"Riptide Enjoyer {currentclient.Id}");
+            PlayerIdManager.SetUsername($"Riptide Enjoyer");
 
             _isServerActive = true;
             _isConnectionActive = true;
@@ -268,7 +269,7 @@ namespace LabFusion.Network
             currentclient.Disconnected += OnClientDisconnect;
             // Update player ID here since it's determined on the Riptide Client ID
             PlayerIdManager.SetLongId(currentclient.Id);
-            PlayerIdManager.SetUsername($"Riptide Enjoyer {currentclient.Id}");
+            PlayerIdManager.SetUsername($"Riptide Enjoyer");
 
             _isServerActive = false;
             _isConnectionActive = true;
