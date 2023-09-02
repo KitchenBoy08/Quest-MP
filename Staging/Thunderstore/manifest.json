@@ -1,8 +1,8 @@
 {
     "name": "Tide Fusion",
-    "version_number": "1.5.0",
+    "version_number": "1.0.0",
     "website_url": "https://github.com/KitchenBoy08/TideFusion/",
-    "description": "A multiplayer mod for BONELAB, taking advantage of its physical interaction.",
+    "description": "A fork of Fusion including a P2P networking layer, Riptide!",
     "dependencies": [
         "gnonme-BoneLib-2.2.1"
     ]
