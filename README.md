@@ -1,11 +1,11 @@
-# BONELAB Fusion Release
+# BONELAB TideFusion Release
 A multiplayer mod for BONELAB featuring support for all platforms.
 [You can view a basic installation guide here.](INSTALLATION.md)
 
 ![](https://i.imgur.com/1ZpMfei.png)
 
 ## Networking
-This mod is networked and built around Steam, but the networking system can be swapped out using a Networking Layer.
+Fusion is networked and built around Steam, but the networking system can be swapped out using a Networking Layer. This fork adds its own Networking layer using P2P called Riptide.
 
 ## Modules
 Fusion supports a system called "Modules". This allows other code mods to add on and sync their own events in Fusion.
@@ -25,21 +25,22 @@ The module example can be found here:
 https://github.com/Lakatrazz/Fusion-Module-Example
 
 ## Credits
-- BoneLib AutoUpdater: https://github.com/yowchap/BoneLib
-- Testing/Development Credits In Game
+- Lakatrazz: Made Fusion and all the base things
+- Trev: Made the base port of Fusion to quest, allowing things to move along much smoother
+- EverythingOnArm: Helped me through the base networking solution, and guided me through this whole project
 
 ## Licensing
-- The source code of [Facepunch.Steamworks](https://github.com/Facepunch/Facepunch.Steamworks) is used partially under the MIT License. The full license can be found [here](https://github.com/Facepunch/Facepunch.Steamworks/blob/master/LICENSE).
-- The source code of [Steamworks.NET](https://github.com/rlabrecque/Steamworks.NET) is used partially under the MIT License. The full license can be found [here](https://github.com/rlabrecque/Steamworks.NET/blob/master/LICENSE.txt).
-- The source code of [LiteNetLib](https://github.com/RevenantX/LiteNetLib) is included under the MIT License. The full license can be found [here](https://github.com/RevenantX/LiteNetLib/blob/master/LICENSE.txt).
+- The source code of [RiptideNetworking](https://github.com/RiptideNetworking/Riptide) is included under the MIT License. The full license can be found [here](https://github.com/RiptideNetworking/Riptide/blob/main/LICENSE.md).
+- The source code of [Open.NAT](https://github.com/lontivero/Open.NAT) is included under the MIT License. The full license can be found [here](https://github.com/lontivero/Open.NAT/blob/master/LICENSE).
 
 ## Setting up the Source Code
 1. Clone the git repo into a folder
 2. Setup a "managed" folder in the "Core" folder.
 3. Drag the dlls from Melonloader/Managed into the managed folder.
 4. Drag MelonLoader.dll and 0Harmony.dll into the managed folder.
-5. You're done!
+5. Manually reference RiptideNetworking.dll and Open.NAT.dll from the plugins folder (included with mod release).
+6. You're done!
 
 ## Disclaimer
 
-#### THIS PROJECT IS NOT AFFILIATED WITH ANY OTHER MULTIPLAYER MODS OR STRESS LEVEL ZERO! This is its own standalone mod and shares no code with others, any similarities are coincidental!
+#### THIS PROJECT IS NOT AFFILIATED WITH LAKATRAZZ AND BASE FUSION, AS WELL AS SLZ OR ANY OTHER DEVELOPMENT PARTIES.
