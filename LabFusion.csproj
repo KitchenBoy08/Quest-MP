@@ -900,7 +900,7 @@
       <HintPath>packages\Open.NAT.2.1.0.0\lib\net45\Open.Nat.dll</HintPath>
     </Reference>
     <Reference Include="RiptideNetworking">
-      <HintPath>..\..\OneDrive\Desktop\Riptide-2.0.0\RiptideNetworking\RiptideNetworking\bin\Debug\netstandard2.0\netstandard2.0\RiptideNetworking.dll</HintPath>
+      <HintPath>..\..\RiptideNetworking.dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

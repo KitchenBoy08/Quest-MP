@@ -61,10 +61,6 @@ namespace LabFusion.Network
             currentclient = new Client();
             currentserver = new Server();
 
-            // Initialize RiptideLogger if in DEBUG
-#if DEBUG
-            RiptideLogger.Initialize(MelonLogger.Msg, MelonLogger.Msg, MelonLogger.Warning, MelonLogger.Error, false);
-#endif
             IPGetter.GetExternalIP(OnExternalIPAddressRetrieved);
             PlayerIdManager.SetUsername("Riptide Enjoyer");
 
