@@ -1,6 +1,6 @@
 {
-    "name": "Tide Fusion",
-    "version_number": "1.0.0",
+    "name": "TideFusion",
+    "version_number": "1.0.2",
     "website_url": "https://github.com/KitchenBoy08/TideFusion/",
     "description": "A fork of Fusion including a P2P networking layer, Riptide!",
     "dependencies": [

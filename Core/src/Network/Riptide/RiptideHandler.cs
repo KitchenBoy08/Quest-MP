@@ -1,25 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-
-using LabFusion.Data;
-using LabFusion.Representation;
-using LabFusion.Utilities;
 
 using Riptide;
-using Riptide.Utils;
-using Riptide.Transports;
-
-using UnityEngine;
-using System.Runtime.CompilerServices;
-using Steamworks.Data;
-using Steamworks;
-using UnityEngine.UIElements;
-using System.Web.SessionState;
-using System.Windows.Forms.DataVisualization.Charting;
 
 namespace LabFusion.Network
 {

@@ -1,84 +1,46 @@
-# BONELAB Fusion
-Having been in development for 5 months, the long awaited multiplayer mod FUSION for BONELAB is here.<br>
+# BONELAB TideFusion
+### Having been in development for (2) months, the long awaited network layer mod TideFusion for Fusion is here.
 
-![](https://i.imgur.com/1ZpMfei.png)
+## IF YOU NEED SUPPORT, DO NOT GO TO THE FUSION DISCORD, GO TO THE TIDEFUSION DISCORD [HERE](https://discord.gg/YyXK2U7GsU).
 
-# Installation
-## How To Install (PCVR)
+## Installation
+### How To Install (PCVR)
 1. Make sure you are on BONELAB Patch 3. This is the "public beta" branch.
 2. Install MelonLoader (0.5.7 required).
 3. Install BoneLib.
 4. Download Fusion and drag the LabFusion.dll file into your MelonLoader Mods folder. This is not to be confused with the SLZ official mods folder.
 5. Place the Plugins into your MelonLoader Plugins folder.
 6. Make sure you DON'T have the base Fusion Auto-Updater installed.
-6. You're done!
+You're done!
 
-## How To Install (Quest)
+### How To Install (Quest)
 1. Make sure you are on BONELAB Patch 3. This is the "public beta" branch.
 2. Install LemonLoader (Latest version Required).
 3. Install BoneLib.
 4. Download Fusion and drag the LabFusion.dll file into your MelonLoader Mods folder. This is not to be confused with the SLZ official mods folder.
 5. Place the Plugins into your MelonLoader Plugins folder.
-6. You're done!
+You're done!
 
-# About
-## How to Use the Mod
-### Keyboard:
--Changing caps lock on or off will cause the game to freeze for a second.
--The keyboard has a paste button
--Make sure to press the yellow "Enter" button when you're done
-### Server Codes:
+## About
+### How to Use the Mod
+#### Keyboard:
+-Changing caps lock on or off will cause the game to freeze for a second. -The keyboard has a paste button -Make sure to press the yellow "Enter" button when you're done
+
+#### Server Codes:
 -Server codes are just encoded IP addresses, and while it's not exactly easy to decode, I wouldn't share it with strangers that you don't trust.
-### Usernames:
+
+####Usernames:
 -Everyone in a server is named "Riptide Enjoyer", and in order to change that, you can either paste your name in the base Fusion nickname settings, or if you're on quest you need to use the keyboard in Riptide Settings.
-### Hosting Servers:
+
+#### Hosting Servers:
 -In order to properly host a server, you need to port forward. On PC this is done mostly automatically, if your router supports it. On Quest, you need to port forward manually.
 
-## Physical Interactions
-Instead of players and synced props being kinematic, non-physics objects, all interactions are solved using physical forces.<br>
-This means you can pick up your friends, throw them, stand on them, push them, and more.
+# YOU MUST PORT FORWARD ON PORT 7777 UDP
+### How to use Riptide
+-Go into the Fusion menu -Go to "Network Layer Manager" -Click on the target layer, and cycle until the target layer says "Riptide" -Restart your game
 
-## Campaign Support
-The entire campaign has been ensured completable, with nearly every custom event synced, as well as optimizations made to make the experience run as smoothly as possible.
-
-## Supported Platforms
-- SteamVR
-- Oculus PCVR
-- Oculus Quest
-
-## Crossplay Support
-All platforms are able to crossplay together. In order to do so, you simply have to select the same "Networking Layer" in BONEMENU and restart the game. The option is under BONELAB Fusion -> Network Layer Manager -> Target Layer. Note that some layers may be unsupported on some platforms.
-
-# Additional Content
-## Modules, Gamemodes, and the Bitmart
-Fusion has integrated support to allow other mods to implement Fusion compatibility using "Modules". There is an SDK for Unity, allowing you to implement features while in multiplayer, as well as a code SDK in order to create unique synced features. You can find both of these [here](https://github.com/Lakatrazz/BONELAB-Fusion).
-
-Besides that, Fusion also has integrated gamemodes. The current gamemodes are:
-- Deathmatch, Free-for-all fighting!
-- Team Deathmatch, Kill as many players on the opposite team!
-- Entangled, Be constrained to a randomized partner!
-
-Custom maps can implement these gamemodes, and customize them specifically for their map.
-
-Finally, Fusion has built in cosmetics. Winning gamemodes will earn you Bits to use at the Bitmart. Here, you are able to equip/unequip as well as purchase items such as cosmetics. Other players will be able to see these cosmetics, and you can mix and match as you choose.
-
-## Achievements
-As an additional way to earn Bits, you can accomplish various tasks to complete Achievements. There are a large amount of Achievements, each with differing challenge, risk, and reward. Upon completing every achievement, you may even unlock some secret items!
-
-# More
-## Credits
-You can view the most recent changes and credits in the in game info box in VoidG114.
-
-## Source
-- Fusion: https://github.com/KitchenBoy08/TideFusion
-- Fusion Module Example: https://github.com/Lakatrazz/Fusion-Module-Example
-- Fusion Helper: https://github.com/Lakatrazz/Fusion-Helper
-
-## Soundtrack
-You can listen to the Fusion official soundtrack here:
-
-[![Soundtrack](https://i.imgur.com/ppUtaMd.png)](https://www.youtube.com/playlist?list=PLNifPIaAecBKTMlKSBYfeW81UZgNNfYe0)
-
-## Footage
-
-[![Launch Trailer](https://i.imgur.com/9qAdvsc.png)](https://www.youtube.com/watch?v=pVavphtfTd4)
+## Patch Notes:
+### 1.0.1
+-Updated Encoding and Decoding IPs to be "safer" (Still be careful)
++Codes are a decent amount longer
++Old codes will NOT WORK (UPDATE SERVER LISTINGS)
