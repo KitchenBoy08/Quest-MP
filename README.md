@@ -2,27 +2,10 @@
 A multiplayer mod for BONELAB featuring support for all platforms.
 [You can view a basic installation guide here.](INSTALLATION.md)
 
-![](https://i.imgur.com/1ZpMfei.png)
-
 ## Networking
 Fusion is networked and built around Steam, but the networking system can be swapped out using a Networking Layer. This fork adds its own Networking layer using P2P called Riptide.
 
-## Modules
-Fusion supports a system called "Modules". This allows other code mods to add on and sync their own events in Fusion.
-Fusion also has an SDK for integrating features into Marrow™ SDK items, maps, and more.
-
-## Marrow SDK Integration
-NOTICE:
-When using the integration, if you have the extended sdk installed, delete the "MarrowSDK" script that comes with the extended sdk.
-It can be found in "Scripts/SLZ.Marrow.SDK/SLZ/Marrow/MarrowSDK".
-The reason for this is that this is already included in the real sdk, and Fusion uses some values from it, causing it to get confused.
-
-You can download the integration unity package from [the Releases tab of this repository](https://github.com/Lakatrazz/BONELAB-Fusion/releases/latest).
-Alternatively, you can download the files raw [here](https://github.com/Lakatrazz/BONELAB-Fusion/tree/main/Core/marrow-integration).
-
-## Module Example
-The module example can be found here:
-https://github.com/Lakatrazz/Fusion-Module-Example
+# Check Fusion's Repo for Fusion Information
 
 ## Credits
 - Lakatrazz: Made Fusion and all the base things
