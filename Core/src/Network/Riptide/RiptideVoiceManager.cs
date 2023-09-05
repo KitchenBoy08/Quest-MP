@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 namespace LabFusion.Network
 {
     public sealed class RiptideVoiceManager : VoiceManager {
+        public override bool CanTalk => false;
+        public override bool CanHear => false;
         public override VoiceHandler GetVoiceHandler(PlayerId id)
         {
             if (TryGetHandler(id, out var handler))

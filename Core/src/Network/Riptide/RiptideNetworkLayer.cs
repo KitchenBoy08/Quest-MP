@@ -43,10 +43,6 @@ namespace LabFusion.Network
     public class RiptideNetworkLayer : NetworkLayer
     {
         internal override string Title => "Riptide";
-
-        // AsyncCallbacks are bad!
-        // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
-        public const bool AsyncCallbacks = false;
         public static Server currentserver { get; set; }
         public static Client currentclient { get; set; }
         public static string publicIp;
@@ -94,7 +90,7 @@ namespace LabFusion.Network
             }
             else
             {
-                Debug.LogError("Failed to retrieve external IP address.");
+                FusionLogger.Error("Failed to retrieve external IP address.");
             }
         }
 
@@ -306,10 +302,10 @@ namespace LabFusion.Network
         }
 
         internal override void Disconnect(string reason = "") {
-            if (currentclient.IsConnected)
+            if (IsClient)
                 currentclient.Disconnect();
 
-            if (currentserver.IsRunning)
+            if (IsServer)
                 currentserver.Stop();
 
             InternalServerHelpers.OnDisconnect(reason);
