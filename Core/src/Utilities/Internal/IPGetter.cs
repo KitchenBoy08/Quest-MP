@@ -35,8 +35,8 @@ public static class IPGetter
         }
         catch (Exception e)
         {
-            MelonLogger.Error($"Error when fetching external IP:");
-            MelonLogger.Error(e);
+            FusionLogger.Error($"Error when fetching external IP:");
+            FusionLogger.Error(e);
         }
     }
 }
