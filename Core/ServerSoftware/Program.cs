@@ -9,40 +9,14 @@ using Riptide.Utils;
 
 class Server
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        TcpListener server = null;
-        try
-        {
-            IPAddress iPAddress = IPAddress.Parse("127.0.0.1");
-            int port = 9999;
+        Console.WriteLine("Starting Server")
 
-            server = new TcpListener(iPAddress, port);
+        currentserver = new Server();
+        currentserver.TimeoutTime = 20000;
+        currentserver.HeartbeatInterval = 5000;
 
-            server.Start();
-            Console.WriteLine("Server Has Started");
-            Console.WriteLine("Waiting for a connection...");
-
-            while (true)
-            {
-                TcpClient client = server.AcceptTcpClient();
-                Console.WriteLine("Connected!");
-
-                NetworkStream stream = client.GetStream();
-
-                byte[] bytes = new byte[255];
-                int bytesRead = stream.Read(bytes, 0, bytes.Length);
-                string receivedMessage = Encoding.ASCII.GetString(bytes, 0, bytesRead);
-
-                client.Close();
-            }
-        }catch (SocketException e)
-        {
-            Console.WriteLine("SocketException: {0}", e);
-        }
-        finally
-        {
-            server.Stop();
-        }
+        currentserver.Start(7777, 256);
     }
 }
