@@ -31,7 +31,6 @@ class Server
                 byte[] bytes = new byte[255];
                 int bytesRead = stream.Read(bytes, 0, bytes.Length);
                 string receivedMessage = Encoding.ASCII.GetString(bytes, 0, bytesRead);
-                Console.WriteLine("Received: {0}", receivedMessage);
 
                 client.Close();
             }
