@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 using Riptide;
 
-namespace LabFusion.Network
+namespace RiptideNetworking
 {
     public static class RiptideHandler
     {
