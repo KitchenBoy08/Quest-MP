@@ -18,5 +18,12 @@ class Server
         currentserver.HeartbeatInterval = 5000;
 
         currentserver.Start(7777, 256);
+
+       /*
+        OnClientDisconnect()
+        {
+            Console.WriteLine("Player left")
+        }
+        */
     }
 }
