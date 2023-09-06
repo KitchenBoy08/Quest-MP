@@ -19,7 +19,7 @@ class Server
 
         currentserver.Start(7777, 256);
 
-       /*
+       /* I will work on this later
         OnClientDisconnect()
         {
             Console.WriteLine("Player left")
