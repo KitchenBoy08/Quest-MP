@@ -20,11 +20,11 @@ class Server
             server = new TcpListener(iPAddress, port);
 
             server.Start();
-            Console.WriteLine("Socket Server Has Started");
+            Console.WriteLine("Server Has Started");
+            Console.WriteLine("Waiting for a connection...");
 
             while (true)
             {
-                Console.WriteLine("Waiting for a connection...");
                 TcpClient client = server.AcceptTcpClient();
                 Console.WriteLine("Connected!");
 
