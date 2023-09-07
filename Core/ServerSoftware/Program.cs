@@ -23,7 +23,7 @@ namespace Program
             StartRiptideServer();
             server.FetchAndOpenPort();
             Console.ReadLine();
-        }//s
+        }
 
         static void StartRiptideServer()
         {
