@@ -27,12 +27,16 @@ namespace Program
 
         static void StartRiptideServer()
         {
-
             Server curentserver = new Server();
             curentserver = new Server();
             curentserver.TimeoutTime = 20000;
             curentserver.HeartbeatInterval = 5000;
             Console.WriteLine("Server started!");
+        }
+
+        private void OnClientConnected(Client client)
+        {
+            Console.WriteLine($"Client {client.Id} connected!");
         }
 
         private NatDevice natDevice;
@@ -123,4 +127,3 @@ namespace Program
     }
     
 }
-
