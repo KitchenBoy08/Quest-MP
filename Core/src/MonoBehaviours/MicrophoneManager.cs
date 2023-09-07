@@ -1,15 +1,17 @@
 ﻿using UnityEngine;
-using System;
+using Il2CppSystem;
 using LabFusion.Utilities;
 using LabFusion.Data;
 using MelonLoader;
+using System.Linq;
+using System;
 
 namespace LabFusion.MonoBehaviours
 {
     [RegisterTypeInIl2Cpp]
     public class MicrophoneManager : MonoBehaviour
     {
-        public MicrophoneManager(IntPtr intPtr) : base(intPtr) { }
+        public MicrophoneManager(System.IntPtr intPtr) : base(intPtr) { }
 
         private string deviceName = null;
         private AudioClip microphoneClip = null;
@@ -55,8 +57,8 @@ namespace LabFusion.MonoBehaviours
             microphonePos = 0;
         }
 
-        private byte[] voiceData;
-        public byte[] GetMicrophoneData()
+        private Il2CppSystem.Byte[] voiceData;
+        public Il2CppSystem.Byte[] GetMicrophoneData()
         {
             if (!isRecording)
             {
@@ -69,8 +71,8 @@ namespace LabFusion.MonoBehaviours
             microphoneClip.GetData(samples, microphonePos);
 
             // Convert float samples to byte array
-            voiceData = new byte[samples.Length * 2]; // 2 bytes per sample
-            Buffer.BlockCopy(samples, 0, voiceData, 0, voiceData.Length);
+            voiceData = new Il2CppSystem.Byte[samples.Length * 2]; // 2 bytes per sample
+            System.Buffer.BlockCopy(samples, 0, voiceData, 0, voiceData.Length);
 
             microphonePos = Microphone.GetPosition(deviceName);
 

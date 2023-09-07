@@ -6,6 +6,7 @@ using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
 using LabFusion.MonoBehaviours;
+using Il2CppSystem;
 
 using Unity.XR;
 
@@ -34,8 +35,8 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using LabFusion.Data;
 using System.Reflection;
-using LabFusion.Core.src.Network.Riptide;
 using Steamworks.Data;
+using UnityEngine.UIElements;
 
 namespace LabFusion.Network
 {
@@ -167,51 +168,7 @@ namespace LabFusion.Network
         private MicrophoneManager microphoneManager;
         internal override void OnVoiceChatUpdate()
         {
-            /*
-            if (NetworkInfo.HasServer)
-            {
-                bool voiceEnabled = VoiceHelper.IsVoiceEnabled;
 
-                if (voiceEnabled)
-                {
-                    if (voiceObject == null)
-                    {
-                        FusionLogger.Error("voiceObject is null! Creating new GameObject.");
-                        voiceObject = new GameObject("VoiceObject");
-                        GameObject.DontDestroyOnLoad(voiceObject);
-                        return;
-                    }
-
-                    if (microphoneManager == null)
-                    {
-                        FusionLogger.Error("microphoneManager is null! Creating new MicrophoneManager.");
-                        microphoneManager = voiceObject.AddComponent<MicrophoneManager>();
-                        return;
-                    }
-
-                    if (!microphoneManager.isRecording)
-                    {
-                        microphoneManager.StartMicrophone();
-                        return;
-                    }
-
-                    voiceData = CompressionHelper.CompressByteArray(microphoneManager.GetMicrophoneData());
-                } else
-                {
-                    return;
-                }
-
-                // Read voice data
-                if (voiceData != null)
-                {
-                    PlayerSender.SendPlayerVoiceChat(voiceData);
-                    FusionLogger.Log($"Sent Voice Data: {voiceData.Length}");
-                }
-
-                // Update the manager
-                VoiceManager.Update();
-            }
-            */
         }
 
         internal override void StartServer() {
