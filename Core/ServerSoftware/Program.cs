@@ -8,6 +8,7 @@ using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.MonoBehaviours;
 
+using System;
 using System.Security;
 using System.Net.NetworkInformation;
 
@@ -26,19 +27,12 @@ namespace Program
 
         static void StartRiptideServer()
         {
-            Console.WriteLine("Server Started!");
 
             Server curentserver = new Server();
             curentserver = new Server();
             curentserver.TimeoutTime = 20000;
             curentserver.HeartbeatInterval = 5000;
-        }
-
-        private void OnStarted(object sender, System.EventArgs e)
-        {
             Console.WriteLine("Server started!");
-
-
         }
 
         private NatDevice natDevice;
@@ -79,7 +73,7 @@ namespace Program
             try
             {
                 // Open the port
-                var portmap = new Mapping(Protocol.Udp, 7777, 7777, "Tidefusion Server"); ;
+                var portmap = new Mapping(Protocol.Udp, 7777, 7777, "TideFusion Server"); ;
                 await device.CreatePortMapAsync(portmap);
 
                 Console.WriteLine($"Port 7777 has been opened. Protocol: UDP");
