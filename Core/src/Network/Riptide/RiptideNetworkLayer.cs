@@ -32,7 +32,6 @@ using System;
 using System.ServiceModel.Channels;
 using System.Linq;
 using System.Net.NetworkInformation;
-using Oculus.Platform;
 using LabFusion.Data;
 using System.Reflection;
 using LabFusion.Core.src.Network.Riptide;

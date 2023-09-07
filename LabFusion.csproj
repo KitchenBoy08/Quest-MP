@@ -896,19 +896,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Core\managed\MelonLoader.dll</HintPath>
     </Reference>
-    <Reference Include="Oculus.Platform, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files\Oculus\Software\Software\stress-level-zero-inc-bonelab\MelonLoader\Managed\Oculus.Platform.dll</HintPath>
-    </Reference>
-    <Reference Include="Oculus.VR, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files\Oculus\Software\Software\stress-level-zero-inc-bonelab\MelonLoader\Managed\Oculus.VR.dll</HintPath>
-    </Reference>
     <Reference Include="Open.Nat, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f22a6a4582336c76, processorArchitecture=MSIL">
       <HintPath>packages\Open.NAT.2.1.0.0\lib\net45\Open.Nat.dll</HintPath>
     </Reference>
     <Reference Include="RiptideNetworking">
-      <HintPath>..\..\RiptideNetworking.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\BONELAB\Plugins\RiptideNetworking.dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

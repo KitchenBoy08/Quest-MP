@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
-
+using LabFusion.Network;
 using Riptide;
 
 namespace RiptideNetworking
