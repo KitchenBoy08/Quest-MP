@@ -132,6 +132,8 @@ namespace LabFusion.Preferences {
 
         internal static MenuCategory fusionCategory;
         internal static MelonPreferences_Category prefCategory;
+        internal static MelonPreferences_Category tideCategory;
+        internal static MelonPreferences_Category dedicatedTideCategory;
 
         internal static Action OnFusionPreferencesLoaded;
 
@@ -171,6 +173,8 @@ namespace LabFusion.Preferences {
         internal static void OnInitializePreferences() {
             // Create preferences
             prefCategory = MelonPreferences.CreateCategory("BONELAB Fusion");
+            tideCategory = MelonPreferences.CreateCategory("TideFusion");
+            dedicatedTideCategory = MelonPreferences.CreateCategory("Dedicated Tide");
 
             // Server settings
             LocalServerSettings = ServerSettings.CreateMelonPrefs();
@@ -179,14 +183,16 @@ namespace LabFusion.Preferences {
             ClientSettings.NetworkLayerTitle = new FusionPref<string>(prefCategory, "Network Layer Title", NetworkLayerDeterminer.GetDefaultLayer().Title, PrefUpdateMode.IGNORE);
             ClientSettings.ProxyPort = new FusionPref<int>(prefCategory, "Proxy Port", 28340, PrefUpdateMode.IGNORE);
 
-            // QUEST/Riptide 
-            ClientSettings.ServerCode = new FusionPref<string>(prefCategory, "Server Code", $"PASTE SERVER CODE HERE", PrefUpdateMode.LOCAL_UPDATE);
-            ClientSettings.ChosenMic = new FusionPref<string>(prefCategory, "Chosen Microphone", "", PrefUpdateMode.LOCAL_UPDATE);
-            ClientSettings.ServerNameList = new FusionPref<List<string>>(prefCategory, "Server Name List (DO NOT CHANGE)", new List<string> { "" }, PrefUpdateMode.LOCAL_UPDATE);
-            ClientSettings.ServerCodeList = new FusionPref<List<string>>(prefCategory, "Server Code List (DO NOT CHANGE)", new List<string> { "" }, PrefUpdateMode.LOCAL_UPDATE);
+            // TideFusion
+            ClientSettings.ServerCode = new FusionPref<string>(tideCategory, "Server Code", $"PASTE SERVER CODE HERE", PrefUpdateMode.LOCAL_UPDATE);
+            ClientSettings.ChosenMic = new FusionPref<string>(tideCategory, "Chosen Microphone", "", PrefUpdateMode.LOCAL_UPDATE);
+            ClientSettings.ServerNameList = new FusionPref<List<string>>(tideCategory, "Server Name List (DO NOT CHANGE)", new List<string> { "" }, PrefUpdateMode.LOCAL_UPDATE);
+            ClientSettings.ServerCodeList = new FusionPref<List<string>>(tideCategory, "Server Code List (DO NOT CHANGE)", new List<string> { "" }, PrefUpdateMode.LOCAL_UPDATE);
 
-            ClientSettings.ServerNameToAdd = new FusionPref<string>(prefCategory, "Server Name To Add (DO NOT CHANGE)", "", PrefUpdateMode.LOCAL_UPDATE);
-            ClientSettings.ServerCodeToAdd = new FusionPref<string>(prefCategory, "Server Code To Add (DO NOT CHANGE)", "", PrefUpdateMode.LOCAL_UPDATE);
+            ClientSettings.ServerNameToAdd = new FusionPref<string>(tideCategory, "Server Name To Add (DO NOT CHANGE)", "", PrefUpdateMode.LOCAL_UPDATE);
+            ClientSettings.ServerCodeToAdd = new FusionPref<string>(tideCategory, "Server Code To Add (DO NOT CHANGE)", "", PrefUpdateMode.LOCAL_UPDATE);
+
+            // Dedicated TideFusion
 
             // Nametag
             ClientSettings.NametagsEnabled = new FusionPref<bool>(prefCategory, "Client Nametags Enabled", true, PrefUpdateMode.LOCAL_UPDATE);
@@ -208,6 +214,8 @@ namespace LabFusion.Preferences {
 
             // Save category
             prefCategory.SaveToFile(false);
+            tideCategory.SaveToFile(false);
+            dedicatedTideCategory.SaveToFile(false);
         }
 
         internal static void OnPrepareBoneMenuCategory() {
