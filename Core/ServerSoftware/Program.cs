@@ -17,6 +17,7 @@ namespace Program
 {
     public class ServerClass
     {
+        public static Server currentserver;
         static void Main(string[] args)
         {
             ServerClass server = new ServerClass();
@@ -25,38 +26,36 @@ namespace Program
             Console.ReadLine();
         }
 
-        static void StartRiptideServer()
+        private static void StartRiptideServer()
         {
-            Server curentserver = new Server();
-            curentserver = new Server();
-            curentserver.TimeoutTime = 20000;
-            curentserver.HeartbeatInterval = 5000;
+            currentserver = new Server();
+            currentserver.TimeoutTime = 20000;
+            currentserver.HeartbeatInterval = 5000;
             Console.WriteLine("Server started!");
         }
 
-        private void OnClientConnected(Client client)
+        private static void OnClientConnected(Client client)
         {
             Console.WriteLine($"Client {client.Id} connected!");
         }
 
-        private void OnClientDisconnected(Client client, DisconnectReason reason)
+        private static void OnClientDisconnected(Client client, DisconnectReason reason)
         {
             Console.WriteLine($"Client {client.Id} disconnected! Reason: {reason}");
         }
 
-        private void OnMessageReceived(Message message, Client client)
+        private static void OnMessageReceived(Message message, Client client)
         {
             Console.WriteLine($"Received message from {client.Id}! Contents: {message}");
         }
 
-        private NatDevice natDevice;
         private async void FetchAndOpenPort()
         {
             try
             {
                 var discoverer = new NatDiscoverer();
                 var cts = new System.Threading.CancellationTokenSource(5000);
-                natDevice = await discoverer.DiscoverDeviceAsync(PortMapper.Upnp, cts);
+                NatDevice natDevice = await discoverer.DiscoverDeviceAsync(PortMapper.Upnp, cts);
 
                 if (natDevice != null)
                 {

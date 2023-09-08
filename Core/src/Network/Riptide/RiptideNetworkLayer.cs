@@ -684,7 +684,7 @@ namespace LabFusion.Network
                     FusionLogger.Log("No compatible NAT device found.");
                 }
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 FusionLogger.Error($"Error: {ex.Message}");
             }
@@ -699,7 +699,7 @@ namespace LabFusion.Network
 
                 MelonLogger.Msg($"Port 7777 has been opened. Protocol: UDP");
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 MelonLogger.Error($"Error opening port: {ex.Message}");
             }
@@ -731,7 +731,7 @@ namespace LabFusion.Network
                     }
                 }
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 MelonLogger.Error($"Error fetching local IPv4 address: {ex.Message}");
             }
