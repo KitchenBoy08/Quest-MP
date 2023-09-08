@@ -39,6 +39,16 @@ namespace Program
             Console.WriteLine($"Client {client.Id} connected!");
         }
 
+        private void OnClientDisconnected(Client client, DisconnectReason reason)
+        {
+            Console.WriteLine($"Client {client.Id} disconnected! Reason: {reason}");
+        }
+
+        private void OnMessageReceived(Message message, Client client)
+        {
+            Console.WriteLine($"Received message from {client.Id}! Contents: {message}");
+        }
+
         private NatDevice natDevice;
         private async void FetchAndOpenPort()
         {
