@@ -94,7 +94,7 @@ namespace LabFusion.Network
             }
             else
             {
-                Debug.LogError("Failed to retrieve external IP address.");
+                FusionLogger.Error("Failed to retrieve external IP address.");
             }
         }
 
