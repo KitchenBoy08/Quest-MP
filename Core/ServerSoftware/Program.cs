@@ -11,19 +11,43 @@ using LabFusion.MonoBehaviours;
 using System;
 using System.Security;
 using System.Net.NetworkInformation;
-
+using ServerSoftware;
 
 namespace Program
 {
     public class ServerClass
     {
+        public static Mapping portmap = new Mapping(Protocol.Udp, 7777, 7777, "TideFusion Server");
+        public static bool hasPortForwarded = false;
         public static Server currentserver;
+        public static int playerCount = 0;
+        public static NatDevice natDevice;
         static void Main(string[] args)
         {
-            ServerClass server = new ServerClass();
+            Console.Title = "Fusion Dedicated Server";
+
             StartRiptideServer();
-            server.FetchAndOpenPort();
-            Console.ReadLine();
+            while (currentserver == null) { }
+
+            FetchAndOpenPort();
+            InitializeCommandPrompt();
+        }
+
+        public static void InitializeCommandPrompt()
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Player Count: {playerCount}");
+
+            Console.WriteLine($"Enter a Command (help for more info)");
+            string command = Console.ReadLine();
+            Commands.RunCommand(command);
+
+        }
+
+        public static void UpdateWindow()
+        {
+            InitializeCommandPrompt();
         }
 
         private static void StartRiptideServer()
@@ -49,13 +73,13 @@ namespace Program
             Console.WriteLine($"Received message from {client.Id}! Contents: {message}");
         }
 
-        private async void FetchAndOpenPort()
+        private static async void FetchAndOpenPort()
         {
             try
             {
                 var discoverer = new NatDiscoverer();
                 var cts = new System.Threading.CancellationTokenSource(5000);
-                NatDevice natDevice = await discoverer.DiscoverDeviceAsync(PortMapper.Upnp, cts);
+                natDevice = await discoverer.DiscoverDeviceAsync(PortMapper.Upnp, cts);
 
                 if (natDevice != null)
                 {
@@ -77,27 +101,29 @@ namespace Program
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                hasPortForwarded = false;
+                UpdateWindow();
             }
         }
 
-        private async Task OpenPortAsync(NatDevice device)
+        private static async Task OpenPortAsync(NatDevice device)
         {
             try
             {
                 // Open the port
-                var portmap = new Mapping(Protocol.Udp, 7777, 7777, "TideFusion Server"); ;
                 await device.CreatePortMapAsync(portmap);
 
-                Console.WriteLine($"Port 7777 has been opened. Protocol: UDP");
+                hasPortForwarded = true;
+                UpdateWindow();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error opening port: {ex.Message}");
+                hasPortForwarded = false;
+                UpdateWindow();
             }
         }
 
-        private string GetLocalIPAddress()
+        private static string GetLocalIPAddress()
         {
             string? localIpAddress = null;
 
@@ -127,8 +153,8 @@ namespace Program
             }
             catch (Exception ex)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Error fetching local IPv4 address: {ex.Message}");
+                hasPortForwarded = false;
+                UpdateWindow();
             }
 
             return localIpAddress;

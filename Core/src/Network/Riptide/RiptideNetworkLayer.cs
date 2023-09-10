@@ -172,17 +172,6 @@ namespace LabFusion.Network
         }
 
         internal override void StartServer() {
-            if (currentclient == null)
-            {
-                currentclient = new Client();
-            }
-            if (currentserver == null)
-            {
-                currentserver = new Server();
-                currentserver.TimeoutTime = 20000;
-                currentserver.HeartbeatInterval = 5000;
-            }
-
             currentclient.Connected += OnStarted;
             // Player cap is set just above Fusion's built in 255 player cap, since Fusion already has a player cap limit system
             currentserver.Start(7777, 256);
@@ -281,6 +270,30 @@ namespace LabFusion.Network
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
+            currentclient.ConnectionFailed += OnConnectionFail;
+        }
+
+        private void OnConnectionFail(object sender, ConnectionFailedEventArgs info)
+        {
+            FusionNotifier.Send(new FusionNotification()
+            {
+                title = "Connection Failed",
+                showTitleOnPopup = true,
+                isMenuItem = false,
+                isPopup = true,
+                message = $"Failed to establish a connection with the server!",
+                popupLength = 3f,
+            });
+            FusionNotifier.Send(new FusionNotification()
+            {
+                title = "Connection Failed",
+                showTitleOnPopup = true,
+                isMenuItem = false,
+                isPopup = true,
+                message = $"Make sure the host has port forwarded and their server is open!",
+                popupLength = 3f,
+            });
+            FusionLogger.Error($"Failed to connect to server with error: {info.Message}");
         }
 
         private void OnGamemodeChanged(Gamemode gamemode) {
