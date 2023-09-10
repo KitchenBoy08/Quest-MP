@@ -163,14 +163,6 @@ namespace LabFusion.Network
             handler?.OnVoiceBytesReceived(bytes);
         }
 
-        private byte[] voiceData;
-        private GameObject voiceObject;
-        private MicrophoneManager microphoneManager;
-        internal override void OnVoiceChatUpdate()
-        {
-
-        }
-
         internal override void StartServer() {
             currentclient.Connected += OnStarted;
             // Player cap is set just above Fusion's built in 255 player cap, since Fusion already has a player cap limit system
@@ -389,6 +381,7 @@ namespace LabFusion.Network
             var connectionInfo = settings.CreateCategory("Connection Stuff", Color.white);
 
             var pingMenu = connectionInfo.CreateCategory("Ping Menu", Color.white);
+            _pingDisplay = pingMenu.CreateFunctionElement("Ping:\n (REFRESH)", Color.grey, null);
             pingMenu.CreateFunctionElement("Refresh", Color.blue, () =>
             {
                 if (currentclient.SmoothRTT == -1)
@@ -397,25 +390,27 @@ namespace LabFusion.Network
                     return;
                 }
 
-                _pingDisplay.SetName($"Ping:\n {currentclient.SmoothRTT}");
-
-                switch (currentclient.RTT)
+                int ping = currentclient.RTT;
+                switch (ping)
                 {
                     case <= 100:
                         _pingDisplay.SetColor(Color.green);
+                        _pingDisplay.SetName($"Ping:\n {ping}");
                         return;
                     case <= 200:
                         _pingDisplay.SetColor(Color.yellow);
+                        _pingDisplay.SetName($"Ping:\n {ping}");
                         return;
                     case <= 300:
                         _pingDisplay.SetColor(Color.red);
+                        _pingDisplay.SetName($"Ping:\n {ping}");
                         return;
                     case > 300:
                         _pingDisplay.SetColor(Color.black);
+                        _pingDisplay.SetName($"Ping:\n {ping}");
                         return;
                 }
             });
-            _pingDisplay = pingMenu.CreateFunctionElement("Ping:\n (REFRESH)", Color.grey, null);
         }
 
         private FunctionElement _createServerElement;
