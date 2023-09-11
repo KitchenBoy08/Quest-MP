@@ -13,8 +13,7 @@ namespace ServerSoftware
         public class Command
         {
             public string identifier = "";
-            public int intValue = 0;
-            public bool boolValue;
+            public string[] modifiers;
         }
 
         public static void RunCommand(Command command)
@@ -26,11 +25,23 @@ namespace ServerSoftware
                         PortHelper.Close();
                     break;
                 case "kick":
-                    if (command.intValue != 0)
+                    try
                     {
-                        Server.ServerClass.currentserver.TryGetClient((ushort)command.intValue, out Connection player);
-                        Server.ServerClass.currentserver.Reject(player);
-                        Server.ServerClass.UpdateWindow($"Kicked player with ID {command.intValue}");
+                        if (!ushort.TryParse(command.modifiers[1], out ushort id))
+                        {
+                            Server.ServerClass.UpdateWindow($"{id} is not the correct format of ID!");
+                        }
+                    } catch 
+                    {
+                        Server.ServerClass.UpdateWindow($"Incorrect ID format!");
+                    }
+                    if (ushort.Parse(command.modifiers[1].ToString()) != 0)
+                    {
+                        if (Server.ServerClass.currentserver.TryGetClient(ushort.Parse(command.modifiers[1]), out Connection player))
+                        {
+                            Server.ServerClass.currentserver.DisconnectClient(player);
+                            Server.ServerClass.UpdateWindow($"Kicked player with ID {player.Id}");
+                        }
                     } else
                     {
                         Server.ServerClass.UpdateWindow("Invalid Command! Add a player ID!");

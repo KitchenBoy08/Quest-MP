@@ -51,7 +51,9 @@ namespace Server
 
             string typed = Console.ReadLine();
             Commands.Command command = new Commands.Command();
-            command.identifier = typed.Split(" ").First();
+            string[] typedArray = typed.Split(" ");
+            command.identifier = typedArray[0];
+            command.modifiers = typedArray;
 
             Commands.RunCommand(command);
 
@@ -68,7 +70,7 @@ namespace Server
 
             StartRiptideServer();
 
-            Server.ServerClass.UpdateWindow("Restarted Server!");
+            UpdateWindow("Restarted Server!");
         }
 
         private static void StartRiptideServer()
@@ -81,6 +83,10 @@ namespace Server
             currentserver.Start(7777, 256);
 
             // Create a Timer that calls the Tick method every 'interval' milliseconds
+            if (timer != null)
+            {
+                timer.Dispose();
+            } 
             timer = new Timer(Tick, null, 0, tickInterval);
 
             Console.WriteLine("Server started!");

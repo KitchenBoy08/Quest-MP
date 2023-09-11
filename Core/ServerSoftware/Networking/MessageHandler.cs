@@ -9,9 +9,8 @@ namespace Server.Networking
         [MessageHandler(0)]
         private static void HandleSomeMessageFromClient(ushort riptideID, Message message)
         {
-            Server.ServerClass.currentserver.TryGetClient(riptideID, out Connection client);
 #if DEBUG
-            Console.WriteLine($"Received message from id: {client.Id}!");
+            Console.WriteLine($"Received message from id: {riptideID}!");
 #endif
 
             byte[] bytes = message.GetBytes();
@@ -25,6 +24,7 @@ namespace Server.Networking
                     Console.WriteLine("Handling SendFromServer");
 #endif
                     Message sentFromServer = Message.Create(MessageSendMode.Unreliable, 0);
+                    sentFromServer.Release();
                     sentFromServer.AddBytes(bytes);
                     Server.ServerClass.currentserver.Send(sentFromServer, playerID);
                     break;
@@ -33,6 +33,7 @@ namespace Server.Networking
                     Console.WriteLine("Handling SendToServer");
 #endif
                     Message sentToServer = Message.Create(MessageSendMode.Unreliable, 0);
+                    sentToServer.Release();
                     sentToServer.AddBytes(bytes);
                     Server.ServerClass.currentserver.Send(message, Server.ServerClass.host);
                     break;
@@ -41,6 +42,7 @@ namespace Server.Networking
                     Console.WriteLine("Handling SendToAll");
 #endif
                     Message sentToAll = Message.Create(MessageSendMode.Unreliable, 0);
+                    sentToAll.Release();
                     sentToAll.AddBytes(bytes);
                     Server.ServerClass.currentserver.SendToAll(sentToAll);
                     break;

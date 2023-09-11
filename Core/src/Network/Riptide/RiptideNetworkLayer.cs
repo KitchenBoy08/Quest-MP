@@ -68,7 +68,7 @@ namespace LabFusion.Network
         public static Client currentclient { get; set; }
         public static string publicIp;
 
-        internal override bool IsServer => isHost;
+        internal override bool IsServer => isHost || currentserver.IsRunning;
 
         internal override bool IsClient => currentclient.IsConnected;
 
@@ -282,8 +282,6 @@ namespace LabFusion.Network
                 currentserver.Stop();
 
             isHost = false;
-
-            InternalServerHelpers.OnDisconnect(disconnect.Reason.ToString());
 
             OnUpdateRiptideLobby();
 
