@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\LabFusion.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="Open.Nat">
       <HintPath>..\..\..\..\..\Plugins\Open.Nat.dll</HintPath>
     </Reference>

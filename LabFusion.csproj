@@ -468,13 +468,12 @@
     <Compile Include="Core\src\Network\Proxy\ProxySocketHandler.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyVoiceManager.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyVoiceHandler.cs" />
-    <Compile Include="Core\src\Network\RiptideDedicated\DedicatedHelpers.cs" />
-    <Compile Include="Core\src\Network\RiptideDedicated\RiptideDedicatedHandler.cs" />
-    <Compile Include="Core\src\Network\RiptideDedicated\RiptideDedicatedLayer.cs" />
+    <Compile Include="Core\src\Network\Riptide\Enums\ServerTypes.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideHandler.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideVoiceHandler.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideVoiceManager.cs" />
+    <Compile Include="Core\src\Network\Riptide\Enums\SendTypes.cs" />
     <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVoiceManager.cs" />
     <Compile Include="Core\src\Network\Steam\SteamVRNetworkLayer.cs" />

@@ -35,13 +35,30 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using LabFusion.Data;
 using System.Reflection;
-using Steamworks.Data;
+using LabFusion.Network;
 using UnityEngine.UIElements;
+using System.Drawing;
+using LabFusion.Core.src.Network.Riptide.Enums;
 
 namespace LabFusion.Network
 {
     public class RiptideNetworkLayer : NetworkLayer
     {
+        public static class CurrentServerType
+        {
+            private static ServerTypes type;
+
+            public static void SetType(ServerTypes type)
+            {
+                CurrentServerType.type = type;
+            }
+
+            public static ServerTypes GetType()
+            {
+                return type;
+            }
+        }
+
         internal override string Title => "Riptide";
 
         // AsyncCallbacks are bad!
@@ -51,9 +68,11 @@ namespace LabFusion.Network
         public static Client currentclient { get; set; }
         public static string publicIp;
 
-        internal override bool IsServer => currentserver.IsRunning;
+        internal override bool IsServer => isHost;
 
         internal override bool IsClient => currentclient.IsConnected;
+
+        public static bool isHost;
 
         private readonly RiptideVoiceManager _voiceManager = new();
         internal override IVoiceManager VoiceManager => _voiceManager;
@@ -64,6 +83,7 @@ namespace LabFusion.Network
 
         internal override void OnInitializeLayer() {
             currentclient = new Client();
+
             currentserver = new Server();
             currentserver.TimeoutTime = 20000;
             currentserver.HeartbeatInterval = 5000;
@@ -126,16 +146,31 @@ namespace LabFusion.Network
         }
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message) {
-            if (IsServer) {
-                currentserver.SendToAll(RiptideHandler.PrepareMessage(message, channel));
-            }
-            else {
-                currentclient.Send(RiptideHandler.PrepareMessage(message, channel));
+            if (CurrentServerType.GetType() == ServerTypes.DEDICATED)
+            {
+                if (IsServer)
+                {
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendToAll));
+                }
+                else
+                {
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendToServer));
+                }
+            } else
+            {
+                if (IsServer)
+                {
+                    currentserver.SendToAll(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendToAll));
+                }
+                else
+                {
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendToServer));
+                }
             }
         }
 
         internal override void SendToServer(NetworkChannel channel, FusionMessage message) {
-            currentclient.Send(RiptideHandler.PrepareMessage(message, channel));
+            currentclient.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendToServer));
         }
 
         internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message) {
@@ -146,10 +181,19 @@ namespace LabFusion.Network
 
         internal override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message) {
             if (IsServer) {
-                if (userId == PlayerIdManager.LocalLongId)
-                    currentserver.Send(RiptideHandler.PrepareMessage(message, channel), (ushort)PlayerIdManager.LocalLongId);
-                else if (currentserver.TryGetClient((ushort)userId, out Riptide.Connection client))
-                    currentserver.Send(RiptideHandler.PrepareMessage(message, channel), client);
+                if (CurrentServerType.GetType() == ServerTypes.DEDICATED)
+                {
+                    if (userId == PlayerIdManager.LocalLongId)
+                        currentclient.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendFromServer, (ushort)PlayerIdManager.LocalLongId));
+                    else if (currentserver.TryGetClient((ushort)userId, out Riptide.Connection client))
+                        currentclient.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendFromServer, client.Id));
+                } else
+                {
+                    if (userId == PlayerIdManager.LocalLongId)
+                        currentserver.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendFromServer), (ushort)PlayerIdManager.LocalLongId);
+                    else if (currentserver.TryGetClient((ushort)userId, out Riptide.Connection client))
+                        currentserver.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendFromServer), client);
+                }
             }
         }
 
@@ -175,6 +219,7 @@ namespace LabFusion.Network
 #if DEBUG
             FusionLogger.Log("SERVER START HOOKED");
 #endif
+            isHost = true;
 
             // Update player ID here since it's determined on the Riptide Client ID
             PlayerIdManager.SetLongId(currentclient.Id);
@@ -211,7 +256,6 @@ namespace LabFusion.Network
             else
             {
                 string decodedIp = IPSafety.IPSafety.DecodeIPAddress(ip);
-                ConnectToServer(decodedIp);
 
                 currentclient.Connect(decodedIp + ":7777");
             }
@@ -222,22 +266,26 @@ namespace LabFusion.Network
             FusionLogger.Log("SERVER CONNECT HOOKED");
 #endif
             isConnecting = false;
-
-            currentclient.Disconnected += OnClientDisconnect;
-            // Update player ID here since it's determined on the Riptide Client ID
-            PlayerIdManager.SetLongId(currentclient.Id);
-            PlayerIdManager.SetUsername($"Riptide Enjoyer");
-
-            ConnectionSender.SendConnectionRequest();
-
             OnUpdateRiptideLobby();
 
-            currentclient.Connected -= OnConnect;
+            Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Unreliable, 1);
+            sent.AddString("RequestServerType");
+            currentclient.Send(sent);
         }
 
-        private void OnClientDisconnect(object sender, Riptide.DisconnectedEventArgs disconnect)
+        public static void OnClientDisconnect(object sender, Riptide.DisconnectedEventArgs disconnect)
         {
-            Disconnect();
+            if (currentclient.IsConnected)
+                currentclient.Disconnect();
+
+            if (currentserver.IsRunning)
+                currentserver.Stop();
+
+            isHost = false;
+
+            InternalServerHelpers.OnDisconnect(disconnect.Reason.ToString());
+
+            OnUpdateRiptideLobby();
 
             currentclient.Disconnected -= OnClientDisconnect;
         }
@@ -248,6 +296,8 @@ namespace LabFusion.Network
 
             if (currentserver.IsRunning)
                 currentserver.Stop();
+
+            isHost = false;
 
             InternalServerHelpers.OnDisconnect(reason);
 
@@ -319,7 +369,7 @@ namespace LabFusion.Network
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
         }
 
-        private void OnUpdateRiptideLobby() {
+        public static void OnUpdateRiptideLobby() {
             // Update bonemenu items
             OnUpdateCreateServerText();
         }
@@ -413,7 +463,7 @@ namespace LabFusion.Network
             });
         }
 
-        private FunctionElement _createServerElement;
+        private static FunctionElement _createServerElement;
 
         private void CreateServerInfoMenu(MenuCategory category) {
             _createServerElement = category.CreateFunctionElement("Start Server", Color.white, OnClickCreateServer);
@@ -441,16 +491,16 @@ namespace LabFusion.Network
             Clipboard.SetText(encodedIP);
         }
 
-        private void OnUpdateCreateServerText() {
-            if (IsClient && !IsServer)
+        public static void OnUpdateCreateServerText() {
+            if (currentclient.IsConnected && !currentserver.IsRunning)
             {
                 _createServerElement.SetName("Disconnect");
             }
-            else if (IsServer)
+            else if (currentserver.IsRunning)
             {
                 _createServerElement.SetName("Stop Server");
             }
-            else if (!IsClient)
+            else if (!currentclient.IsConnected)
             {
                 _createServerElement.SetName("Start Server");
             }
