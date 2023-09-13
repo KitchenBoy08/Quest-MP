@@ -8,8 +8,8 @@ namespace LabFusion.Network
 {
     public enum SendTypes
     {
-        SendToAll = 1,
-        SendFromServer = 2,
-        SendToServer = 3,
+        SendToAll = 2,
+        SendFromServer = 3,
+        SendToServer = 4,
     }
 }

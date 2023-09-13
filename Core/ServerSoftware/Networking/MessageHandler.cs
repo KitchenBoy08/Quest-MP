@@ -5,60 +5,53 @@ namespace Server.Networking
 {
     public static class MessageHandler
     {
-
-        [MessageHandler(0)]
-        private static void HandleSomeMessageFromClient(ushort riptideID, Message message)
+        [MessageHandler(2)]
+        public static void HandleSendToServer(ushort riptideID, Message message)
         {
-#if DEBUG
-            Console.WriteLine($"Received message from id: {riptideID}!");
-#endif
-
             byte[] bytes = message.GetBytes();
-            SendTypes tag = (SendTypes)message.GetInt();
-            ushort playerID = message.GetUShort();
+            Message sent = Message.Create(MessageSendMode.Unreliable, 0);
+            sent.AddBytes(bytes);
 
-            switch (tag)
-            {
-                case SendTypes.SendFromServer:
-#if DEBUG
-                    Console.WriteLine("Handling SendFromServer");
-#endif
-                    Message sentFromServer = Message.Create(MessageSendMode.Unreliable, 0);
-                    sentFromServer.Release();
-                    sentFromServer.AddBytes(bytes);
-                    Server.ServerClass.currentserver.Send(sentFromServer, playerID);
-                    break;
-                case SendTypes.SendToServer:
-#if DEBUG
-                    Console.WriteLine("Handling SendToServer");
-#endif
-                    Message sentToServer = Message.Create(MessageSendMode.Unreliable, 0);
-                    sentToServer.Release();
-                    sentToServer.AddBytes(bytes);
-                    Server.ServerClass.currentserver.Send(message, Server.ServerClass.host);
-                    break;
-                case SendTypes.SendToAll:
-#if DEBUG
-                    Console.WriteLine("Handling SendToAll");
-#endif
-                    Message sentToAll = Message.Create(MessageSendMode.Unreliable, 0);
-                    sentToAll.Release();
-                    sentToAll.AddBytes(bytes);
-                    Server.ServerClass.currentserver.SendToAll(sentToAll);
-                    break;
-                default:
-                    Console.WriteLine("Message is not in the correct format!");
-                    break;
-            }
+            ServerClass.currentserver.Send(sent, ServerClass.host);
+            Console.WriteLine("Handling SendToServer");
+            Console.WriteLine($"Sent {bytes.Length}");
+        }
+
+        [MessageHandler(3)]
+        public static void HandleSendToAll(ushort riptideID, Message message)
+        {
+            byte[] bytes = message.GetBytes();
+            Message sent = Message.Create(MessageSendMode.Unreliable, 0);
+            sent.AddBytes(bytes);
+
+            ServerClass.currentserver.SendToAll(sent);
+            Console.WriteLine("Handling SendToAll");
+            Console.WriteLine($"Sent {bytes.Length}");
+        }
+
+        [MessageHandler(4)]
+        public static void HandleSendFromServer(ushort riptideID, Message message)
+        {
+            byte[] bytes = message.GetBytes();
+            ushort playerID = bytes[bytes.Count() - 1];
+
+            Message sentFromServer = Message.Create(MessageSendMode.Unreliable, 0);
+            sentFromServer.Release();
+
+            List<byte> bytesToAdd = bytes.ToList();
+            bytesToAdd.RemoveAt(bytes.Count() - 1);
+
+            sentFromServer.AddBytes(bytesToAdd.ToArray());
+
+            Server.ServerClass.currentserver.Send(sentFromServer, playerID);
+            Console.WriteLine("Handled SendFromServer");
+            Console.WriteLine($"Sent {bytes.Length}");
         }
 
         [MessageHandler(1)]
         private static void HandleClientRequest(ushort riptideID, Message message)
         {
             Server.ServerClass.currentserver.TryGetClient(riptideID, out Connection client);
-#if DEBUG
-            Console.WriteLine($"Received Request message from id: {client.Id}!");
-#endif
 
             if (message.GetString() == "RequestServerType")
             {

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using LabFusion.Core.src.Network.Riptide.Enums;
 using LabFusion.Data;
@@ -51,19 +53,33 @@ namespace LabFusion.Network
             return byteArray;
         }
 
-        public static Message PrepareMessage(FusionMessage fusionMessage, NetworkChannel channel, SendTypes sendType, ushort playerID = 0)
+        public static Message PrepareMessage(FusionMessage fusionMessage, NetworkChannel channel, ushort messageChannel, ushort playerID = 0)
         {
-            var message = Message.Create(ConvertToSendMode(channel), 0); // Create the message
+            if (RiptideNetworkLayer.CurrentServerType.GetType() == ServerTypes.P2P)
+            {
+                var message = Message.Create(ConvertToSendMode(channel), 0); // Create the message
 
-            message.Release(); // Make sure the message is empty before adding bytes
+                message.Release(); // Make sure the message is empty before adding bytes
 
-            message.AddBytes(FusionMessageToBytes(fusionMessage)); // Add bytes
+                message.AddBytes(FusionMessageToBytes(fusionMessage)); // Add bytes
 
-            message.AddInt((int)sendType);
+                return message;
+            } else
+            {
+                var message = Message.Create(ConvertToSendMode(channel), messageChannel); // Create the message
 
-            message.AddUShort(playerID);
+                message.Release(); // Make sure the message is empty before adding bytes
 
-            return message;
+                if (playerID != 0)
+                {
+                    message.AddBytes(AddPlayerIDToBytes(FusionMessageToBytes(fusionMessage), (byte)playerID)); // Add bytes
+                } else
+                {
+                    message.AddBytes(FusionMessageToBytes(fusionMessage)); // Add bytes
+                }
+
+                return message;
+            }
         }
 
         [MessageHandler(0)]
@@ -71,7 +87,7 @@ namespace LabFusion.Network
         {
             unsafe
             {
-                int messageLength = message.GetBytes().Length;
+                int messageLength = message.WrittenLength;
 
                 byte[] buffer = message.GetBytes();
                 fixed (byte* messageBuffer = buffer)
@@ -86,7 +102,7 @@ namespace LabFusion.Network
         {
             unsafe
             {
-                int messageLength = message.GetBytes().Length;
+                int messageLength = message.WrittenLength;
 
                 byte[] buffer = message.GetBytes();
                 fixed (byte* messageBuffer = buffer)
@@ -150,10 +166,18 @@ namespace LabFusion.Network
             {
                 Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Reliable, 0);
                 sent.AddInt((int)ServerTypes.P2P);
-                RiptideNetworkLayer.currentserver.TryGetClient(riptideID, out Connection client);
-                RiptideNetworkLayer.currentserver.Send(sent, client);
+                RiptideNetworkLayer.currentserver.Send(sent, riptideID);
                 return;
             }
+        }
+
+        private static byte[] AddPlayerIDToBytes(byte[] bytes, byte playerID)
+        {
+            List<byte> byteList = bytes.ToList();
+
+            byteList.Add(playerID);
+
+            return byteList.ToArray();
         }
     }
 }

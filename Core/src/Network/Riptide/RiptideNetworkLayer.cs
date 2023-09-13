@@ -39,6 +39,7 @@ using LabFusion.Network;
 using UnityEngine.UIElements;
 using System.Drawing;
 using LabFusion.Core.src.Network.Riptide.Enums;
+using LabFusion.Syncables;
 
 namespace LabFusion.Network
 {
@@ -148,29 +149,35 @@ namespace LabFusion.Network
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message) {
             if (CurrentServerType.GetType() == ServerTypes.DEDICATED)
             {
-                if (IsServer)
+                if (isHost)
                 {
-                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendToAll));
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 3));
                 }
                 else
                 {
-                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendToServer));
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 2));
                 }
             } else
             {
                 if (IsServer)
                 {
-                    currentserver.SendToAll(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendToAll));
+                    currentserver.SendToAll(RiptideHandler.PrepareMessage(message, channel, 0));
                 }
                 else
                 {
-                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendToServer));
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 0));
                 }
             }
         }
 
         internal override void SendToServer(NetworkChannel channel, FusionMessage message) {
-            currentclient.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendToServer));
+            if (CurrentServerType.GetType() == ServerTypes.DEDICATED)
+            {
+                currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 2));
+            } else
+            {
+                currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 0));
+            }
         }
 
         internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message) {
@@ -180,19 +187,23 @@ namespace LabFusion.Network
         }
 
         internal override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message) {
-            if (IsServer) {
-                if (CurrentServerType.GetType() == ServerTypes.DEDICATED)
+            if (CurrentServerType.GetType() == ServerTypes.DEDICATED)
+            {
+                if (isHost)
                 {
                     if (userId == PlayerIdManager.LocalLongId)
-                        currentclient.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendFromServer, (ushort)PlayerIdManager.LocalLongId));
+                        currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, (ushort)PlayerIdManager.LocalLongId));
                     else if (currentserver.TryGetClient((ushort)userId, out Riptide.Connection client))
-                        currentclient.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendFromServer, client.Id));
-                } else
+                        currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, client.Id));
+                }
+            } else
+            {
+                if (IsServer)
                 {
                     if (userId == PlayerIdManager.LocalLongId)
-                        currentserver.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendFromServer), (ushort)PlayerIdManager.LocalLongId);
+                        currentserver.Send(RiptideHandler.PrepareMessage(message, channel, 0), (ushort)PlayerIdManager.LocalLongId);
                     else if (currentserver.TryGetClient((ushort)userId, out Riptide.Connection client))
-                        currentserver.Send(RiptideHandler.PrepareMessage(message, channel, SendTypes.SendFromServer), client);
+                        currentserver.Send(RiptideHandler.PrepareMessage(message, channel, 0), client);
                 }
             }
         }
