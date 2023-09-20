@@ -6,6 +6,7 @@ using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
 using LabFusion.MonoBehaviours;
+using Il2CppSystem;
 
 using Unity.XR;
 
@@ -32,24 +33,43 @@ using System;
 using System.ServiceModel.Channels;
 using System.Linq;
 using System.Net.NetworkInformation;
-using Oculus.Platform;
 using LabFusion.Data;
 using System.Reflection;
-using LabFusion.Core.src.Network.Riptide;
-using Steamworks.Data;
+using LabFusion.Network;
+using UnityEngine.UIElements;
+using System.Drawing;
+using LabFusion.Core.src.Network.Riptide.Enums;
+using LabFusion.Syncables;
 
 namespace LabFusion.Network
 {
     public class RiptideNetworkLayer : NetworkLayer
     {
+        public static class CurrentServerType
+        {
+            private static ServerTypes type;
+
+            public static void SetType(ServerTypes type)
+            {
+                CurrentServerType.type = type;
+            }
+
+            public static ServerTypes GetType()
+            {
+                return type;
+            }
+        }
+
         internal override string Title => "Riptide";
         public static Server currentserver { get; set; }
         public static Client currentclient { get; set; }
         public static string publicIp;
 
-        internal override bool IsServer => currentserver.IsRunning;
+        internal override bool IsServer => isHost || currentserver.IsRunning;
 
         internal override bool IsClient => currentclient.IsConnected;
+
+        public static bool isHost;
 
         private readonly RiptideVoiceManager _voiceManager = new();
         internal override IVoiceManager VoiceManager => _voiceManager;
@@ -61,8 +81,15 @@ namespace LabFusion.Network
         internal override void OnInitializeLayer() {
             currentclient = new Client();
             currentserver = new Server();
-            currentserver.TimeoutTime = 20000;
-            currentserver.HeartbeatInterval = 5000;
+
+            // Hooking
+            currentclient.Disconnected += OnClientDisconnect;
+
+            currentserver.TimeoutTime = 30000;
+            currentserver.HeartbeatInterval = 10000;
+
+            currentclient.TimeoutTime = 30000;
+            currentclient.HeartbeatInterval = 10000;
 
             IPGetter.GetExternalIP(OnExternalIPAddressRetrieved);
             PlayerIdManager.SetUsername("Riptide Enjoyer");
@@ -101,19 +128,13 @@ namespace LabFusion.Network
         }
 
         internal override void OnUpdateLayer() {
-            if (currentserver != null)
-            {
-                currentserver.Update();
-            }
-            if (currentclient != null)
-            {
-                currentclient.Update();
-            }
+            currentserver.Update();
+            currentclient.Update();
         }
 
         internal override string GetUsername(ulong userId) {
             // Find a way to get nickname, this will do for testing
-            string Username = ("Riptide Enjoyer");
+            string Username = ($"Riptide Enjoyer {userId}");
             return Username;
         }
 
@@ -122,16 +143,37 @@ namespace LabFusion.Network
         }
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message) {
-            if (IsServer) {
-                currentserver.SendToAll(RiptideHandler.PrepareMessage(message, channel));
-            }
-            else {
-                currentclient.Send(RiptideHandler.PrepareMessage(message, channel));
+            if (CurrentServerType.GetType() == ServerTypes.DEDICATED)
+            {
+                if (isHost)
+                {
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 3));
+                }
+                else
+                {
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 2));
+                }
+            } else
+            {
+                if (IsServer)
+                {
+                    currentserver.SendToAll(RiptideHandler.PrepareMessage(message, channel, 0));
+                }
+                else
+                {
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 0));
+                }
             }
         }
 
         internal override void SendToServer(NetworkChannel channel, FusionMessage message) {
-            currentclient.Send(RiptideHandler.PrepareMessage(message, channel));
+            if (CurrentServerType.GetType() == ServerTypes.DEDICATED)
+            {
+                currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 2));
+            } else
+            {
+                currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 0));
+            }
         }
 
         internal override void SendFromServer(byte userId, NetworkChannel channel, FusionMessage message) {
@@ -141,99 +183,48 @@ namespace LabFusion.Network
         }
 
         internal override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message) {
-            if (IsServer) {
-                if (userId == PlayerIdManager.LocalLongId)
-                    currentserver.Send(RiptideHandler.PrepareMessage(message, channel), (ushort)PlayerIdManager.LocalLongId);
-                else if (currentserver.TryGetClient((ushort)userId, out Riptide.Connection client))
-                    currentserver.Send(RiptideHandler.PrepareMessage(message, channel), client);
-            }
-        }
-
-        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
-        {
-            // If we are deafened, no need to deal with voice chat
-            if (VoiceHelper.IsDeafened)
-                return;
-
-            var handler = VoiceManager.GetVoiceHandler(id);
-            handler?.OnVoiceBytesReceived(bytes);
-        }
-
-        private byte[] voiceData;
-        private GameObject voiceObject;
-        private MicrophoneManager microphoneManager;
-        internal override void OnVoiceChatUpdate()
-        {
-            /*
-            if (NetworkInfo.HasServer)
+            if (CurrentServerType.GetType() == ServerTypes.DEDICATED)
             {
-                bool voiceEnabled = VoiceHelper.IsVoiceEnabled;
-
-                if (voiceEnabled)
+                if (isHost)
                 {
-                    if (voiceObject == null)
-                    {
-                        FusionLogger.Error("voiceObject is null! Creating new GameObject.");
-                        voiceObject = new GameObject("VoiceObject");
-                        GameObject.DontDestroyOnLoad(voiceObject);
-                        return;
-                    }
-
-                    if (microphoneManager == null)
-                    {
-                        FusionLogger.Error("microphoneManager is null! Creating new MicrophoneManager.");
-                        microphoneManager = voiceObject.AddComponent<MicrophoneManager>();
-                        return;
-                    }
-
-                    if (!microphoneManager.isRecording)
-                    {
-                        microphoneManager.StartMicrophone();
-                        return;
-                    }
-
-                    voiceData = CompressionHelper.CompressByteArray(microphoneManager.GetMicrophoneData());
-                } else
-                {
-                    return;
+                    if (userId == PlayerIdManager.LocalLongId)
+                        currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, (ushort)PlayerIdManager.LocalLongId));
+                    else
+                        currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, (ushort)userId));
                 }
-
-                // Read voice data
-                if (voiceData != null)
+            } else
+            {
+                if (IsServer)
                 {
-                    PlayerSender.SendPlayerVoiceChat(voiceData);
-                    FusionLogger.Log($"Sent Voice Data: {voiceData.Length}");
+                    if (userId == PlayerIdManager.LocalLongId)
+                        currentserver.Send(RiptideHandler.PrepareMessage(message, channel, 0), (ushort)PlayerIdManager.LocalLongId);
+                    else if (currentserver.TryGetClient((ushort)userId, out Riptide.Connection client))
+                        currentserver.Send(RiptideHandler.PrepareMessage(message, channel, 0), client);
                 }
-
-                // Update the manager
-                VoiceManager.Update();
             }
-            */
         }
 
-        internal override void StartServer() {
-            if (currentclient == null)
-            {
-                currentclient = new Client();
-            }
-            if (currentserver == null)
-            {
-                currentserver = new Server();
-                currentserver.TimeoutTime = 20000;
-                currentserver.HeartbeatInterval = 5000;
-            }
-
+        internal override void StartServer()
+        {
+            // Making sure the server is fully started before calling start things
             currentclient.Connected += OnStarted;
+
             // Player cap is set just above Fusion's built in 255 player cap, since Fusion already has a player cap limit system
             currentserver.Start(7777, 256);
 
             currentclient.Connect("127.0.0.1:7777");
         }
 
-        private void OnStarted(object sender, System.EventArgs e) {
+        private void OnStarted(object sender, System.EventArgs e)
+        {
+            currentserver.ClientDisconnected += OnClientDisconnect;
+
+            currentclient.Connected -= OnStarted;
+
 #if DEBUG
             FusionLogger.Log("SERVER START HOOKED");
 #endif
+            CurrentServerType.SetType(ServerTypes.P2P);
 
             // Update player ID here since it's determined on the Riptide Client ID
             PlayerIdManager.SetLongId(currentclient.Id);
@@ -243,11 +234,6 @@ namespace LabFusion.Network
 
             // Call server setup
             InternalServerHelpers.OnStartServer();
-
-            currentserver.ClientDisconnected += OnClientDisconnect;
-            currentserver.ClientConnected += OnClientConnect;
-
-            currentclient.Connected -= OnStarted;
         }
 
         private bool isConnecting;
@@ -270,35 +256,37 @@ namespace LabFusion.Network
             else
             {
                 string decodedIp = IPSafety.IPSafety.DecodeIPAddress(ip);
-                ConnectToServer(decodedIp);
 
                 currentclient.Connect(decodedIp + ":7777");
             }
         }
 
         private void OnConnect(object sender, System.EventArgs e) {
+            currentclient.Connected -= OnConnect;
 #if DEBUG
             FusionLogger.Log("SERVER CONNECT HOOKED");
 #endif
             isConnecting = false;
-
-            currentclient.Disconnected += OnClientDisconnect;
-            // Update player ID here since it's determined on the Riptide Client ID
-            PlayerIdManager.SetLongId(currentclient.Id);
-            PlayerIdManager.SetUsername($"Riptide Enjoyer");
-
-            ConnectionSender.SendConnectionRequest();
-
             OnUpdateRiptideLobby();
 
-            currentclient.Connected -= OnConnect;
+            Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Unreliable, 1);
+            sent.AddString("RequestServerType");
+            currentclient.Send(sent);
         }
 
-        private void OnClientDisconnect(object sender, Riptide.DisconnectedEventArgs disconnect)
+        public static void OnClientDisconnect(object sender, Riptide.DisconnectedEventArgs disconnect)
         {
-            Disconnect();
+            if (currentclient.IsConnected)
+                currentclient.Disconnect();
 
-            currentclient.Disconnected -= OnClientDisconnect;
+            if (currentserver.IsRunning)
+                currentserver.Stop();
+
+            InternalServerHelpers.OnDisconnect(GetDisconnectReason(disconnect.Reason));
+
+            isHost = false;
+
+            OnUpdateRiptideLobby();
         }
 
         internal override void Disconnect(string reason = "") {
@@ -308,7 +296,7 @@ namespace LabFusion.Network
             if (IsServer)
                 currentserver.Stop();
 
-            InternalServerHelpers.OnDisconnect(reason);
+            isHost = false;
 
             OnUpdateRiptideLobby();
         }
@@ -321,6 +309,30 @@ namespace LabFusion.Network
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
+            currentclient.ConnectionFailed += OnConnectionFail;
+        }
+
+        private void OnConnectionFail(object sender, ConnectionFailedEventArgs info)
+        {
+            FusionNotifier.Send(new FusionNotification()
+            {
+                title = "Connection Failed",
+                showTitleOnPopup = true,
+                isMenuItem = false,
+                isPopup = true,
+                message = $"Failed to establish a connection with the server!",
+                popupLength = 3f,
+            });
+            FusionNotifier.Send(new FusionNotification()
+            {
+                title = "Connection Failed",
+                showTitleOnPopup = true,
+                isMenuItem = false,
+                isPopup = true,
+                message = $"Make sure the host has port forwarded and their server is open!",
+                popupLength = 3f,
+            });
+            FusionLogger.Error($"Failed to connect to server with error: {info.Message}");
         }
 
         private void OnGamemodeChanged(Gamemode gamemode) {
@@ -354,7 +366,7 @@ namespace LabFusion.Network
             MultiplayerHooking.OnDisconnect -= OnDisconnect;
         }
 
-        private void OnUpdateRiptideLobby() {
+        public static void OnUpdateRiptideLobby() {
             // Update bonemenu items
             OnUpdateCreateServerText();
         }
@@ -416,36 +428,39 @@ namespace LabFusion.Network
             var connectionInfo = settings.CreateCategory("Connection Stuff", Color.white);
 
             var pingMenu = connectionInfo.CreateCategory("Ping Menu", Color.white);
+            _pingDisplay = pingMenu.CreateFunctionElement("Ping:\n (REFRESH)", Color.grey, null);
             pingMenu.CreateFunctionElement("Refresh", Color.blue, () =>
             {
-                if (currentclient.SmoothRTT == -1)
+                if (currentclient.RTT == -1)
                 {
                     _pingDisplay.SetName("Ping not calculated.");
                     return;
                 }
 
-                _pingDisplay.SetName($"Ping:\n {currentclient.SmoothRTT}");
-
-                switch (currentclient.RTT)
+                int ping = currentclient.RTT;
+                switch (ping)
                 {
                     case <= 100:
                         _pingDisplay.SetColor(Color.green);
+                        _pingDisplay.SetName($"Ping:\n {ping}");
                         return;
                     case <= 200:
                         _pingDisplay.SetColor(Color.yellow);
+                        _pingDisplay.SetName($"Ping:\n {ping}");
                         return;
                     case <= 300:
                         _pingDisplay.SetColor(Color.red);
+                        _pingDisplay.SetName($"Ping:\n {ping}");
                         return;
                     case > 300:
                         _pingDisplay.SetColor(Color.black);
+                        _pingDisplay.SetName($"Ping:\n {ping}");
                         return;
                 }
             });
-            _pingDisplay = pingMenu.CreateFunctionElement("Ping:\n (REFRESH)", Color.grey, null);
         }
 
-        private FunctionElement _createServerElement;
+        private static FunctionElement _createServerElement;
 
         private void CreateServerInfoMenu(MenuCategory category) {
             _createServerElement = category.CreateFunctionElement("Start Server", Color.white, OnClickCreateServer);
@@ -473,16 +488,16 @@ namespace LabFusion.Network
             Clipboard.SetText(encodedIP);
         }
 
-        private void OnUpdateCreateServerText() {
-            if (IsClient && !IsServer)
+        public static void OnUpdateCreateServerText() {
+            if (currentclient.IsConnected && !currentserver.IsRunning)
             {
                 _createServerElement.SetName("Disconnect");
             }
-            else if (IsServer)
+            else if (currentserver.IsRunning)
             {
                 _createServerElement.SetName("Stop Server");
             }
-            else if (!IsClient)
+            else if (!currentclient.IsConnected)
             {
                 _createServerElement.SetName("Start Server");
             }
@@ -539,25 +554,11 @@ namespace LabFusion.Network
 
         private void OnClientDisconnect(object sender, ServerDisconnectedEventArgs client)
         {
-            string nickname = PlayerIdManager.GetPlayerId(client.Client.Id).GetMetadata(MetadataHelper.NicknameKey);
-            if (nickname != null)
-            {
-                FusionLogger.Log($"{PlayerIdManager.GetPlayerId(client.Client.Id).GetMetadata(MetadataHelper.NicknameKey)} disconnected with reason:\n {GetDisconnectReason(client.Reason)}");
-            } else
-            {
-                FusionLogger.Log($"Client with ID of {client.Client.Id} disconnected with reason:\n {GetDisconnectReason(client.Reason)}");
-            }
-
             // Update the mod so it knows this user has left
             InternalServerHelpers.OnUserLeave(client.Client.Id);
 
             // Send disconnect notif to everyone
             ConnectionSender.SendDisconnect(client.Client.Id, GetDisconnectReason(client.Reason));
-        }
-
-        private void OnClientConnect(object sender, ServerConnectedEventArgs client)
-        {
-            FusionLogger.Log($"Client connected with ID {client.Client.Id}");
         }
 
         private void OnDisplayServerCode()
@@ -643,6 +644,34 @@ namespace LabFusion.Network
         {
             if (listingName != "" && listingCode != "")
             {
+                if (FusionPreferences.ClientSettings.ServerNameList.GetValue().Where(name => name.ToString() == listingName).Skip(1).Any())
+                {
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        title = "Invalid Listing",
+                        showTitleOnPopup = true,
+                        isMenuItem = false,
+                        isPopup = true,
+                        message = $"A listing with this name has already been created!",
+                        popupLength = 3f,
+                    });
+                    return;
+                }
+
+                if (FusionPreferences.ClientSettings.ServerCodeList.GetValue().Where(code => code.ToString() == listingCode).Skip(1).Any())
+                {
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        title = "Invalid Listing",
+                        showTitleOnPopup = true,
+                        isMenuItem = false,
+                        isPopup = true,
+                        message = $"A listing with this code has already been created!",
+                        popupLength = 3f,
+                    });
+                    return;
+                }
+
                 ServerListing listing = new ServerListing() { Name = listingName, ServerCode = listingCode };
 
                 FusionPreferences.ClientSettings.ServerNameToAdd.SetValue("");
@@ -724,7 +753,7 @@ namespace LabFusion.Network
                     FusionLogger.Log("No compatible NAT device found.");
                 }
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 FusionLogger.Error($"Error: {ex.Message}");
             }
@@ -739,7 +768,7 @@ namespace LabFusion.Network
 
                 MelonLogger.Msg($"Port 7777 has been opened. Protocol: UDP");
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 MelonLogger.Error($"Error opening port: {ex.Message}");
             }
@@ -771,7 +800,7 @@ namespace LabFusion.Network
                     }
                 }
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 MelonLogger.Error($"Error fetching local IPv4 address: {ex.Message}");
             }
