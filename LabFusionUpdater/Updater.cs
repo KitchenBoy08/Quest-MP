@@ -9,11 +9,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace LabFusionUpdater
+namespace TideFusionUpdater
 {
     internal static class Updater
     {
-        private static readonly string _dataDir = Path.Combine(MelonUtils.UserDataDirectory, $"{FusionUpdaterPlugin.PluginName}");
+        private static readonly string _dataDir = Path.Combine(MelonUtils.UserDataDirectory, $"{TideUpdaterPlugin.PluginName}");
         private static readonly string _updaterAppName = "updater.exe";
 
         private static bool pluginNeedsUpdating = false;
@@ -22,11 +22,11 @@ namespace LabFusionUpdater
         {
             // Check for local version of mod and read version if it exists
             Version localVersion = new Version(0, 0, 0);
-            if (File.Exists(FusionUpdaterPlugin.ModAssemblyPath))
+            if (File.Exists(TideUpdaterPlugin.ModAssemblyPath))
             {
-                AssemblyName localAssemblyInfo = AssemblyName.GetAssemblyName(FusionUpdaterPlugin.ModAssemblyPath);
+                AssemblyName localAssemblyInfo = AssemblyName.GetAssemblyName(TideUpdaterPlugin.ModAssemblyPath);
                 localVersion = new Version(localAssemblyInfo.Version.Major, localAssemblyInfo.Version.Minor, localAssemblyInfo.Version.Build); // Remaking the object so there's no 4th number
-                FusionUpdaterPlugin.Logger.Msg($"{FusionUpdaterPlugin.ModName}{FusionUpdaterPlugin.FileExtension} found in Mods folder. Version: {localVersion}");
+                TideUpdaterPlugin.Logger.Msg($"{TideUpdaterPlugin.ModName}{TideUpdaterPlugin.FileExtension} found in Mods folder. Version: {localVersion}");
             }
 
             try
@@ -34,7 +34,7 @@ namespace LabFusionUpdater
                 Directory.CreateDirectory(_dataDir);
                 string updaterScriptPath = Path.Combine(_dataDir, _updaterAppName);
 
-                Assembly assembly = FusionUpdaterPlugin.UpdaterAssembly;
+                Assembly assembly = TideUpdaterPlugin.UpdaterAssembly;
                 string resourceName = assembly.GetManifestResourceNames().First(x => x.Contains(_updaterAppName));
                 using (Stream stream = assembly.GetManifestResourceStream(resourceName))
                 {
@@ -44,7 +44,7 @@ namespace LabFusionUpdater
 
                 Process process = new Process();
                 process.StartInfo.FileName = updaterScriptPath;
-                process.StartInfo.Arguments = $"{localVersion} \"{FusionUpdaterPlugin.ModAssemblyPath}\" \"{FusionUpdaterPlugin.PluginAssemblyPath}\" \"false\"";
+                process.StartInfo.Arguments = $"{localVersion} \"{TideUpdaterPlugin.ModAssemblyPath}\" \"{TideUpdaterPlugin.PluginAssemblyPath}\" \"false\"";
                 process.Start();
                 process.WaitForExit();
                 ExitCode code = (ExitCode)process.ExitCode;
@@ -52,21 +52,21 @@ namespace LabFusionUpdater
                 switch (code)
                 {
                     case ExitCode.Success:
-                        FusionUpdaterPlugin.Instance.LoggerInstance.Msg($"{FusionUpdaterPlugin.ModName}{FusionUpdaterPlugin.FileExtension} updated successfully!");
+                        TideUpdaterPlugin.Instance.LoggerInstance.Msg($"{TideUpdaterPlugin.ModName}{TideUpdaterPlugin.FileExtension} updated successfully!");
                         pluginNeedsUpdating = true;
                         break;
                     case ExitCode.UpToDate:
-                        FusionUpdaterPlugin.Instance.LoggerInstance.Msg($"{FusionUpdaterPlugin.ModName}{FusionUpdaterPlugin.FileExtension} is already up to date.");
+                        TideUpdaterPlugin.Instance.LoggerInstance.Msg($"{TideUpdaterPlugin.ModName}{TideUpdaterPlugin.FileExtension} is already up to date.");
                         break;
                     case ExitCode.Error:
-                        FusionUpdaterPlugin.Instance.LoggerInstance.Error($"{FusionUpdaterPlugin.ModName}{FusionUpdaterPlugin.FileExtension} failed to update!");
+                        TideUpdaterPlugin.Instance.LoggerInstance.Error($"{TideUpdaterPlugin.ModName}{TideUpdaterPlugin.FileExtension} failed to update!");
                         break;
                 }
             }
             catch (Exception e)
             {
-                FusionUpdaterPlugin.Logger.Error($"Exception caught while running {FusionUpdaterPlugin.ModName} updater!");
-                FusionUpdaterPlugin.Logger.Error(e.ToString());
+                TideUpdaterPlugin.Logger.Error($"Exception caught while running {TideUpdaterPlugin.ModName} updater!");
+                TideUpdaterPlugin.Logger.Error(e.ToString());
             }
         }
 
@@ -87,7 +87,7 @@ namespace LabFusionUpdater
 
                 Process process = new Process();
                 process.StartInfo.FileName = updaterScriptPath;
-                process.StartInfo.Arguments = $"{new Version(0, 0, 0)} \"{FusionUpdaterPlugin.ModAssemblyPath}\" \"{FusionUpdaterPlugin.PluginAssemblyPath}\" true";
+                process.StartInfo.Arguments = $"{new Version(0, 0, 0)} \"{TideUpdaterPlugin.ModAssemblyPath}\" \"{TideUpdaterPlugin.PluginAssemblyPath}\" true";
                 process.Start();
             }
         }

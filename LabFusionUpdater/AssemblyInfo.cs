@@ -7,15 +7,15 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.InteropServices;
 
-using LabFusionUpdater;
 using MelonLoader;
+using TideFusionUpdater;
 
-[assembly: AssemblyTitle(FusionUpdaterPlugin.Name)]
+[assembly: AssemblyTitle(TideUpdaterPlugin.Name)]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany(null)]
-[assembly: AssemblyProduct(FusionUpdaterPlugin.Name)]
-[assembly: AssemblyCopyright("Created by " + FusionUpdaterPlugin.Author)]
+[assembly: AssemblyProduct(TideUpdaterPlugin.Name)]
+[assembly: AssemblyCopyright("Created by " + TideUpdaterPlugin.Author)]
 [assembly: AssemblyTrademark(null)]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
@@ -23,6 +23,6 @@ using MelonLoader;
 [assembly: AssemblyVersion("1.0.0")]
 [assembly: AssemblyFileVersion("1.0.0")]
 [assembly: NeutralResourcesLanguage("en")]
-[assembly: MelonInfo(typeof(FusionUpdaterPlugin), FusionUpdaterPlugin.Name, "1.0.0", FusionUpdaterPlugin.Author, null)]
+[assembly: MelonInfo(typeof(TideUpdaterPlugin), TideUpdaterPlugin.Name, "1.0.0", TideUpdaterPlugin.Author, null)]
 
 [assembly: MelonGame("Stress Level Zero", "BONELAB")]

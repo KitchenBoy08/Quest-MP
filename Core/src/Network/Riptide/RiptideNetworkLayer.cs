@@ -84,10 +84,16 @@ namespace LabFusion.Network
 
         internal override void OnInitializeLayer() {
             currentclient = new Client();
-
             currentserver = new Server();
-            currentserver.TimeoutTime = 20000;
-            currentserver.HeartbeatInterval = 5000;
+
+            // Hooking
+            currentclient.Disconnected += OnClientDisconnect;
+
+            currentserver.TimeoutTime = 30000;
+            currentserver.HeartbeatInterval = 10000;
+
+            currentclient.TimeoutTime = 30000;
+            currentclient.HeartbeatInterval = 10000;
 
             IPGetter.GetExternalIP(OnExternalIPAddressRetrieved);
             PlayerIdManager.SetUsername("Riptide Enjoyer");
@@ -126,19 +132,13 @@ namespace LabFusion.Network
         }
 
         internal override void OnUpdateLayer() {
-            if (currentserver != null)
-            {
-                currentserver.Update();
-            }
-            if (currentclient != null)
-            {
-                currentclient.Update();
-            }
+            currentserver.Update();
+            currentclient.Update();
         }
 
         internal override string GetUsername(ulong userId) {
             // Find a way to get nickname, this will do for testing
-            string Username = ("Riptide Enjoyer");
+            string Username = ($"Riptide Enjoyer {userId}");
             return Username;
         }
 
@@ -193,8 +193,8 @@ namespace LabFusion.Network
                 {
                     if (userId == PlayerIdManager.LocalLongId)
                         currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, (ushort)PlayerIdManager.LocalLongId));
-                    else if (currentserver.TryGetClient((ushort)userId, out Riptide.Connection client))
-                        currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, client.Id));
+                    else
+                        currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, (ushort)userId));
                 }
             } else
             {
@@ -208,29 +208,27 @@ namespace LabFusion.Network
             }
         }
 
-        internal override void OnVoiceBytesReceived(PlayerId id, byte[] bytes)
+        internal override void StartServer()
         {
-            // If we are deafened, no need to deal with voice chat
-            if (VoiceHelper.IsDeafened)
-                return;
-
-            var handler = VoiceManager.GetVoiceHandler(id);
-            handler?.OnVoiceBytesReceived(bytes);
-        }
-
-        internal override void StartServer() {
+            // Making sure the server is fully started before calling start things
             currentclient.Connected += OnStarted;
+
             // Player cap is set just above Fusion's built in 255 player cap, since Fusion already has a player cap limit system
             currentserver.Start(7777, 256);
 
             currentclient.Connect("127.0.0.1:7777");
         }
 
-        private void OnStarted(object sender, System.EventArgs e) {
+        private void OnStarted(object sender, System.EventArgs e)
+        {
+            currentserver.ClientDisconnected += OnClientDisconnect;
+
+            currentclient.Connected -= OnStarted;
+
 #if DEBUG
             FusionLogger.Log("SERVER START HOOKED");
 #endif
-            isHost = true;
+            CurrentServerType.SetType(ServerTypes.P2P);
 
             // Update player ID here since it's determined on the Riptide Client ID
             PlayerIdManager.SetLongId(currentclient.Id);
@@ -240,11 +238,6 @@ namespace LabFusion.Network
 
             // Call server setup
             InternalServerHelpers.OnStartServer();
-
-            currentserver.ClientDisconnected += OnClientDisconnect;
-            currentserver.ClientConnected += OnClientConnect;
-
-            currentclient.Connected -= OnStarted;
         }
 
         private bool isConnecting;
@@ -273,6 +266,7 @@ namespace LabFusion.Network
         }
 
         private void OnConnect(object sender, System.EventArgs e) {
+            currentclient.Connected -= OnConnect;
 #if DEBUG
             FusionLogger.Log("SERVER CONNECT HOOKED");
 #endif
@@ -292,11 +286,11 @@ namespace LabFusion.Network
             if (currentserver.IsRunning)
                 currentserver.Stop();
 
+            InternalServerHelpers.OnDisconnect(GetDisconnectReason(disconnect.Reason));
+
             isHost = false;
 
             OnUpdateRiptideLobby();
-
-            currentclient.Disconnected -= OnClientDisconnect;
         }
 
         internal override void Disconnect(string reason = "") {
@@ -307,8 +301,6 @@ namespace LabFusion.Network
                 currentserver.Stop();
 
             isHost = false;
-
-            InternalServerHelpers.OnDisconnect(reason);
 
             OnUpdateRiptideLobby();
         }
@@ -443,7 +435,7 @@ namespace LabFusion.Network
             _pingDisplay = pingMenu.CreateFunctionElement("Ping:\n (REFRESH)", Color.grey, null);
             pingMenu.CreateFunctionElement("Refresh", Color.blue, () =>
             {
-                if (currentclient.SmoothRTT == -1)
+                if (currentclient.RTT == -1)
                 {
                     _pingDisplay.SetName("Ping not calculated.");
                     return;
@@ -566,25 +558,11 @@ namespace LabFusion.Network
 
         private void OnClientDisconnect(object sender, ServerDisconnectedEventArgs client)
         {
-            string nickname = PlayerIdManager.GetPlayerId(client.Client.Id).GetMetadata(MetadataHelper.NicknameKey);
-            if (nickname != null)
-            {
-                FusionLogger.Log($"{PlayerIdManager.GetPlayerId(client.Client.Id).GetMetadata(MetadataHelper.NicknameKey)} disconnected with reason:\n {GetDisconnectReason(client.Reason)}");
-            } else
-            {
-                FusionLogger.Log($"Client with ID of {client.Client.Id} disconnected with reason:\n {GetDisconnectReason(client.Reason)}");
-            }
-
             // Update the mod so it knows this user has left
             InternalServerHelpers.OnUserLeave(client.Client.Id);
 
             // Send disconnect notif to everyone
             ConnectionSender.SendDisconnect(client.Client.Id, GetDisconnectReason(client.Reason));
-        }
-
-        private void OnClientConnect(object sender, ServerConnectedEventArgs client)
-        {
-            FusionLogger.Log($"Client connected with ID {client.Client.Id}");
         }
 
         private void OnDisplayServerCode()
@@ -670,6 +648,34 @@ namespace LabFusion.Network
         {
             if (listingName != "" && listingCode != "")
             {
+                if (FusionPreferences.ClientSettings.ServerNameList.GetValue().Where(name => name.ToString() == listingName).Skip(1).Any())
+                {
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        title = "Invalid Listing",
+                        showTitleOnPopup = true,
+                        isMenuItem = false,
+                        isPopup = true,
+                        message = $"A listing with this name has already been created!",
+                        popupLength = 3f,
+                    });
+                    return;
+                }
+
+                if (FusionPreferences.ClientSettings.ServerCodeList.GetValue().Where(code => code.ToString() == listingCode).Skip(1).Any())
+                {
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        title = "Invalid Listing",
+                        showTitleOnPopup = true,
+                        isMenuItem = false,
+                        isPopup = true,
+                        message = $"A listing with this code has already been created!",
+                        popupLength = 3f,
+                    });
+                    return;
+                }
+
                 ServerListing listing = new ServerListing() { Name = listingName, ServerCode = listingCode };
 
                 FusionPreferences.ClientSettings.ServerNameToAdd.SetValue("");

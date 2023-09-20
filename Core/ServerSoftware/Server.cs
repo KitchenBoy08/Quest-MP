@@ -8,11 +8,25 @@ using System;
 using System.Security;
 using System.Net.NetworkInformation;
 using ServerSoftware;
+using ServerSoftware.Utilities;
+using System.Runtime.InteropServices;
 
 namespace Server
 {
     public static class ServerClass
     {
+        private const int MF_BYCOMMAND = 0x00000000;
+        public const int SC_CLOSE = 0xF060;
+
+        [DllImport("user32.dll")]
+        public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+
+        [DllImport("kernel32.dll", ExactSpelling = true)]
+        private static extern IntPtr GetConsoleWindow();
+
         public static Connection host;
         public static bool hasPortForwarded = false;
         public static Riptide.Server currentserver;
@@ -23,12 +37,12 @@ namespace Server
 
         private static void Main(string[] args)
         {
+            DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), SC_CLOSE, MF_BYCOMMAND);
             Console.Title = "Fusion Dedicated Server";
 
             StartRiptideServer();
 
             PortHelper.OpenPort();
-            InitializeCommandPrompt();
         }
 
         public static void InitializeCommandPrompt(string info = "")
@@ -36,7 +50,7 @@ namespace Server
             Console.Clear();
 
             Console.WriteLine($"Player Count: {playerCount}");
-            Console.WriteLine($"Server Code: {IPStuff.IPSafety.EncodeIPAddress(IPStuff.IPGetter.GetExternalIP())}");
+            Console.WriteLine($"Server Code: {IPStuff.EncodeIPAddress(IPStuff.GetExternalIP())}");
             Console.WriteLine($"Has Auto Port Forwarded: {hasPortForwarded}");
 
             Console.WriteLine("\n===============================================\n");
@@ -68,18 +82,11 @@ namespace Server
         {
             currentserver.Stop();
 
-            StartRiptideServer();
-
-            UpdateWindow("Restarted Server!");
+            StartRiptideServer(true);
         }
 
-        private static void StartRiptideServer()
+        private static void StartRiptideServer(bool reset = false)
         {
-            currentserver = new Riptide.Server();
-            currentserver.ClientConnected += OnClientConnected;
-            currentserver.ClientDisconnected += OnClientDisconnected;
-            currentserver.TimeoutTime = 20000;
-            currentserver.HeartbeatInterval = 5000;
             currentserver.Start(7777, 256);
 
             // Create a Timer that calls the Tick method every 'interval' milliseconds
@@ -89,7 +96,7 @@ namespace Server
             } 
             timer = new Timer(Tick, null, 0, tickInterval);
 
-            Console.WriteLine("Server started!");
+            if (!reset) UpdateWindow("Server started!"); else UpdateWindow("Server restarted!");
         }
 
         private static void Tick(object state)
@@ -99,11 +106,12 @@ namespace Server
 
         private static void OnClientDisconnected(object? sender, ServerDisconnectedEventArgs client)
         {
+            client.Client.CanTimeout = false;
             playerCount = currentserver.ClientCount;
 
             if (client.Client == host)
             {
-                RestartServer();
+                RestartServer(true);
             }
         }
 
@@ -116,7 +124,7 @@ namespace Server
 
             playerCount = currentserver.ClientCount;
 
-            UpdateWindow();
+            UpdateWindow("Obtained new host!");
         }
     }
     

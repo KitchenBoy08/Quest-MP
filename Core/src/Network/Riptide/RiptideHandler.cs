@@ -26,7 +26,7 @@ namespace LabFusion.Network
                     sendMode = MessageSendMode.Unreliable;
                     break;
                 case NetworkChannel.Reliable:
-                    sendMode = MessageSendMode.Unreliable;
+                    sendMode = MessageSendMode.Reliable;
                     break;
             }
             return sendMode;
@@ -130,6 +130,10 @@ namespace LabFusion.Network
                     InternalServerHelpers.OnStartServer();
 
                     RiptideNetworkLayer.OnUpdateRiptideLobby();
+
+                    FusionSceneManager.HookOnDelayedLevelLoad(() => {
+                        PermissionList.SetPermission(PlayerIdManager.LocalLongId, PlayerIdManager.LocalUsername, PermissionLevel.DEFAULT);
+                    });
                 }
                 else
                 {
@@ -143,31 +147,30 @@ namespace LabFusion.Network
                     ConnectionSender.SendConnectionRequest();
                 }
             }
-            else if (message.GetInt() == (int)ServerTypes.P2P)
+            else
             {
+                RiptideNetworkLayer.isHost = false;
+
                 RiptideNetworkLayer.CurrentServerType.SetType(ServerTypes.P2P);
                 RiptideNetworkLayer.currentclient.Disconnected += RiptideNetworkLayer.OnClientDisconnect;
                 // Update player ID here since it's determined on the Riptide Client ID
                 PlayerIdManager.SetLongId(RiptideNetworkLayer.currentclient.Id);
                 PlayerIdManager.SetUsername($"Riptide Enjoyer");
+
                 ConnectionSender.SendConnectionRequest();
-                RiptideNetworkLayer.OnUpdateRiptideLobby();
-                return;
-            } else
-            {
-                FusionLogger.Error("Server Response was incorrect!");
             }
         }
 
         [MessageHandler(1)]
         private static void HandleClientRequest(ushort riptideID, Message message)
         {
+            RiptideNetworkLayer.currentserver.TryGetClient(riptideID, out Connection client);
+
             if (message.GetString() == "RequestServerType")
             {
-                Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Reliable, 0);
+                Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Unreliable, 1);
                 sent.AddInt((int)ServerTypes.P2P);
-                RiptideNetworkLayer.currentserver.Send(sent, riptideID);
-                return;
+                RiptideNetworkLayer.currentserver.Send(sent, client);
             }
         }
 

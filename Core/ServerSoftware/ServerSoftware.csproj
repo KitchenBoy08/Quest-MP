@@ -13,7 +13,7 @@
       <HintPath>..\..\..\..\..\Plugins\Open.Nat.dll</HintPath>
     </Reference>
     <Reference Include="RiptideNetworking">
-      <HintPath>..\..\..\..\..\Plugins\RiptideNetworking.dll</HintPath>
+      <HintPath>..\..\..\..\Referencing\RiptideNetworking.dll</HintPath>
     </Reference>
   </ItemGroup>
 

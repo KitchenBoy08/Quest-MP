@@ -900,8 +900,9 @@
     <Reference Include="Open.Nat">
       <HintPath>..\..\..\Plugins\Open.Nat.dll</HintPath>
     </Reference>
-    <Reference Include="RiptideNetworking">
-      <HintPath>..\..\..\Plugins\RiptideNetworking.dll</HintPath>
+    <Reference Include="RiptideNetworking, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Riptide-main\RiptideNetworking\RiptideNetworking\bin\Debug\netstandard2.0\netstandard2.0\RiptideNetworking.dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

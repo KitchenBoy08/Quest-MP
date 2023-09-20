@@ -12,9 +12,9 @@ namespace Server.Networking
             Message sent = Message.Create(MessageSendMode.Unreliable, 0);
             sent.AddBytes(bytes);
 
-            ServerClass.currentserver.Send(sent, ServerClass.host);
             Console.WriteLine("Handling SendToServer");
-            Console.WriteLine($"Sent {bytes.Length}");
+
+            ServerClass.currentserver.Send(sent, ServerClass.host);
         }
 
         [MessageHandler(3)]
@@ -24,9 +24,9 @@ namespace Server.Networking
             Message sent = Message.Create(MessageSendMode.Unreliable, 0);
             sent.AddBytes(bytes);
 
-            ServerClass.currentserver.SendToAll(sent);
             Console.WriteLine("Handling SendToAll");
-            Console.WriteLine($"Sent {bytes.Length}");
+
+            ServerClass.currentserver.SendToAll(sent);
         }
 
         [MessageHandler(4)]
@@ -43,9 +43,9 @@ namespace Server.Networking
 
             sentFromServer.AddBytes(bytesToAdd.ToArray());
 
+            Console.WriteLine("Handling SendFromServer");
+
             Server.ServerClass.currentserver.Send(sentFromServer, playerID);
-            Console.WriteLine("Handled SendFromServer");
-            Console.WriteLine($"Sent {bytes.Length}");
         }
 
         [MessageHandler(1)]
@@ -59,7 +59,6 @@ namespace Server.Networking
                 sent.AddInt((int)ServerTypes.DEDICATED);
                 Server.ServerClass.currentserver.Send(sent, client);
                 Console.WriteLine("Sending Server Type");
-                return;
             }
         }
     }

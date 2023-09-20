@@ -13,18 +13,19 @@ public static class PortHelper
 
             if (device != null)
             {
-                await device.CreatePortMapAsync(new Mapping(Protocol.Udp, internalPort, externalPort, "UDP Port Forwarding"));
+                await device.CreatePortMapAsync(new Mapping(Protocol.Udp, internalPort, externalPort, "TideFusion Port"));
                 Server.ServerClass.hasPortForwarded = true;
-                Server.ServerClass.UpdateWindow();
+                Server.ServerClass.UpdateWindow("Automatically opened UDP port!");
+            } else
+            {
+                Server.ServerClass.hasPortForwarded = false;
+                Server.ServerClass.UpdateWindow($"Unable to find NAT device!");
             }
         }
-        catch (NatDeviceNotFoundException)
+        catch (Exception e)
         {
-            Console.WriteLine("No NAT device found.");
-        }
-        catch (MappingException ex)
-        {
-            Console.WriteLine($"Error forwarding UDP port: {ex.Message}");
+            Server.ServerClass.hasPortForwarded = false;
+            Server.ServerClass.UpdateWindow($"Unable to automatically open port with exception:\n {e}");
         }
     }
 
