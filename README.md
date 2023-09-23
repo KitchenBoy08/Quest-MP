@@ -3,7 +3,7 @@ A multiplayer mod for BONELAB featuring support for all platforms.
 [You can view a basic installation guide here.](INSTALLATION.md)
 
 ## Networking
-Fusion is networked and built around Steam, but the networking system can be swapped out using a Networking Layer. This fork adds its own Networking layer using P2P called Riptide.
+Fusion is networked and built around Steam, but the networking system can be swapped out using a Networking Layer. This fork adds its own Networking layer using a networking solution called Riptide.
 
 # Check Fusion's Repo for Fusion Information
 
