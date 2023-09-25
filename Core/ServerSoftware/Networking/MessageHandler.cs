@@ -11,13 +11,16 @@ namespace Server.Networking
         {
             byte[] bytes = message.GetBytes();
 
-            Message sent = Message.Create(message.SendMode, 0);
+            Message sent = Message.Create(message.SendMode, 5);
             sent.Release();
 
             sent.AddBytes(bytes);
+            sent.AddBool(true);
 
-            ServerClass.currentserver.Send(sent, ServerClass.host);
-            Console.WriteLine("SentToServer");
+            if (ServerClass.currentserver.TryGetClient((ushort)ServerClass.hostID, out Connection client))
+                ServerClass.currentserver.Send(sent, (ushort)ServerClass.hostID);
+            else
+                ServerClass.UpdateWindow("Failed to SendToHost");
         }
 
         [MessageHandler(3)]
@@ -25,10 +28,11 @@ namespace Server.Networking
         {
             byte[] bytes = message.GetBytes();
 
-            Message sent = Message.Create(message.SendMode, 0);
+            Message sent = Message.Create(message.SendMode, 5);
             sent.Release();
 
             sent.AddBytes(bytes);
+            sent.AddBool(false);
 
             ServerClass.currentserver.SendToAll(sent);
         }
@@ -39,13 +43,13 @@ namespace Server.Networking
             byte[] bytes = message.GetBytes();
             ushort playerID = message.GetUShort();
             
-            Message sentFromServer = Message.Create(message.SendMode, 0);
-            sentFromServer.Release();
+            Message sent = Message.Create(message.SendMode, 5);
+            sent.Release();
 
-            sentFromServer.AddBytes(bytes);
+            sent.AddBytes(bytes);
+            sent.AddBool(false);
 
-            ServerClass.currentserver.Send(sentFromServer, playerID);
-            Console.WriteLine($"Sent to Client: {playerID}");
+            ServerClass.currentserver.Send(sent, playerID);
         }
 
         [MessageHandler(1)]
@@ -57,8 +61,19 @@ namespace Server.Networking
             {
                 Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Reliable, 1);
                 sent.AddInt((int)ServerTypes.DEDICATED);
+                sent.AddString(ServerClass.currentLevelBarcode);
                 ServerClass.currentserver.Send(sent, client);
             }
         }
+
+        [MessageHandler(7)]
+        public static void HandleLevelInfo(ushort riptideID, Message message)
+        {
+            string levelBarcode = message.GetString();
+            string levelName = message.GetString();
+            ServerClass.currentLevelBarcode = levelBarcode;
+            ServerClass.UpdateWindow($"Loaded new level with Title: \n{levelName}");
+        }
+
     }
 }

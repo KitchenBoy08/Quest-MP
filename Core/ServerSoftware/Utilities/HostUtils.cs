@@ -10,16 +10,6 @@ namespace ServerSoftware.Utilities
 {
     public static class HostUtils
     {
-        public static void TrySetHost(Connection client)
-        {
-            Message message = Message.Create(MessageSendMode.Reliable, 11);
-            message.Release();
-
-            message.AddByte(1);
-
-            ServerClass.currentserver.Send(message, client);
-        }
-
         [MessageHandler(11)]
         public static void HandleHostResponse(ushort riptideID, Message message)
         {
@@ -29,7 +19,7 @@ namespace ServerSoftware.Utilities
             {
                 if (ServerClass.currentserver.TryGetClient(riptideID, out Connection client))
                 {
-                    ServerClass.host = client;
+                    ServerClass.hostID = client.Id;
                     ServerClass.UpdateWindow("Obtained new host!");
                 } else
                 {

@@ -27,21 +27,12 @@ using LabFusion.Core.src.BoneMenu;
 
 using LabFusion.SDK.Gamemodes;
 using BoneLib;
-using System.Threading.Tasks;
-using System;
 using System.ServiceModel.Channels;
 using System.Linq;
-using System.Net.NetworkInformation;
-using LabFusion.Data;
-using System.Reflection;
-using LabFusion.Network;
-using UnityEngine.UIElements;
-using System.Drawing;
 using LabFusion.Core.src.Network.Riptide.Enums;
-using LabFusion.Syncables;
-using SLZ.Marrow.Warehouse;
-using SLZ.Marrow.Pool;
-using System.Windows.Forms.DataVisualization.Charting;
+using LabFusion.Data;
+using static SLZ.Bonelab.BonelabProgressionHelper;
+using System.Web.UI.WebControls;
 
 namespace LabFusion.Network
 {
@@ -308,6 +299,28 @@ namespace LabFusion.Network
 
             // Riptide Hooks
             currentclient.ConnectionFailed += OnConnectionFail;
+            Hooking.OnLevelInitialized += OnLevelLoad;
+        }
+
+        private void OnLevelLoad(LevelInfo info)
+        {
+            if (CurrentServerType.GetType() == ServerTypes.DEDICATED && isHost)
+            {
+                Riptide.Message levelInfo = Riptide.Message.Create(MessageSendMode.Reliable, 7);
+                levelInfo.Release();
+
+                levelInfo.AddString(info.barcode);
+                levelInfo.AddString(info.title);
+                currentclient.Send(levelInfo);
+
+                PermissionList.SetPermission(PlayerIdManager.LocalLongId, PlayerIdManager.LocalUsername, PermissionLevel.DEFAULT);
+                var playerId = PlayerIdManager.GetPlayerId(PlayerIdManager.LocalLongId);
+
+                if (playerId != null && NetworkInfo.IsServer)
+                {
+                    playerId.TrySetMetadata(MetadataHelper.PermissionKey, PermissionLevel.DEFAULT.ToString());
+                }
+            }
         }
 
         private void OnConnectionFail(object sender, ConnectionFailedEventArgs info)

@@ -10,7 +10,9 @@ using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using Riptide;
+using SLZ.Bonelab;
 using SLZ.Marrow.SceneStreaming;
+using Steamworks.Data;
 
 namespace LabFusion.Network
 {
@@ -84,6 +86,21 @@ namespace LabFusion.Network
             }
         }
 
+        [MessageHandler(5)]
+        public static void HandleDedicatedServerMessage(Message message)
+        {
+            unsafe
+            {
+                int messageLength = message.WrittenLength;
+
+                byte[] buffer = message.GetBytes();
+                fixed (byte* messageBuffer = buffer)
+                {
+                    FusionMessageHandler.ReadMessage(messageBuffer, messageLength, message.GetBool());
+                }
+            }
+        }
+
         [MessageHandler(0)]
         public static void HandleSomeMessageFromServer(Message message)
         {
@@ -109,7 +126,7 @@ namespace LabFusion.Network
                 byte[] buffer = message.GetBytes();
                 fixed (byte* messageBuffer = buffer)
                 {
-                    FusionMessageHandler.ReadMessage(messageBuffer, messageLength, true);
+                    FusionMessageHandler.ReadMessage(messageBuffer, messageLength);
                 } 
             }
         }
@@ -117,8 +134,18 @@ namespace LabFusion.Network
         [MessageHandler(1)]
         private static void HandleServerResponse(Message message)
         {
-            if (message.GetInt() == (int)ServerTypes.DEDICATED)
+            ServerTypes type = (ServerTypes)message.GetInt();
+            string levelBarcode = message.GetString();
+            if (type == ServerTypes.DEDICATED)
             {
+                if (!FusionSceneManager.HasLevel(levelBarcode) && levelBarcode != "NONE")
+                {
+                    if (RiptideNetworkLayer.currentclient.IsConnected) 
+                        RiptideNetworkLayer.currentclient.Disconnect();
+
+                    return;
+                }
+
                 RiptideNetworkLayer.CurrentServerType.SetType(ServerTypes.DEDICATED);
 
                 if (RiptideNetworkLayer.currentclient.Id == 1)
@@ -126,11 +153,6 @@ namespace LabFusion.Network
                     RiptideNetworkLayer.isHost = true;
 
                     PlayerIdManager.SetLongId(RiptideNetworkLayer.currentclient.Id);
-
-                    FusionSceneManager.HookOnDelayedLevelLoad(() =>
-                    {
-                        PermissionList.SetPermission(PlayerIdManager.LocalLongId, PlayerIdManager.LocalUsername, PermissionLevel.DEFAULT);
-                    });
 
                     // Mimicking the OnStartServer method in order to make it custom
                     // Create local id
@@ -163,9 +185,10 @@ namespace LabFusion.Network
                     // Unlock achievement
                     if (AchievementManager.TryGetAchievement<HeadOfHouse>(out var achievement))
                         achievement.IncrementTask();
-
-                    // Reload the scene
-                    SceneStreamer.Reload();
+                    if (levelBarcode == "NONE")
+                        SceneStreamer.Reload();
+                    else
+                        SceneStreamer.Load(levelBarcode);
                 }
                 else
                 {
@@ -191,12 +214,13 @@ namespace LabFusion.Network
         [MessageHandler(1)]
         private static void HandleClientRequest(ushort riptideID, Message message)
         {
-            RiptideNetworkLayer.currentserver.TryGetClient(riptideID, out Connection client);
+            RiptideNetworkLayer.currentserver.TryGetClient(riptideID, out Riptide.Connection client);
 
             if (message.GetString() == "RequestServerType")
             {
                 Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Unreliable, 1);
                 sent.AddInt((int)ServerTypes.P2P);
+                sent.AddString("NONE");
                 RiptideNetworkLayer.currentserver.Send(sent, client);
             }
         }
@@ -245,6 +269,44 @@ namespace LabFusion.Network
 
                 RiptideNetworkLayer.currentclient.Send(response);
             }
+        }
+
+        [MessageHandler(12)]
+        public static void HandleServerCommand(Message message)
+        {
+            if (RiptideNetworkLayer.CurrentServerType.GetType() == ServerTypes.DEDICATED)
+            {
+                CommandTypes type = (CommandTypes)message.GetInt();
+                string commandString = message.GetString();
+                int commandInt = message.GetInt();
+
+                switch (type)
+                {
+                    case CommandTypes.ReloadLevel:
+                        SceneStreamer.Reload();
+                        break;
+                    case CommandTypes.LoadLevel:
+                        if (FusionSceneManager.HasLevel(commandString))
+                            SceneStreamer.Load(commandString); 
+                        else
+                            FusionNotifier.Send(new FusionNotification()
+                            {
+                                title = "Error Loading Level",
+                                showTitleOnPopup = true,
+                                isMenuItem = false,
+                                isPopup = true,
+                                message = $"The dedicated server tried loading a level which you don't have!",
+                                popupLength = 3f,
+                            });
+                        break;
+                }
+            }
+        }
+
+        enum CommandTypes
+        {
+            ReloadLevel = 0,
+            LoadLevel = 1,
         }
     }
 }

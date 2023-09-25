@@ -24,11 +24,12 @@ namespace ServerSoftware
         [DllImport("kernel32.dll", ExactSpelling = true)]
         private static extern IntPtr GetConsoleWindow();
 
-        public static Connection host;
+        public static int hostID = 0;
         public static bool hasPortForwarded = false;
         public static Riptide.Server currentserver = new();
         public static int playerCount = 0;
-        public static string currentLevelBarcode;
+        public static string currentLevelBarcode = "NONE";
+        public static string currentLevelName = "NONE";
         private static Timer timer;
         private static int tickInterval = 5;
 
@@ -52,8 +53,13 @@ namespace ServerSoftware
         {
             Console.Clear();
             Console.WriteLine($"Player Count: {playerCount}");
+            /*
             Console.WriteLine($"Server Code: {IPStuff.EncodeIPAddress(IPStuff.GetExternalIP())}");
+            */
             Console.WriteLine($"Has Auto Port Forwarded: {hasPortForwarded}");
+            Console.WriteLine($"Current Level Barcode: {currentLevelBarcode}");
+            Console.WriteLine($"Current Level Title: {currentLevelName}");
+            Console.WriteLine($"Current Host ID: {hostID }");
 
             Console.WriteLine("\n===============================");
 
@@ -63,7 +69,7 @@ namespace ServerSoftware
                 Console.WriteLine("===============================\n");
             }
 
-            Console.WriteLine("Enter a command! (Help for more info)");
+            Console.WriteLine("Enter a command! (help for more info)");
             string typed = Console.ReadLine();
 
             Commands.Command command = new Commands.Command();
@@ -79,21 +85,19 @@ namespace ServerSoftware
         {
             currentserver.Stop();
 
-            StartRiptideServer(true);
-        }
-
-        private static void StartRiptideServer(bool reset = false)
-        {
-            if (currentserver == null)
+            if (resetData )
             {
-                currentserver = new();
-                currentserver.TimeoutTime = 30000;
-                currentserver.HeartbeatInterval = 30000;
-
-                currentserver.ClientConnected += OnClientConnected;
-                currentserver.ClientDisconnected += OnClientDisconnected;
+                currentLevelBarcode = "NONE";
+                currentLevelName = "NONE";
             }
 
+            StartRiptideServer(true);
+
+            hostID = 0;
+        }
+
+        public static void StartRiptideServer(bool reset = false)
+        {
             currentserver.Start(7777, 256);
 
             // Create a Timer that calls the Tick method every 'interval' milliseconds
@@ -108,29 +112,19 @@ namespace ServerSoftware
 
         private static void Tick(object state)
         {
-            if (currentserver != null)
-                currentserver.Update();
-            else
-            {
-                currentserver = new();
-                currentserver.TimeoutTime = 30000;
-                currentserver.HeartbeatInterval = 30000;
-
-                currentserver.ClientConnected += OnClientConnected;
-                currentserver.ClientDisconnected += OnClientDisconnected;
-            }
+            currentserver.Update();
         }
 
         private static void OnClientDisconnected(object? sender, ServerDisconnectedEventArgs client)
         {
             playerCount = currentserver.ClientCount;
 
-            if (client.Client == host)
+            if (client.Client.Id == hostID)
             {
                 if (playerCount != 0)
                 {
-                    Connection connection = currentserver.Clients[0];
-                    HostUtils.TrySetHost(connection);
+                    // TODO: Add system for changing server host
+                    RestartServer();
                 } else
                 {
                     RestartServer();
@@ -149,7 +143,7 @@ namespace ServerSoftware
 
             if (client.Client.Id == 1)
             {
-                host = client.Client;
+                hostID = client.Client.Id;
                 UpdateWindow("Obtained new host!");
             } else 
                 UpdateWindow($"Client {client.Client.Id} connected.");
