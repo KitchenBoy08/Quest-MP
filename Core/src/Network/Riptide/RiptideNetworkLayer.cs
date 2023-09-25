@@ -63,17 +63,13 @@ namespace LabFusion.Network
         }
 
         internal override string Title => "Riptide";
-<<<<<<< Updated upstream
-        public static Server currentserver { get; set; }
-        public static Client currentclient { get; set; }
-=======
 
         // AsyncCallbacks are bad!
         // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
         public const bool AsyncCallbacks = false;
         public static Server currentserver = new();
         public static Client currentclient = new();
->>>>>>> Stashed changes
+
         public static string publicIp;
         public static bool isHost = false;
 
