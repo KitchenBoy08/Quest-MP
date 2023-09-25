@@ -1,5 +1,6 @@
 using Riptide;
 using Server.Enums;
+using ServerSoftware;
 
 namespace Server.Networking
 {
@@ -9,22 +10,25 @@ namespace Server.Networking
         public static void HandleSendToServer(ushort riptideID, Message message)
         {
             byte[] bytes = message.GetBytes();
-            Message sent = Message.Create(MessageSendMode.Unreliable, 0);
+
+            Message sent = Message.Create(message.SendMode, 0);
+            sent.Release();
+
             sent.AddBytes(bytes);
 
-            Console.WriteLine("Handling SendToServer");
-
             ServerClass.currentserver.Send(sent, ServerClass.host);
+            Console.WriteLine("SentToServer");
         }
 
         [MessageHandler(3)]
         public static void HandleSendToAll(ushort riptideID, Message message)
         {
             byte[] bytes = message.GetBytes();
-            Message sent = Message.Create(MessageSendMode.Unreliable, 0);
-            sent.AddBytes(bytes);
 
-            Console.WriteLine("Handling SendToAll");
+            Message sent = Message.Create(message.SendMode, 0);
+            sent.Release();
+
+            sent.AddBytes(bytes);
 
             ServerClass.currentserver.SendToAll(sent);
         }
@@ -33,32 +37,27 @@ namespace Server.Networking
         public static void HandleSendFromServer(ushort riptideID, Message message)
         {
             byte[] bytes = message.GetBytes();
-            ushort playerID = bytes[bytes.Count() - 1];
-
-            Message sentFromServer = Message.Create(MessageSendMode.Unreliable, 0);
+            ushort playerID = message.GetUShort();
+            
+            Message sentFromServer = Message.Create(message.SendMode, 0);
             sentFromServer.Release();
 
-            List<byte> bytesToAdd = bytes.ToList();
-            bytesToAdd.RemoveAt(bytes.Count() - 1);
+            sentFromServer.AddBytes(bytes);
 
-            sentFromServer.AddBytes(bytesToAdd.ToArray());
-
-            Console.WriteLine("Handling SendFromServer");
-
-            Server.ServerClass.currentserver.Send(sentFromServer, playerID);
+            ServerClass.currentserver.Send(sentFromServer, playerID);
+            Console.WriteLine($"Sent to Client: {playerID}");
         }
 
         [MessageHandler(1)]
-        private static void HandleClientRequest(ushort riptideID, Message message)
+        public static void HandleClientRequest(ushort riptideID, Message message)
         {
-            Server.ServerClass.currentserver.TryGetClient(riptideID, out Connection client);
+            ServerClass.currentserver.TryGetClient(riptideID, out Connection client);
 
             if (message.GetString() == "RequestServerType")
             {
-                Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Unreliable, 1);
+                Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Reliable, 1);
                 sent.AddInt((int)ServerTypes.DEDICATED);
-                Server.ServerClass.currentserver.Send(sent, client);
-                Console.WriteLine("Sending Server Type");
+                ServerClass.currentserver.Send(sent, client);
             }
         }
     }

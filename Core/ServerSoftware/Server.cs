@@ -2,16 +2,13 @@
 using Riptide.Transports.Udp;
 using Riptide.Utils;
 
-using Open.Nat;
-
 using System;
 using System.Security;
 using System.Net.NetworkInformation;
-using ServerSoftware;
 using ServerSoftware.Utilities;
 using System.Runtime.InteropServices;
 
-namespace Server
+namespace ServerSoftware
 {
     public static class ServerClass
     {
@@ -29,7 +26,7 @@ namespace Server
 
         public static Connection host;
         public static bool hasPortForwarded = false;
-        public static Riptide.Server currentserver;
+        public static Riptide.Server currentserver = new();
         public static int playerCount = 0;
         public static string currentLevelBarcode;
         private static Timer timer;
@@ -37,33 +34,38 @@ namespace Server
 
         private static void Main(string[] args)
         {
+            currentserver.TimeoutTime = 30000;
+            currentserver.HeartbeatInterval = 30000;
+
+            currentserver.ClientConnected += OnClientConnected;
+            currentserver.ClientDisconnected += OnClientDisconnected;
+
             DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), SC_CLOSE, MF_BYCOMMAND);
-            Console.Title = "Fusion Dedicated Server";
+            Console.Title = "TideFusion Dedicated Server";
 
             StartRiptideServer();
 
             PortHelper.OpenPort();
         }
 
-        public static void InitializeCommandPrompt(string info = "")
+        public static void UpdateWindow(string info = "")
         {
             Console.Clear();
-
             Console.WriteLine($"Player Count: {playerCount}");
             Console.WriteLine($"Server Code: {IPStuff.EncodeIPAddress(IPStuff.GetExternalIP())}");
             Console.WriteLine($"Has Auto Port Forwarded: {hasPortForwarded}");
 
-            Console.WriteLine("\n===============================================\n");
+            Console.WriteLine("\n===============================");
 
-            if (info == "")
-            {
-                Console.WriteLine($"Enter a Command (help for more info)");
-            } else
+            if (info != "")
             {
                 Console.WriteLine(info);
+                Console.WriteLine("===============================\n");
             }
 
+            Console.WriteLine("Enter a command! (Help for more info)");
             string typed = Console.ReadLine();
+
             Commands.Command command = new Commands.Command();
             string[] typedArray = typed.Split(" ");
             command.identifier = typedArray[0];
@@ -73,12 +75,7 @@ namespace Server
 
         }
 
-        public static void UpdateWindow(string info = "")
-        {
-            InitializeCommandPrompt(info);
-        }
-
-        public static void RestartServer(bool resetSyncables = false)
+        public static void RestartServer(bool resetData = false)
         {
             currentserver.Stop();
 
@@ -87,6 +84,16 @@ namespace Server
 
         private static void StartRiptideServer(bool reset = false)
         {
+            if (currentserver == null)
+            {
+                currentserver = new();
+                currentserver.TimeoutTime = 30000;
+                currentserver.HeartbeatInterval = 30000;
+
+                currentserver.ClientConnected += OnClientConnected;
+                currentserver.ClientDisconnected += OnClientDisconnected;
+            }
+
             currentserver.Start(7777, 256);
 
             // Create a Timer that calls the Tick method every 'interval' milliseconds
@@ -101,30 +108,51 @@ namespace Server
 
         private static void Tick(object state)
         {
-            currentserver.Update();
+            if (currentserver != null)
+                currentserver.Update();
+            else
+            {
+                currentserver = new();
+                currentserver.TimeoutTime = 30000;
+                currentserver.HeartbeatInterval = 30000;
+
+                currentserver.ClientConnected += OnClientConnected;
+                currentserver.ClientDisconnected += OnClientDisconnected;
+            }
         }
 
         private static void OnClientDisconnected(object? sender, ServerDisconnectedEventArgs client)
         {
-            client.Client.CanTimeout = false;
             playerCount = currentserver.ClientCount;
 
             if (client.Client == host)
             {
-                RestartServer(true);
+                if (playerCount != 0)
+                {
+                    Connection connection = currentserver.Clients[0];
+                    HostUtils.TrySetHost(connection);
+                } else
+                {
+                    RestartServer();
+                }
+            }
+            else
+            {
+                UpdateWindow($"Client disconnected with ID {client.Client.Id}");
             }
         }
 
         private static void OnClientConnected(object? sender, ServerConnectedEventArgs client)
         {
+            playerCount = currentserver.ClientCount;
+            client.Client.TimeoutTime = 30000;
+
             if (client.Client.Id == 1)
             {
                 host = client.Client;
-            }
-
-            playerCount = currentserver.ClientCount;
-
-            UpdateWindow("Obtained new host!");
+                UpdateWindow("Obtained new host!");
+            } else 
+                UpdateWindow($"Client {client.Client.Id} connected.");
         }
     }
     

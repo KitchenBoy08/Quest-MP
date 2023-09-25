@@ -27,7 +27,6 @@ using LabFusion.Core.src.BoneMenu;
 
 using LabFusion.SDK.Gamemodes;
 using BoneLib;
-using Open.Nat;
 using System.Threading.Tasks;
 using System;
 using System.ServiceModel.Channels;
@@ -40,6 +39,9 @@ using UnityEngine.UIElements;
 using System.Drawing;
 using LabFusion.Core.src.Network.Riptide.Enums;
 using LabFusion.Syncables;
+using SLZ.Marrow.Warehouse;
+using SLZ.Marrow.Pool;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace LabFusion.Network
 {
@@ -61,15 +63,23 @@ namespace LabFusion.Network
         }
 
         internal override string Title => "Riptide";
+<<<<<<< Updated upstream
         public static Server currentserver { get; set; }
         public static Client currentclient { get; set; }
-        public static string publicIp;
+=======
 
-        internal override bool IsServer => isHost || currentserver.IsRunning;
+        // AsyncCallbacks are bad!
+        // In Unity/Melonloader, they can cause random crashes, especially when making a lot of calls
+        public const bool AsyncCallbacks = false;
+        public static Server currentserver = new();
+        public static Client currentclient = new();
+>>>>>>> Stashed changes
+        public static string publicIp;
+        public static bool isHost = false;
+
+        internal override bool IsServer => currentserver.IsRunning || isHost;
 
         internal override bool IsClient => currentclient.IsConnected;
-
-        public static bool isHost;
 
         private readonly RiptideVoiceManager _voiceManager = new();
         internal override IVoiceManager VoiceManager => _voiceManager;
@@ -79,9 +89,6 @@ namespace LabFusion.Network
         protected string _targetServerIP;
 
         internal override void OnInitializeLayer() {
-            currentclient = new Client();
-            currentserver = new Server();
-
             // Hooking
             currentclient.Disconnected += OnClientDisconnect;
 
@@ -92,7 +99,6 @@ namespace LabFusion.Network
             currentclient.HeartbeatInterval = 10000;
 
             IPGetter.GetExternalIP(OnExternalIPAddressRetrieved);
-            PlayerIdManager.SetUsername("Riptide Enjoyer");
 
             FusionLogger.Log("Initialized Riptide Layer");
         }
@@ -101,10 +107,7 @@ namespace LabFusion.Network
         {
             PlayerIdManager.SetUsername("Riptide Enjoyer");
 
-            if (!HelperMethods.IsAndroid())
-            {
-                FetchAndOpenPort();
-            }
+            PortHelper.OpenPort();
 
             HookRiptideEvents();
         }
@@ -125,6 +128,8 @@ namespace LabFusion.Network
             Disconnect();
 
             UnHookRiptideEvents();
+
+            PortHelper.ClosePort();
         }
 
         internal override void OnUpdateLayer() {
@@ -187,10 +192,7 @@ namespace LabFusion.Network
             {
                 if (isHost)
                 {
-                    if (userId == PlayerIdManager.LocalLongId)
-                        currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, (ushort)PlayerIdManager.LocalLongId));
-                    else
-                        currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, (ushort)userId));
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, (ushort)userId));
                 }
             } else
             {
@@ -220,7 +222,6 @@ namespace LabFusion.Network
             currentserver.ClientDisconnected += OnClientDisconnect;
 
             currentclient.Connected -= OnStarted;
-
 #if DEBUG
             FusionLogger.Log("SERVER START HOOKED");
 #endif
@@ -228,7 +229,6 @@ namespace LabFusion.Network
 
             // Update player ID here since it's determined on the Riptide Client ID
             PlayerIdManager.SetLongId(currentclient.Id);
-            PlayerIdManager.SetUsername($"Riptide Enjoyer");
 
             OnUpdateRiptideLobby();
 
@@ -269,7 +269,7 @@ namespace LabFusion.Network
             isConnecting = false;
             OnUpdateRiptideLobby();
 
-            Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Unreliable, 1);
+            Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Reliable, 1);
             sent.AddString("RequestServerType");
             currentclient.Send(sent);
         }
@@ -309,6 +309,8 @@ namespace LabFusion.Network
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
             MultiplayerHooking.OnDisconnect += OnDisconnect;
+
+            // Riptide Hooks
             currentclient.ConnectionFailed += OnConnectionFail;
         }
 
@@ -320,8 +322,8 @@ namespace LabFusion.Network
                 showTitleOnPopup = true,
                 isMenuItem = false,
                 isPopup = true,
-                message = $"Failed to establish a connection with the server!",
-                popupLength = 3f,
+                message = $"Failed to connect with reason: {GetConnectionFailReason(info.Reason)}",
+                popupLength = 1.5f,
             });
             FusionNotifier.Send(new FusionNotification()
             {
@@ -330,9 +332,29 @@ namespace LabFusion.Network
                 isMenuItem = false,
                 isPopup = true,
                 message = $"Make sure the host has port forwarded and their server is open!",
-                popupLength = 3f,
+                popupLength = 1.5f,
             });
+
             FusionLogger.Error($"Failed to connect to server with error: {info.Message}");
+        }
+
+        private string GetConnectionFailReason(RejectReason reason)
+        {
+            switch (reason)
+            {
+                case RejectReason.ServerFull:
+                    return "Server is Full";
+                case RejectReason.NoConnection:
+                    return "No Connection";
+                case RejectReason.Custom:
+                    return "Custom Reason";
+                case RejectReason.Rejected:
+                    return "Connection Rejected";
+                case RejectReason.AlreadyConnected:
+                    return "Already Connected to Server";
+                default:
+                    return @"¯\_(ツ)_/¯";
+            }
         }
 
         private void OnGamemodeChanged(Gamemode gamemode) {
@@ -412,7 +434,7 @@ namespace LabFusion.Network
         {
             var settings = category.CreateCategory("Riptide Settings", Color.blue);
 
-            // Create Username Menu
+            // Create Nickname Menu
             var nicknamePanel = settings.CreateCategory("Riptide Nickname", Color.white);
             _nicknameDisplay = nicknamePanel.CreateFunctionElement($"Current Nickname: {FusionPreferences.ClientSettings.Nickname.GetValue()}", Color.white, null);
 
@@ -458,6 +480,9 @@ namespace LabFusion.Network
                         return;
                 }
             });
+
+            // Funny stuff
+            /// Maybe later idk
         }
 
         private static FunctionElement _createServerElement;
@@ -534,17 +559,17 @@ namespace LabFusion.Network
             switch (reason)
             {
                 case DisconnectReason.Disconnected:
-                    return "Client disconnected";
+                    return "Disconnected from Server";
                 case DisconnectReason.NeverConnected:
-                    return "Client failed to connect";
+                    return "Client Failed to Connect";
                 case DisconnectReason.ConnectionRejected:
-                    return "Connection rejected";
+                    return "Connection was Rejected";
                 case DisconnectReason.ServerStopped:
-                    return "Server stopped";
+                    return "Server was Stopped";
                 case DisconnectReason.TimedOut:
-                    return "Timed out";
+                    return "Timed out from Server";
                 case DisconnectReason.Kicked:
-                    return "Kicked by host";
+                    return "Kicked";
                 case DisconnectReason.TransportError:
                     return "Transport error";
                 default:
@@ -723,89 +748,6 @@ namespace LabFusion.Network
         {
             public string Name;
             public string ServerCode;
-        }
-
-        // UPNP Stuff
-        private NatDevice natDevice;
-        private async void FetchAndOpenPort()
-        {
-            try
-            {
-                var discoverer = new NatDiscoverer();
-                var cts = new System.Threading.CancellationTokenSource(5000);
-                natDevice = await discoverer.DiscoverDeviceAsync(PortMapper.Upnp, cts);
-
-                if (natDevice != null)
-                {
-                    string localIp = GetLocalIPAddress();
-
-                    if (!string.IsNullOrEmpty(localIp))
-                    {
-                        await OpenPortAsync(natDevice);
-                    }
-                    else
-                    {
-                        FusionLogger.Log("Failed to fetch Local IP.");
-                    }
-                }
-                else
-                {
-                    FusionLogger.Log("No compatible NAT device found.");
-                }
-            }
-            catch (System.Exception ex)
-            {
-                FusionLogger.Error($"Error: {ex.Message}");
-            }
-        }
-        private async Task OpenPortAsync(NatDevice device)
-        {
-            try
-            {
-                // Open the port
-                var portmap = new Mapping(Protocol.Udp, 7777, 7777, "MelonLoader"); ;
-                await device.CreatePortMapAsync(portmap);
-
-                MelonLogger.Msg($"Port 7777 has been opened. Protocol: UDP");
-            }
-            catch (System.Exception ex)
-            {
-                MelonLogger.Error($"Error opening port: {ex.Message}");
-            }
-        }
-
-        private string GetLocalIPAddress()
-        {
-            string localIpAddress = null;
-
-            try
-            {
-                NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
-
-                NetworkInterface activeInterface = networkInterfaces.FirstOrDefault(
-                    iface => iface.OperationalStatus == OperationalStatus.Up &&
-                             (iface.NetworkInterfaceType != NetworkInterfaceType.Loopback || iface.NetworkInterfaceType != NetworkInterfaceType.Tunnel) &&
-                             iface.GetIPProperties().UnicastAddresses.Any(
-                                 addr => addr.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork));
-
-                if (activeInterface != null)
-                {
-                    var ipProperties = activeInterface.GetIPProperties();
-                    var ipv4Address = ipProperties.UnicastAddresses.FirstOrDefault(
-                        addr => addr.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)?.Address;
-
-                    if (ipv4Address != null)
-                    {
-                        localIpAddress = ipv4Address.ToString();
-                    }
-                }
-            }
-            catch (System.Exception ex)
-            {
-                MelonLogger.Error($"Error fetching local IPv4 address: {ex.Message}");
-            }
-
-            return localIpAddress;
         }
     }
 }

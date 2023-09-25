@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Open.Nat">
-      <HintPath>..\..\..\..\..\Plugins\Open.Nat.dll</HintPath>
+    <Reference Include="Mono.Nat">
+      <HintPath>..\..\..\..\Referencing\Mono.Nat.dll</HintPath>
     </Reference>
     <Reference Include="RiptideNetworking">
-      <HintPath>..\..\..\..\Referencing\RiptideNetworking.dll</HintPath>
+      <HintPath>..\..\bin\Debug\RiptideNetworking.dll</HintPath>
     </Reference>
   </ItemGroup>
 

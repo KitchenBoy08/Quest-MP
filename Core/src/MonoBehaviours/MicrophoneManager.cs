@@ -5,6 +5,7 @@ using LabFusion.Data;
 using MelonLoader;
 using System.Linq;
 using System;
+using BoneLib;
 
 namespace LabFusion.MonoBehaviours
 {
@@ -57,9 +58,13 @@ namespace LabFusion.MonoBehaviours
             microphonePos = 0;
         }
 
-        private Il2CppSystem.Byte[] voiceData;
-        public Il2CppSystem.Byte[] GetMicrophoneData()
+        public float[] GetMicrophoneData()
         {
+            if (Microphone.GetPosition(deviceName) < microphonePos)
+            {
+                microphonePos = Microphone.GetPosition(deviceName);
+            }
+
             if (!isRecording)
             {
                 FusionLogger.Warn("Microphone is not recording.");
@@ -70,13 +75,10 @@ namespace LabFusion.MonoBehaviours
             float[] samples = new float[microphoneClip.samples];
             microphoneClip.GetData(samples, microphonePos);
 
-            // Convert float samples to byte array
-            voiceData = new Il2CppSystem.Byte[samples.Length * 2]; // 2 bytes per sample
-            System.Buffer.BlockCopy(samples, 0, voiceData, 0, voiceData.Length);
 
             microphonePos = Microphone.GetPosition(deviceName);
 
-            return voiceData;
+            return samples;
         }
     }
 }

@@ -1,5 +1,9 @@
-﻿using Mono.Nat;
-using ServerSoftware;
+﻿using System;
+using System.Threading.Tasks;
+using LabFusion.Extensions;
+using LabFusion.Utilities;
+using Mono.Nat;
+using Mono.Nat.Upnp;
 
 public static class PortHelper
 {
@@ -20,15 +24,13 @@ public static class PortHelper
             try
             {
                 upnpDevice.DeletePortMap(mapping);
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
-                ServerClass.UpdateWindow($"Failed to delete port mapping with error: {ex}");
+                FusionLogger.Error($"Failed to delete port mapping with error: {ex}");
             }
-        }
-        else
+        } else
         {
-            ServerClass.UpdateWindow("Can't delete port mapping as the device is null!");
+            FusionLogger.Log("Can't delete port mapping as the device is null!");
         }
     }
 
@@ -39,10 +41,9 @@ public static class PortHelper
         {
             device.Device.CreatePortMap(mapping);
             upnpDevice = device.Device;
-        }
-        catch (Exception ex)
+        } catch (Exception ex) 
         {
-            ServerClass.UpdateWindow($"Failed creating port map with exception: {ex}");
+            FusionLogger.Error($"Failed creating port map with exception: {ex}");
         }
     }
 }

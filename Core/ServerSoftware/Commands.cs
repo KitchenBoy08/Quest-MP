@@ -1,5 +1,5 @@
-﻿using Open.Nat;
-using Riptide;
+﻿using Riptide;
+using Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,8 +21,8 @@ namespace ServerSoftware
             switch (command.identifier)
             {
                 case "exit":
-                    if (Server.ServerClass.hasPortForwarded)
-                        PortHelper.Close();
+                    if (ServerClass.hasPortForwarded)
+                        PortHelper.ClosePort();
                     Environment.Exit(0);
                     break;
                 case "kick":
@@ -30,35 +30,43 @@ namespace ServerSoftware
                     {
                         if (!ushort.TryParse(command.modifiers[1], out ushort id))
                         {
-                            Server.ServerClass.UpdateWindow($"{id} is not the correct format of ID!");
+                            ServerClass.UpdateWindow($"'{command.modifiers[1]}' is not the correct format of ID!");
                         }
-                    } catch 
+                    } catch (Exception e)
                     {
-                        Server.ServerClass.UpdateWindow($"Incorrect ID format!");
+                        ServerClass.UpdateWindow($"Failed to parse ID with error: {e}");
                     }
-                    if (ushort.Parse(command.modifiers[1].ToString()) != 0)
+                    if (ServerClass.currentserver.TryGetClient(ushort.Parse(command.modifiers[1]), out Connection client))
                     {
-                        if (Server.ServerClass.currentserver.TryGetClient(ushort.Parse(command.modifiers[1]), out Connection player))
-                        {
-                            Server.ServerClass.currentserver.DisconnectClient(player);
-                            Server.ServerClass.UpdateWindow($"Kicked player with ID {player.Id}");
-                        }
+                        ServerClass.currentserver.DisconnectClient(client);
+                        ServerClass.UpdateWindow($"Kicked client with ID: {client.Id}");
                     } else
-                    {
-                        Server.ServerClass.UpdateWindow("Invalid Command! Add a player ID!");
-                    }
+                        ServerClass.UpdateWindow($"Client not found with ID: {ushort.Parse(command.modifiers[1])}");
                     break;
                 case "restart":
-                    Server.ServerClass.RestartServer();
+                    ServerClass.RestartServer();
                     break;
                 case "help":
-                    Server.ServerClass.UpdateWindow(
+                    ServerClass.UpdateWindow(
+                        "Commands are CASE SENSITIVE!\n" +
                         "[exit]: Closes the app and closes port map (MUST USE THIS TO CLOSE APP)\n" +
                         "[kick (playerID)]: Kicks the client that matches the ID from the server\n" +
-                        "[restart (Reset Syncables)]: Closes and Opens the riptide server, kicking all clients. Type true or false after depending on if you want to reset syncables or not.");
+                        "[restart (Reset Syncables)]: Closes and Opens the riptide server, kicking all clients. Type true or false after depending on if you want to reset syncables or not.\n" +
+                        "[debug]: Displays debug info inside the prompt menu"
+                        );
+                    break;
+                case "debug":
+                    if (ServerClass.host != null)
+                        ServerClass.UpdateWindow(
+                            $"Current Host ID: {ServerClass.host.Id}"
+                            );
+                    else
+                        ServerClass.UpdateWindow(
+                            $"No current server host"
+                            );
                     break;
                 default:
-                    Server.ServerClass.UpdateWindow("Invalid Command!");
+                    ServerClass.UpdateWindow("Invalid Command!");
                     break;
             }
         }

@@ -5,9 +5,12 @@ using System.Runtime.InteropServices;
 using LabFusion.Core.src.Network.Riptide.Enums;
 using LabFusion.Data;
 using LabFusion.Representation;
+using LabFusion.SDK.Achievements;
+using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using Riptide;
+using SLZ.Marrow.SceneStreaming;
 
 namespace LabFusion.Network
 {
@@ -70,12 +73,11 @@ namespace LabFusion.Network
 
                 message.Release(); // Make sure the message is empty before adding bytes
 
+                message.AddBytes(FusionMessageToBytes(fusionMessage));
+
                 if (playerID != 0)
                 {
-                    message.AddBytes(AddPlayerIDToBytes(FusionMessageToBytes(fusionMessage), (byte)playerID)); // Add bytes
-                } else
-                {
-                    message.AddBytes(FusionMessageToBytes(fusionMessage)); // Add bytes
+                    message.AddUShort(playerID);
                 }
 
                 return message;
@@ -118,44 +120,69 @@ namespace LabFusion.Network
             if (message.GetInt() == (int)ServerTypes.DEDICATED)
             {
                 RiptideNetworkLayer.CurrentServerType.SetType(ServerTypes.DEDICATED);
+
                 if (RiptideNetworkLayer.currentclient.Id == 1)
                 {
                     RiptideNetworkLayer.isHost = true;
 
-                    RiptideNetworkLayer.currentclient.Disconnected += RiptideNetworkLayer.OnClientDisconnect;
-                    // Update player ID here since it's determined on the Riptide Client ID
                     PlayerIdManager.SetLongId(RiptideNetworkLayer.currentclient.Id);
-                    PlayerIdManager.SetUsername($"Riptide Enjoyer");
 
-                    InternalServerHelpers.OnStartServer();
-
-                    RiptideNetworkLayer.OnUpdateRiptideLobby();
-
-                    FusionSceneManager.HookOnDelayedLevelLoad(() => {
+                    FusionSceneManager.HookOnDelayedLevelLoad(() =>
+                    {
                         PermissionList.SetPermission(PlayerIdManager.LocalLongId, PlayerIdManager.LocalUsername, PermissionLevel.DEFAULT);
                     });
+
+                    // Mimicking the OnStartServer method in order to make it custom
+                    // Create local id
+                    var id = new PlayerId(PlayerIdManager.LocalLongId, 0, InternalServerHelpers.GetInitialMetadata(), InternalServerHelpers.GetInitialEquippedItems());
+                    id.Insert();
+                    PlayerIdManager.ApplyLocalId();
+
+                    // Register module message handlers so they can send messages
+                    var names = ModuleMessageHandler.GetExistingTypeNames();
+                    ModuleMessageHandler.PopulateHandlerTable(names);
+
+                    // Register gamemodes
+                    var gamemodeNames = GamemodeRegistration.GetExistingTypeNames();
+                    GamemodeRegistration.PopulateGamemodeTable(gamemodeNames);
+
+                    // Update hooks
+                    MultiplayerHooking.Internal_OnStartServer();
+
+                    // Send a notification
+                    FusionNotifier.Send(new FusionNotification()
+                    {
+                        title = "Connected to Server",
+                        message = "Connected to Dedicated Server",
+                        showTitleOnPopup = true,
+                        isMenuItem = false,
+                        isPopup = true,
+                        type = NotificationType.SUCCESS,
+                    });
+
+                    // Unlock achievement
+                    if (AchievementManager.TryGetAchievement<HeadOfHouse>(out var achievement))
+                        achievement.IncrementTask();
+
+                    // Reload the scene
+                    SceneStreamer.Reload();
                 }
                 else
                 {
                     RiptideNetworkLayer.isHost = false;
 
-                    RiptideNetworkLayer.currentclient.Disconnected += RiptideNetworkLayer.OnClientDisconnect;
-                    // Update player ID here since it's determined on the Riptide Client ID
                     PlayerIdManager.SetLongId(RiptideNetworkLayer.currentclient.Id);
-                    PlayerIdManager.SetUsername($"Riptide Enjoyer");
 
                     ConnectionSender.SendConnectionRequest();
                 }
             }
             else
             {
+                RiptideNetworkLayer.CurrentServerType.SetType(ServerTypes.P2P);
+
                 RiptideNetworkLayer.isHost = false;
 
-                RiptideNetworkLayer.CurrentServerType.SetType(ServerTypes.P2P);
-                RiptideNetworkLayer.currentclient.Disconnected += RiptideNetworkLayer.OnClientDisconnect;
-                // Update player ID here since it's determined on the Riptide Client ID
                 PlayerIdManager.SetLongId(RiptideNetworkLayer.currentclient.Id);
-                PlayerIdManager.SetUsername($"Riptide Enjoyer");
 
                 ConnectionSender.SendConnectionRequest();
             }
@@ -181,6 +208,43 @@ namespace LabFusion.Network
             byteList.Add(playerID);
 
             return byteList.ToArray();
+        }
+
+        [MessageHandler(11)]
+        public static void HandleHostRequest(Message message)
+        {
+            if (RiptideNetworkLayer.CurrentServerType.GetType() == ServerTypes.DEDICATED)
+            {
+                RiptideNetworkLayer.isHost = true;
+
+                Message response = Message.Create(MessageSendMode.Reliable, 11);
+                response.Release();
+
+                response.AddBool(true);
+
+                RiptideNetworkLayer.currentclient.Send(response);
+
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    title = "New Host",
+                    showTitleOnPopup = false,
+                    isMenuItem = false,
+                    isPopup = true,
+                    message = $"You are now handling all server messages!",
+                    popupLength = 3f,
+                });
+
+            } else
+            {
+                RiptideNetworkLayer.isHost = false;
+
+                Message response = Message.Create(MessageSendMode.Reliable, 11);
+                response.Release();
+
+                response.AddBool(false);
+
+                RiptideNetworkLayer.currentclient.Send(response);
+            }
         }
     }
 }
