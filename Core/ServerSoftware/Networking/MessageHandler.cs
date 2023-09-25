@@ -72,6 +72,7 @@ namespace Server.Networking
             string levelBarcode = message.GetString();
             string levelName = message.GetString();
             ServerClass.currentLevelBarcode = levelBarcode;
+            ServerClass.currentLevelName = levelName;
             ServerClass.UpdateWindow($"Loaded new level with Title: \n{levelName}");
         }
 
