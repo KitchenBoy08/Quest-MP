@@ -23,6 +23,7 @@ namespace ServerSoftware
                 case "exit":
                     if (ServerClass.hasPortForwarded)
                         PortHelper.ClosePort();
+                    ServerClass.currentserver.Stop();
                     Environment.Exit(0);
                     break;
                 case "kick":
