@@ -45,10 +45,5 @@ public static class PortHelper
         {
             ServerClass.UpdateWindow($"Failed creating port map with exception: {ex}");
         }
-
-        if (upnpDevice = null)
-        {
-            Server.ServerClass.hasPortForwarded = false;
-        }
     }
 }
