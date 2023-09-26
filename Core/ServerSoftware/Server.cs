@@ -9,21 +9,9 @@ using ServerSoftware.Utilities;
 using System.Runtime.InteropServices;
 
 namespace ServerSoftware
-{
+{ 
     public static class ServerClass
     {
-        private const int MF_BYCOMMAND = 0x00000000;
-        public const int SC_CLOSE = 0xF060;
-
-        [DllImport("user32.dll")]
-        public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
-
-        [DllImport("kernel32.dll", ExactSpelling = true)]
-        private static extern IntPtr GetConsoleWindow();
-
         public static int hostID = 0;
         public static bool hasPortForwarded = false;
         public static Riptide.Server currentserver = new();
@@ -35,13 +23,14 @@ namespace ServerSoftware
 
         private static void Main(string[] args)
         {
+            OSCheck.CheckOS();
+
             currentserver.TimeoutTime = 30000;
             currentserver.HeartbeatInterval = 30000;
 
             currentserver.ClientConnected += OnClientConnected;
             currentserver.ClientDisconnected += OnClientDisconnected;
 
-            DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), SC_CLOSE, MF_BYCOMMAND);
             Console.Title = "TideFusion Dedicated Server";
 
             StartRiptideServer();

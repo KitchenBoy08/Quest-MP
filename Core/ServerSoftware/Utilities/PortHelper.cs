@@ -37,18 +37,13 @@ public static class PortHelper
         NatUtility.StopDiscovery();
         try
         {
-            Server.ServerClass.hasPortForwarded = true;
+            ServerClass.hasPortForwarded = true;
             device.Device.CreatePortMap(mapping);
             upnpDevice = device.Device;
         }
         catch (Exception ex)
         {
             ServerClass.UpdateWindow($"Failed creating port map with exception: {ex}");
-        }
-
-        if (upnpDevice = null)
-        {
-            Server.ServerClass.hasPortForwarded = false;
         }
     }
 }
