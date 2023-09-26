@@ -37,7 +37,7 @@ public static class PortHelper
         NatUtility.StopDiscovery();
         try
         {
-            Server.ServerClass.hasPortForwarded = true;
+            ServerClass.hasPortForwarded = true;
             device.Device.CreatePortMap(mapping);
             upnpDevice = device.Device;
         }

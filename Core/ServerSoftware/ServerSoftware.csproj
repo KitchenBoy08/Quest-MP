@@ -10,10 +10,10 @@
 
   <ItemGroup>
     <Reference Include="Mono.Nat">
-      <HintPath>..\..\..\..\Referencing\Mono.Nat.dll</HintPath>
+      <HintPath>..\..\..\..\Libs\Mono.Nat.dll</HintPath>
     </Reference>
     <Reference Include="RiptideNetworking">
-      <HintPath>..\..\bin\Debug\RiptideNetworking.dll</HintPath>
+      <HintPath>..\..\Libs\RiptideNetworking.dll</HintPath>
     </Reference>
   </ItemGroup>
 
