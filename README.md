@@ -15,6 +15,7 @@ Fusion is networked and built around Steam, but the networking system can be swa
 ## Licensing
 - The source code of [RiptideNetworking](https://github.com/RiptideNetworking/Riptide) is included under the MIT License. The full license can be found [here](https://github.com/RiptideNetworking/Riptide/blob/main/LICENSE.md).
 - The source code of [Open.NAT](https://github.com/lontivero/Open.NAT) is included under the MIT License. The full license can be found [here](https://github.com/lontivero/Open.NAT/blob/master/LICENSE).
+- The source code of [Mono.Nat](https://github.com/alanmcgovern/Mono.Nat) is included under the MIT License. The full license can be found [here](https://github.com/alanmcgovern/Mono.Nat/blob/master/LICENSE.md).
 
 ## Setting up the Source Code
 1. Clone the git repo into a folder
