@@ -24,7 +24,7 @@ namespace ServerSoftware.Utilities
         private static Mono.Nat.INatDevice upnpDevice;
         private static Mono.Nat.Mapping mapping;
 
-        //OS Check for removing the X button
+        //OS Check before removing the X button, ends up breaking Linux if we dont :P
         public static void OSCheck()
         {
             if (IsWindows())
