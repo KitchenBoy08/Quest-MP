@@ -23,7 +23,7 @@ namespace ServerSoftware
 
         private static void Main(string[] args)
         {
-            OSCheck.CheckOS();
+            InternalUtils.OSCheck();
 
             currentserver.TimeoutTime = 30000;
             currentserver.HeartbeatInterval = 30000;
@@ -35,7 +35,7 @@ namespace ServerSoftware
 
             StartRiptideServer();
 
-            PortHelper.OpenPort();
+            InternalUtils.OpenUPnPPort();
         }
 
         public static void UpdateWindow(string info = "")

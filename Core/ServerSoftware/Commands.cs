@@ -1,5 +1,6 @@
 ﻿using Riptide;
 using Server;
+using ServerSoftware.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace ServerSoftware
             {
                 case "exit":
                     if (ServerClass.hasPortForwarded)
-                        PortHelper.ClosePort();
+                        InternalUtils.ClosePort();
                     ServerClass.currentserver.Stop();
                     Environment.Exit(0);
                     break;
