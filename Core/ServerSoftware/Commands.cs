@@ -143,5 +143,6 @@ namespace ServerSoftware
     {
         ReloadLevel = 0,
         LoadLevel = 1,
+        ToggleOP = 2,
     }
 }

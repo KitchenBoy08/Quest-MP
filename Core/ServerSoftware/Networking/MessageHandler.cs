@@ -62,6 +62,7 @@ namespace Server.Networking
                 Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Reliable, 1);
                 sent.AddInt((int)ServerTypes.DEDICATED);
                 sent.AddString(ServerClass.currentLevelBarcode);
+                sent.AddString(ServerClass.currentLevelName);
                 ServerClass.currentserver.Send(sent, client);
             }
         }
@@ -76,5 +77,11 @@ namespace Server.Networking
             ServerClass.UpdateWindow($"Loaded new level with Title: \n{levelName}");
         }
 
+        [MessageHandler(8)]
+        public static void HandleClientNotification(ushort riptideID, Message message)
+        {
+            string notif = message.GetString();
+            ServerClass.UpdateWindow(notif);
+        }
     }
 }

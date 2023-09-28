@@ -42,9 +42,9 @@ namespace ServerSoftware
         {
             Console.Clear();
             Console.WriteLine($"Player Count: {playerCount}");
-            /*
+#if !DEBUG
             Console.WriteLine($"Server Code: {IPStuff.EncodeIPAddress(IPStuff.GetExternalIP())}");
-            */
+#endif
             Console.WriteLine($"Has Auto Port Forwarded: {hasPortForwarded}");
             Console.WriteLine($"Current Level Barcode: {currentLevelBarcode}");
             Console.WriteLine($"Current Level Title: {currentLevelName}");
