@@ -33,6 +33,7 @@ using LabFusion.Core.src.Network.Riptide.Enums;
 using LabFusion.Data;
 using static SLZ.Bonelab.BonelabProgressionHelper;
 using System.Web.UI.WebControls;
+using LabFusion.Syncables;
 
 namespace LabFusion.Network
 {
