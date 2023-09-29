@@ -34,6 +34,7 @@ using LabFusion.Data;
 using static SLZ.Bonelab.BonelabProgressionHelper;
 using System.Web.UI.WebControls;
 using LabFusion.Syncables;
+using Riptide.Transports;
 
 namespace LabFusion.Network
 {
