@@ -366,3 +366,7 @@ Core/Fusion Bundles/Assets/AssetBundles/
 /Staging/GitHub/INTERNAL_NOTES.md
 /Staging/GitHub/marrow-integration.unitypackage
 Core/ServerSoftware/Utilities/IPStuff.cs
+/Mono.Nat.dll
+/RiptideNetworking.dll
+/Core/managed
+/LabFusion.csproj

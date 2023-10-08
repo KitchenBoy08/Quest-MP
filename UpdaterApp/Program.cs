@@ -11,10 +11,10 @@ using System.Web.Script.Serialization;
 namespace UpdaterApp
 {
     internal class Program {
-        private static readonly string _releasesApi = "https://api.github.com/repos/Lakatrazz/BONELAB-Fusion/releases";
+        private static readonly string _releasesApi = "https://api.github.com/repos/KitchenBoy08/TideFusion/releases";
         
         public const string ModName = "LabFusion";
-        public const string PluginName = "LabFusionUpdater";
+        public const string PluginName = "TideFusionUpdater";
         public const string AssemblyExtension = ".dll";
 
         static int Main(string[] args)
