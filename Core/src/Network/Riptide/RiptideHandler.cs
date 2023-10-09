@@ -10,9 +10,11 @@ using LabFusion.SDK.Gamemodes;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using Riptide;
+using Riptide.Transports;
 using SLZ.Bonelab;
 using SLZ.Marrow.SceneStreaming;
 using Steamworks.Data;
+using static LabFusion.Network.RiptideNetworkLayer;
 
 namespace LabFusion.Network
 {
@@ -58,7 +60,7 @@ namespace LabFusion.Network
             return byteArray;
         }
 
-        public static Message PrepareMessage(FusionMessage fusionMessage, NetworkChannel channel, ushort messageChannel, ushort playerID = 0)
+        public static Message PrepareMessage(FusionMessage fusionMessage, NetworkChannel channel, ushort messageChannel, short playerID = -1)
         {
             if (RiptideNetworkLayer.CurrentServerType.GetType() == ServerTypes.P2P)
             {
@@ -77,11 +79,10 @@ namespace LabFusion.Network
 
                 message.AddBytes(FusionMessageToBytes(fusionMessage));
 
-                if (playerID != 0)
+                if (playerID != -1)
                 {
-                    message.AddUShort(playerID);
+                    message.AddUShort((ushort)playerID);
                 }
-
                 return message;
             }
         }
@@ -207,9 +208,19 @@ namespace LabFusion.Network
                     ConnectionSender.SendConnectionRequest();
                 }
             }
-            else
+            else if (type == ServerTypes.P2P) 
             {
                 RiptideNetworkLayer.CurrentServerType.SetType(ServerTypes.P2P);
+
+                RiptideNetworkLayer.isHost = false;
+
+                PlayerIdManager.SetLongId(RiptideNetworkLayer.currentclient.Id);
+
+                ConnectionSender.SendConnectionRequest();
+            } 
+            else if (type == ServerTypes.PUBLIC)
+            {
+                RiptideNetworkLayer.CurrentServerType.SetType(ServerTypes.PUBLIC);
 
                 RiptideNetworkLayer.isHost = false;
 
@@ -327,6 +338,46 @@ namespace LabFusion.Network
                 }
             }
         }
+
+        [MessageHandler(25)]
+        public static void HandleDisconnect(Message message)
+        {
+            ushort id = message.GetUShort();
+
+            if (id == 0)
+            {
+                RiptideNetworkLayer.currentclient.Disconnect();
+            } 
+            else
+            {
+                // Update the mod so it knows this user has left
+                InternalServerHelpers.OnUserLeave(id);
+
+                // Send disconnect notif to everyone
+                ConnectionSender.SendDisconnect(id);
+            }
+        }
+
+        [MessageHandler(19)]
+        public static void HandleCreateLobby(Message message)
+        {
+            RiptideNetworkLayer.isHost = true;
+
+#if DEBUG
+            FusionLogger.Log("SERVER START HOOKED");
+#endif
+            CurrentServerType.SetType(ServerTypes.PUBLIC);
+
+            // Update player ID here since it's determined on the Riptide Client ID
+            PlayerIdManager.SetLongId(currentclient.Id);
+
+            OnUpdateRiptideLobby();
+
+            // Call server setup
+            InternalServerHelpers.OnStartServer();
+        }
+
+
 
         enum CommandTypes
         {

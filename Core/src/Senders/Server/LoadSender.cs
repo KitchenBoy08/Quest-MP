@@ -28,6 +28,11 @@ namespace LabFusion.Senders {
             if (!NetworkInfo.IsServer)
                 return;
 
+            // TideFusion Specific
+            FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out PermissionLevel level, out UnityEngine.Color color);
+            if (level != PermissionLevel.OWNER)
+                return;
+
             using (FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode)))
             {
                 using (var data = SceneLoadData.Create(barcode))
@@ -52,6 +57,11 @@ namespace LabFusion.Senders {
 
         public static void SendLevelLoad(string barcode) {
             if (!NetworkInfo.IsServer)
+                return;
+
+            // TideFusion Specific
+            FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out PermissionLevel level, out UnityEngine.Color color);
+            if (level != PermissionLevel.OWNER)
                 return;
 
             using (FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode)))

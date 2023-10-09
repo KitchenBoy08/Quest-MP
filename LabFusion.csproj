@@ -468,6 +468,8 @@
     <Compile Include="Core\src\Network\Proxy\ProxySocketHandler.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyVoiceManager.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyVoiceHandler.cs" />
+    <Compile Include="Core\src\Network\Riptide\PublicLobbyUtils\PublicLobbyManager.cs" />
+    <Compile Include="Core\src\Network\Riptide\PublicLobbyUtils\RiptideLobbyMetaData.cs" />
     <Compile Include="Core\src\Network\Riptide\Utilities\Enums\ServerTypes.cs" />
     <Compile Include="Core\src\Network\Riptide\Utilities\PortHelper.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideHandler.cs" />

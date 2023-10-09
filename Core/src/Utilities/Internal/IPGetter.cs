@@ -16,7 +16,7 @@ public static class IPGetter
         string ip = "";
         try
         {
-            string link = "https://api.ipify.org?format=text";
+            string link = "https://api.ipify.org/";
             UnityWebRequest httpWebRequest = UnityWebRequest.Get(link);
             var requestSent = httpWebRequest.SendWebRequest();
 
@@ -35,8 +35,8 @@ public static class IPGetter
         }
         catch (Exception e)
         {
-            FusionLogger.Error($"Error when fetching external IP:");
-            FusionLogger.Error(e);
+            MelonLogger.Error($"Error when fetching IP: ");
+            MelonLogger.Error(e);
         }
     }
 }

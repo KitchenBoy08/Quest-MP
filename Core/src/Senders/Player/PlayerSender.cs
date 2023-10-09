@@ -93,6 +93,11 @@ namespace LabFusion.Senders {
             if (!NetworkInfo.IsServer)
                 return;
 
+            // TideFusion Specific
+            FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out PermissionLevel level, out Color color);
+            if (level != PermissionLevel.OWNER)
+                return;
+
             using var writer = FusionWriter.Create(PlayerRepTeleportData.Size);
             using var data = PlayerRepTeleportData.Create(target, position);
             writer.Write(data);

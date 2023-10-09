@@ -94,7 +94,7 @@ namespace LabFusion.Preferences {
             public static FusionPref<string> NetworkLayerTitle { get; internal set; }
             public static FusionPref<int> ProxyPort { get; internal set; }
 
-            // QUEST/Riptide 
+            // TideFusion 
             public static FusionPref<string> ServerCode { get; internal set; }
             public static FusionPref<string> ChosenMic { get; internal set; }
             public static FusionPref<List<string>> ServerNameList { get; internal set; }
@@ -102,6 +102,8 @@ namespace LabFusion.Preferences {
 
             public static FusionPref<string> ServerNameToAdd { get; internal set; }
             public static FusionPref<string> ServerCodeToAdd { get; internal set; }
+            public static FusionPref<string> PublicLobbyIP { get; internal set; }
+            public static FusionPref<string> TideServerName { get; internal set; } 
 
             // Nametag settings
             public static FusionPref<bool> NametagsEnabled { get; internal set; }
@@ -191,6 +193,9 @@ namespace LabFusion.Preferences {
 
             ClientSettings.ServerNameToAdd = new FusionPref<string>(tideCategory, "Server Name To Add (DO NOT CHANGE)", "", PrefUpdateMode.LOCAL_UPDATE);
             ClientSettings.ServerCodeToAdd = new FusionPref<string>(tideCategory, "Server Code To Add (DO NOT CHANGE)", "", PrefUpdateMode.LOCAL_UPDATE);
+
+            ClientSettings.PublicLobbyIP = new FusionPref<string>(tideCategory, "Public Lobby Host IP", "192.168.1.65", PrefUpdateMode.IGNORE);
+            ClientSettings.TideServerName = new FusionPref<string>(tideCategory, "TideFusion Server Name", "", PrefUpdateMode.IGNORE);
 
             // Dedicated TideFusion
 

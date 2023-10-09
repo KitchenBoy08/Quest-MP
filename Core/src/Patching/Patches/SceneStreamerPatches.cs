@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using HarmonyLib;
-
+using LabFusion.Data;
 using LabFusion.Network;
+using LabFusion.Representation;
 using LabFusion.Utilities;
 
 using SLZ.Bonelab;
@@ -35,8 +36,11 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(SceneStreamer.Reload))]
         [HarmonyPrefix]
         public static bool Reload() {
+            // TideFusion Specific
+            FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out PermissionLevel permLevel, out Color colorLevel);
+
             // Check if we need to exit early
-            if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer) {
+            if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer || RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.DEDICATED && permLevel != PermissionLevel.OWNER && NetworkInfo.IsServer) {
                 return false;
             }
 
@@ -46,8 +50,11 @@ namespace LabFusion.Patching
         [HarmonyPatch(nameof(SceneStreamer.Load), typeof(string), typeof(string))]
         [HarmonyPrefix]
         public static bool StringLoad(string levelBarcode, string loadLevelBarcode = "") {
+            // TideFusion Specific
+            FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out PermissionLevel permLevel, out Color colorLevel);
+
             // Check if we need to exit early
-            if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer) {
+            if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer || RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.DEDICATED && permLevel != PermissionLevel.OWNER && NetworkInfo.IsServer) {
                 return false;
             }
 
@@ -58,8 +65,11 @@ namespace LabFusion.Patching
         [HarmonyPrefix]
         public static bool CrateLoad(LevelCrateReference level, LevelCrateReference loadLevel) {
             try {
+                // TideFusion Specific
+                FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out PermissionLevel permLevel, out Color colorLevel);
+
                 // Check if we need to exit early
-                if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer) {
+                if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer || RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.DEDICATED && permLevel != PermissionLevel.OWNER && NetworkInfo.IsServer) {
                     return false;
                 }
             }

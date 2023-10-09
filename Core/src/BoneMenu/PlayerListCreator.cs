@@ -39,6 +39,9 @@ namespace LabFusion.BoneMenu
         }
 
         private static void CreatePlayer(PlayerId id) {
+            // TideFusion Specific
+            FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out PermissionLevel permLevel, out Color colorLevel);
+
             // Get the name for the category
             string username = id.GetMetadata(MetadataHelper.UsernameKey);
             string nickname = id.GetMetadata(MetadataHelper.NicknameKey);
@@ -63,7 +66,7 @@ namespace LabFusion.BoneMenu
             byte smallId = id.SmallId;
 
             // Set permission display
-            if (NetworkInfo.IsServer && !id.IsSelf) {
+            if (NetworkInfo.IsServer && !id.IsSelf && permLevel == PermissionLevel.OWNER) {
                 var permSetter = category.CreateEnumElement($"Permissions", Color.yellow, level, (v) => {
                     FusionPermissions.TrySetPermission(longId, username, v);
                 });
@@ -108,31 +111,44 @@ namespace LabFusion.BoneMenu
 
                 // Kick button
                 if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.KickingAllowed.GetValue())) {
-                    moderationCategory.CreateFunctionElement("Kick", Color.red, () => {
-                        PermissionSender.SendPermissionRequest(PermissionCommandType.KICK, id);
-                    }, "Are you sure?");
+                    // TideFusion Specific
+                    if (RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.DEDICATED && permLevel == PermissionLevel.OWNER || RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.NONE)
+                    {
+                        moderationCategory.CreateFunctionElement("Kick", Color.red, () =>
+                        {
+                            PermissionSender.SendPermissionRequest(PermissionCommandType.KICK, id);
+                        }, "Are you sure?");
+                    }
                 }
 
                 // Ban button
                 if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.BanningAllowed.GetValue())) {
-                    moderationCategory.CreateFunctionElement("Ban", Color.red, () =>
+                    // TideFusion Specific
+                    if (RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.DEDICATED && permLevel == PermissionLevel.OWNER || RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.NONE)
                     {
-                        PermissionSender.SendPermissionRequest(PermissionCommandType.BAN, id);
-                    }, "Are you sure?");
+                        moderationCategory.CreateFunctionElement("Ban", Color.red, () =>
+                        {
+                            PermissionSender.SendPermissionRequest(PermissionCommandType.BAN, id);
+                        }, "Are you sure?");
+                    }
                 }
 
                 // Teleport buttons
                 if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.Teleportation.GetValue()))
                 {
-                    moderationCategory.CreateFunctionElement("Teleport To Them", Color.red, () =>
+                    // TideFusion Specific
+                    if (RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.DEDICATED && permLevel == PermissionLevel.OWNER || RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.NONE)
                     {
-                        PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_THEM, id);
-                    }, "Are you sure?");
+                        moderationCategory.CreateFunctionElement("Teleport To Them", Color.red, () =>
+                        {
+                            PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_THEM, id);
+                        }, "Are you sure?");
 
-                    moderationCategory.CreateFunctionElement("Teleport To Us", Color.red, () =>
-                    {
-                        PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_US, id);
-                    }, "Are you sure?");
+                        moderationCategory.CreateFunctionElement("Teleport To Us", Color.red, () =>
+                        {
+                            PermissionSender.SendPermissionRequest(PermissionCommandType.TELEPORT_TO_US, id);
+                        }, "Are you sure?");
+                    }
                 }
             }
 

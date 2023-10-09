@@ -40,6 +40,12 @@ namespace LabFusion.Utilities {
 
         public static void DespawnAll() {
             if (NetworkInfo.IsServer) {
+
+                // TideFusion Specific
+                FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out PermissionLevel level, out Color color);
+                if (level != PermissionLevel.OWNER)
+                    return;
+                
                 var pools = AssetSpawner._instance._poolList;
 
                 // Loop through all pools and get their spawned objects so we can despawn them
