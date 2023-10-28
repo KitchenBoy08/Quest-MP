@@ -6,12 +6,12 @@ namespace Server.Networking
 {
     public static class MessageHandler
     {
-        [MessageHandler(2)]
+        [MessageHandler((ushort)RiptideMessageTypes.SendToServer)]
         public static void HandleSendToServer(ushort riptideID, Message message)
         {
             byte[] bytes = message.GetBytes();
 
-            Message sent = Message.Create(message.SendMode, 5);
+            Message sent = Message.Create(message.SendMode, (ushort)RiptideMessageTypes.FusionMessage);
             sent.Release();
 
             sent.AddBytes(bytes);
@@ -23,12 +23,12 @@ namespace Server.Networking
                 ServerClass.UpdateWindow("Failed to SendToHost");
         }
 
-        [MessageHandler(3)]
-        public static void HandleSendToAll(ushort riptideID, Message message)
+        [MessageHandler((ushort)RiptideMessageTypes.Broadcast)]
+        public static void HandleBroadcast(ushort riptideID, Message message)
         {
             byte[] bytes = message.GetBytes();
 
-            Message sent = Message.Create(message.SendMode, 5);
+            Message sent = Message.Create(message.SendMode, (ushort)RiptideMessageTypes.FusionMessage);
             sent.Release();
 
             sent.AddBytes(bytes);
@@ -37,13 +37,13 @@ namespace Server.Networking
             ServerClass.currentserver.SendToAll(sent);
         }
 
-        [MessageHandler(4)]
+        [MessageHandler((ushort)RiptideMessageTypes.SendFromServer)]
         public static void HandleSendFromServer(ushort riptideID, Message message)
         {
             byte[] bytes = message.GetBytes();
             ushort playerID = message.GetUShort();
             
-            Message sent = Message.Create(message.SendMode, 5);
+            Message sent = Message.Create(message.SendMode, (ushort)RiptideMessageTypes.FusionMessage);
             sent.Release();
 
             sent.AddBytes(bytes);
@@ -52,18 +52,19 @@ namespace Server.Networking
             ServerClass.currentserver.Send(sent, playerID);
         }
 
-        [MessageHandler(1)]
+        [MessageHandler((ushort)RiptideMessageTypes.ServerType)]
         public static void HandleClientRequest(ushort riptideID, Message message)
         {
-            ServerClass.currentserver.TryGetClient(riptideID, out Connection client);
-
-            if (message.GetString() == "RequestServerType")
+            if (ServerClass.currentserver.TryGetClient(riptideID, out Connection client))
             {
-                Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Reliable, 1);
-                sent.AddInt((int)ServerTypes.DEDICATED);
-                sent.AddString(ServerClass.currentLevelBarcode);
-                sent.AddString(ServerClass.currentLevelName);
-                ServerClass.currentserver.Send(sent, client);
+                if (message.GetString() == "RequestServerType")
+                {
+                    Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Reliable, RiptideMessageTypes.ServerType);
+                    sent.AddInt((int)ServerTypes.DEDICATED);
+                    sent.AddString(ServerClass.currentLevelBarcode);
+                    sent.AddString(ServerClass.currentLevelName);
+                    ServerClass.currentserver.Send(sent, client);
+                }
             }
         }
 

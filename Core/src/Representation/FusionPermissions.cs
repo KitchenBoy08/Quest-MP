@@ -40,7 +40,7 @@ namespace LabFusion.Representation {
             // Get server level permissions
             if (NetworkInfo.IsServer) {
                 if (longId == PlayerIdManager.LocalLongId)
-                    if (RiptideNetworkLayer.CurrentServerType.GetType() != Core.src.Network.Riptide.Enums.ServerTypes.DEDICATED)
+                    if (RiptideNetworkLayer.CurrentServerType.GetType() != ServerTypes.DEDICATED)
                         level = PermissionLevel.OWNER;
                 else {
                     foreach (var tuple in PermissionList.PermittedUsers) {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LabFusion.Core.src.Network.Riptide.Enums
+namespace LabFusion.Network
 {
     public enum ServerTypes
     {

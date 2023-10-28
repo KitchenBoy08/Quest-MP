@@ -26,7 +26,7 @@
 	<DefineConstants Condition="'$(Configuration)' == 'Debug-Linux'">DEBUG;PLATFORM_LINUX;STEAMWORKS_LIN_OSX;STEAMWORKS_X64</DefineConstants>
 	<DefineConstants Condition="'$(Configuration)' == 'Release-Linux'">PLATFORM_LINUX;STEAMWORKS_LIN_OSX;STEAMWORKS_X64</DefineConstants>
 	  
-	<Platforms>ARM64;x64</Platforms>
+	<Platforms>ARM64;x64;x86</Platforms>
 	 
 	<RuntimeIdentifier Condition="'$(PlatformConfiguration)' == 'Mac' And '$(Platform)' == 'ARM64'">osx-arm64</RuntimeIdentifier>
 	<RuntimeIdentifier Condition="'$(PlatformConfiguration)' == 'Mac' And '$(Platform)' == 'x64'">osx-x64</RuntimeIdentifier>
@@ -42,7 +42,15 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Mac|x86'">
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Mac|x64'">
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Mac|x86'">
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
@@ -54,11 +62,19 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Win|x86'">
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Mac|ARM64'">
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Win|x64'">
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Win|x86'">
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
@@ -78,7 +94,15 @@
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Linux|x86'">
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Linux|x64'">
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Linux|x86'">
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
 

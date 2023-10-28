@@ -4291,6 +4291,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4297493394544356893, guid: 6ff6beb7234682541972998a1b52056d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.99999976
+      objectReference: {fileID: 0}
+    - target: {fileID: 4297493394544356893, guid: 6ff6beb7234682541972998a1b52056d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.00077204616
+      objectReference: {fileID: 0}
+    - target: {fileID: 4297493394544356893, guid: 6ff6beb7234682541972998a1b52056d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0.088
+      objectReference: {fileID: 0}
     - target: {fileID: 5475420951490461705, guid: 6ff6beb7234682541972998a1b52056d, type: 3}
       propertyPath: m_Name
       value: button_owned

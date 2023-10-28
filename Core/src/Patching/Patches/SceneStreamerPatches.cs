@@ -40,7 +40,7 @@ namespace LabFusion.Patching
             FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out PermissionLevel permLevel, out Color colorLevel);
 
             // Check if we need to exit early
-            if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer || RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.DEDICATED && permLevel != PermissionLevel.OWNER && NetworkInfo.IsServer) {
+            if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer || RiptideNetworkLayer.CurrentServerType.GetType() == ServerTypes.DEDICATED && permLevel != PermissionLevel.OWNER && NetworkInfo.IsServer) {
                 return false;
             }
 
@@ -54,7 +54,7 @@ namespace LabFusion.Patching
             FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out PermissionLevel permLevel, out Color colorLevel);
 
             // Check if we need to exit early
-            if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer || RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.DEDICATED && permLevel != PermissionLevel.OWNER && NetworkInfo.IsServer) {
+            if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer || RiptideNetworkLayer.CurrentServerType.GetType() == ServerTypes.DEDICATED && permLevel != PermissionLevel.OWNER && NetworkInfo.IsServer) {
                 return false;
             }
 
@@ -69,7 +69,7 @@ namespace LabFusion.Patching
                 FusionPermissions.FetchPermissionLevel(PlayerIdManager.LocalLongId, out PermissionLevel permLevel, out Color colorLevel);
 
                 // Check if we need to exit early
-                if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer || RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.DEDICATED && permLevel != PermissionLevel.OWNER && NetworkInfo.IsServer) {
+                if (!IgnorePatches && NetworkInfo.HasServer && !NetworkInfo.IsServer || RiptideNetworkLayer.CurrentServerType.GetType() == ServerTypes.DEDICATED && permLevel != PermissionLevel.OWNER && NetworkInfo.IsServer) {
                     return false;
                 }
             }

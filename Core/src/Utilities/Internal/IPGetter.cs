@@ -1,26 +1,22 @@
-﻿using LabFusion.Utilities;
-using MelonLoader;
-using Newtonsoft.Json;
 using System;
-using System.ComponentModel;
-using System.IdentityModel.Protocols.WSTrust;
-using System.Text;
+using Il2CppSystem;
+using LabFusion.Utilities;
+using MelonLoader;
 using UnityEngine;
 using UnityEngine.Networking;
-using static System.Net.WebRequestMethods;
 
 public static class IPGetter
 {
-    public static void GetExternalIP(Action<string> onCompleted)
+    public static void GetExternalIP(System.Action<string> onCompleted)
     {
         string ip = "";
         try
         {
-            string link = "https://api.ipify.org/";
+            string link = "https://api.ipify.org?format=text";
             UnityWebRequest httpWebRequest = UnityWebRequest.Get(link);
             var requestSent = httpWebRequest.SendWebRequest();
 
-            requestSent.m_completeCallback += new Action<UnityEngine.AsyncOperation>((op) =>
+            requestSent.m_completeCallback += new System.Action<UnityEngine.AsyncOperation>((op) =>
             {
                 ip = httpWebRequest.downloadHandler.text;
                 if (httpWebRequest.result == UnityWebRequest.Result.ConnectionError || httpWebRequest.result == UnityWebRequest.Result.ProtocolError)
@@ -33,9 +29,9 @@ public static class IPGetter
             });
 
         }
-        catch (Exception e)
+        catch (System.Exception e)
         {
-            MelonLogger.Error($"Error when fetching IP: ");
+            MelonLogger.Error($"Error when fetching external IP:");
             MelonLogger.Error(e);
         }
     }

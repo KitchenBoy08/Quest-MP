@@ -35,6 +35,7 @@ namespace LabFusion.Data
         public const string PointShopPrefab = "machine_PointShop";
         public const string InfoBoxPrefab = "machine_InfoBox";
         public const string CupBoardPrefab = "machine_CupBoard";
+        public const string KeyboardPrefab = "Keyboard";
 
         public const string EntangledLinePrefab = "renderer_EntangledLine";
 

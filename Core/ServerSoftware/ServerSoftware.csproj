@@ -13,12 +13,8 @@
       <HintPath>..\..\..\..\Libs\Mono.Nat.dll</HintPath>
     </Reference>
     <Reference Include="RiptideNetworking">
-      <HintPath>..\..\Libs\RiptideNetworking.dll</HintPath>
+      <HintPath>..\..\..\..\..\Plugins\RiptideNetworking.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Open.Nat" Version="2.1.0" />
   </ItemGroup>
 
 </Project>

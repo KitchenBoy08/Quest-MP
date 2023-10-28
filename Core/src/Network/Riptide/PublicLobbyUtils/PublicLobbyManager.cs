@@ -13,28 +13,37 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking.Match;
 
-namespace LabFusion.Core.src.Network.Riptide
+namespace LabFusion.Network
 {
     public static class PublicLobbyManager
     {
         public static MenuCategory publicLobbyCategory;
 
-        public static void CreateLobby()
+        public static void CreatePublicLobby()
         {
             if (RiptideNetworkLayer.currentclient.IsConnected)
+            {
                 RiptideNetworkLayer.currentclient.Disconnect();
+            }
 
-            RiptideNetworkLayer.currentclient.Connected += OnCreateLobby;
-            RiptideNetworkLayer.currentclient.Connect(FusionPreferences.ClientSettings.PublicLobbyIP.GetValue() + ":7676");
+            Riptide.Message createLobby = Riptide.Message.Create(Riptide.MessageSendMode.Reliable, 19);
 
-            Message lobbyCreate = Message.Create(MessageSendMode.Reliable, 14);
-
-            if (FusionPreferences.ClientSettings.TideServerName.GetValue() != "")
-                lobbyCreate.AddString(FusionPreferences.ClientSettings.TideServerName.GetValue());
-            else if (FusionPreferences.ClientSettings.Nickname.GetValue() != null)
-                lobbyCreate.AddString(FusionPreferences.ClientSettings.Nickname.GetValue() + "'s Server");
+            if (FusionPreferences.ClientSettings.TideServerName.GetValue() != string.Empty)
+                createLobby.AddString(FusionPreferences.ClientSettings.TideServerName.GetValue());
+            else if (RiptideNetworkLayer.RiptideUsername != string.Empty)
+                createLobby.AddString(FusionPreferences.ClientSettings.Nickname.GetValue() + "'s Server");
             else
-                lobbyCreate.AddString("UNKOWN USER's Server");
+                createLobby.AddString("UNKNOWN USER's Server");
+            createLobby.AddString($"{LabFusion.FusionVersion.versionMajor}.{LabFusion.FusionVersion.versionMinor}.{LabFusion.FusionVersion.versionPatch}");
+
+            createLobby.AddInt((int)FusionPreferences.LocalServerSettings.Privacy.GetValue());
+            createLobby.AddByte(FusionPreferences.LocalServerSettings.MaxPlayers.GetValue());
+            createLobby.AddBool(FusionPreferences.LocalServerSettings.AllowQuestUsers.GetValue());
+            createLobby.AddBool(FusionPreferences.LocalServerSettings.AllowPCUsers.GetValue());
+
+            createLobby.AddString(FusionSceneManager.Level.name);
+
+            RiptideNetworkLayer.currentclient.Connect(RiptideNetworkLayer.PublicLobbyHost, 5, 0, createLobby);
         }
 
         private static void OnCreateLobby(object sender, EventArgs e)
@@ -55,14 +64,14 @@ namespace LabFusion.Core.src.Network.Riptide
 
             if (!RiptideNetworkLayer.publicLobbyClient.IsConnected)
             {
-                RiptideNetworkLayer.publicLobbyClient.Connect(FusionPreferences.ClientSettings.PublicLobbyIP.GetValue() + ":7676", 5, 0, request);
+                RiptideNetworkLayer.publicLobbyClient.Connect(RiptideNetworkLayer.PublicLobbyHost, 5, 0, request);
             } else
             {
                 RiptideNetworkLayer.publicLobbyClient.Send(request);
             }
         }
 
-        [MessageHandler(20)]
+        [MessageHandler((ushort)RiptideMessageTypes.LobbyInfo)]
         public static void HandleLobbyInfo(Message message)
         {
             if (publicLobbyCategory == null)
@@ -76,11 +85,8 @@ namespace LabFusion.Core.src.Network.Riptide
             string LobbyVersion = message.GetString();
             int PlayerCount = message.GetInt();
 
-            bool NametagsEnabled = message.GetBool();
             ServerPrivacy Privacy = (ServerPrivacy)message.GetInt();
-            TimeScaleMode TimeScaleMode = (TimeScaleMode)message.GetInt();
             int MaxPlayers = message.GetInt();
-            bool VoicechatEnabled = message.GetBool();
             bool AllowQuestUsers = message.GetBool();
             bool AllowPCUsers = message.GetBool();
 
@@ -89,7 +95,7 @@ namespace LabFusion.Core.src.Network.Riptide
             if (Privacy != ServerPrivacy.PUBLIC)
                 return;
 
-            var lobby = publicLobbyCategory.CreateCategory($"{LobbyName} ({PlayerCount}/{MaxPlayers})", Color.white);
+            var lobby = publicLobbyCategory.CreateCategory($"{LobbyName}\n({PlayerCount}/{MaxPlayers})", Color.white);
             lobby.CreateFunctionElement("Join Server", Color.green, () =>
             {
                 if (RiptideNetworkLayer.currentclient.IsConnected)
@@ -99,7 +105,7 @@ namespace LabFusion.Core.src.Network.Riptide
                 Message joinRequest = Message.Create(MessageSendMode.Reliable, 10);
                 joinRequest.AddInt(ServerID);
 
-                RiptideNetworkLayer.currentclient.Connect(FusionPreferences.ClientSettings.PublicLobbyIP.GetValue() + ":7676", 5, 0, joinRequest);
+                RiptideNetworkLayer.currentclient.Connect(RiptideNetworkLayer.PublicLobbyHost, 5, 0, joinRequest);
             });
 
             var lobbyInfo = lobby.CreateSubPanel("Lobby Info", Color.white);
@@ -108,18 +114,7 @@ namespace LabFusion.Core.src.Network.Riptide
             lobbyInfo.CreateFunctionElement($"Player Count: {PlayerCount}", Color.white, null);
 
             var gameInfo = lobby.CreateSubPanel("Game Info", Color.white);
-            gameInfo.CreateFunctionElement($"VC Enabled: {VoicechatEnabled}", Color.white, null);
             gameInfo.CreateFunctionElement($"Level Name: {LevelName}", Color.white, null);
-        }
-
-        [MessageHandler(22)]
-        public static void HandleJoinLobbies(Message message)
-        {
-            RiptideNetworkLayer.currentPublicLobbyID = message.GetInt();
-
-            RiptideNetworkLayer.CurrentServerType.SetType(Enums.ServerTypes.PUBLIC);
-
-            ConnectionSender.SendConnectionRequest();
         }
     }
 }

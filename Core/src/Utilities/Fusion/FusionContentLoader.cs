@@ -17,6 +17,7 @@ namespace LabFusion.Utilities {
         public static GameObject PointShopPrefab { get; private set; }
         public static GameObject InfoBoxPrefab { get; private set; }
         public static GameObject CupBoardPrefab { get; private set; }
+        public static GameObject KeyboardPrefab { get; private set; }
 
         public static GameObject EntangledLinePrefab { get; private set; }
 
@@ -83,6 +84,7 @@ namespace LabFusion.Utilities {
                 PointShopPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.PointShopPrefab);
                 InfoBoxPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.InfoBoxPrefab);
                 CupBoardPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.CupBoardPrefab);
+                KeyboardPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.KeyboardPrefab);
 
                 EntangledLinePrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.EntangledLinePrefab);
 

@@ -29,18 +29,17 @@ using LabFusion.SDK.Gamemodes;
 using BoneLib;
 using System.ServiceModel.Channels;
 using System.Linq;
-using LabFusion.Core.src.Network.Riptide.Enums;
 using LabFusion.Data;
-using static SLZ.Bonelab.BonelabProgressionHelper;
-using System.Web.UI.WebControls;
-using LabFusion.Syncables;
-using Riptide.Transports;
 using LabFusion.Core.src.Network.Riptide;
-using UnityEngine.Rendering;
+using Oculus.Platform.Models;
+using System;
+using Steamworks;
+using SLZ.Marrow.Utilities;
+using System.Runtime.CompilerServices;
 
 namespace LabFusion.Network
 {
-    public class RiptideNetworkLayer : NetworkLayer
+    public partial class RiptideNetworkLayer : NetworkLayer
     {
         public static class CurrentServerType
         {
@@ -66,8 +65,9 @@ namespace LabFusion.Network
         public static Client currentclient = new();
 
         public static Client publicLobbyClient = new();
-        public static int currentPublicLobbyID;
         public static short currentPublicHostID;
+
+        public static string PublicLobbyHost => FusionPreferences.ClientSettings.PublicLobbyIP.GetValue() + "7676";
 
         public static string publicIp;
         public static bool isHost = false;
@@ -83,32 +83,81 @@ namespace LabFusion.Network
 
         protected string _targetServerIP;
 
-        internal override void OnInitializeLayer() {
-            // Hooking
-            currentclient.Disconnected += OnClientDisconnect;
+        public static string RiptideUsername => username;
+        private static string username;
 
+        internal override void OnInitializeLayer() {
+            // Initialize the RiptideLogger if in DEBUG
+#if DEBUG
+            RiptideLogger.Initialize(LogMethod, true);
+#endif
+
+            // Hooking
             currentserver.TimeoutTime = 30000;
             currentserver.HeartbeatInterval = 10000;
 
             currentclient.TimeoutTime = 30000;
             currentclient.HeartbeatInterval = 10000;
 
-            IPGetter.GetExternalIP((string ip) =>
-            {
-                publicIp = ip;
-                FusionLogger.Log(ip);
-            });
-
             FusionLogger.Log("Initialized Riptide Layer");
+        }
+
+        private void LogMethod(string text)
+        {
+            FusionLogger.Log(text);
+        }
+
+        private void InitializeUsername()
+        {
+            if (!HelperMethods.IsAndroid())
+            {
+                if (System.IO.Path.GetFileName(UnityEngine.Application.dataPath) == "BONELAB_Steam_Windows64_Data")
+                {
+                    if (!SteamClient.IsValid)
+                        SteamClient.Init(250820, false);
+
+                    PlayerIdManager.SetUsername(SteamClient.Name);
+
+                    SteamClient.Shutdown();
+
+                } else
+                {
+                    Oculus.Platform.Core.Initialize("5088709007839657");
+                    Oculus.Platform.Users.GetLoggedInUser().OnComplete((Oculus.Platform.Message<User>.Callback)GetLoggedInUserCallback);
+                }
+            } else
+            {
+                Oculus.Platform.Core.Initialize("4215734068529064");
+                Oculus.Platform.Users.GetLoggedInUser().OnComplete((Oculus.Platform.Message<User>.Callback)GetLoggedInUserCallback);
+            }
+        }
+
+        private void GetLoggedInUserCallback(Oculus.Platform.Message msg)
+        {
+            // Attempt to get the Oculus username
+            if (!msg.IsError)
+                PlayerIdManager.SetUsername(msg.GetUser().OculusID);
+            // If failed, assume piracy
+            else
+                PlayerIdManager.SetUsername("Riptide Pirate");
+
+#if DEBUG
+            FusionLogger.Log("Finished getting user callback!");
+#endif
         }
 
         internal override void OnLateInitializeLayer()
         {
-            PlayerIdManager.SetUsername("Riptide Enjoyer");
-
             PortHelper.OpenPort();
 
             HookRiptideEvents();
+
+            IPGetter.GetExternalIP((ip) =>
+            {
+                publicIp = ip;
+            });
+
+            InitializeUsername();
         }
 
         internal override void OnCleanupLayer() {
@@ -126,9 +175,7 @@ namespace LabFusion.Network
         }
 
         internal override string GetUsername(ulong userId) {
-            // Find a way to get nickname, this will do for testing
-            string Username = ($"Riptide Enjoyer {userId}");
-            return Username;
+            return $"Riptide Enjoyer {userId}";
         }
 
         internal override bool IsFriend(ulong userId) {
@@ -136,6 +183,7 @@ namespace LabFusion.Network
         }
 
         internal override void BroadcastMessage(NetworkChannel channel, FusionMessage message) {
+            // Dedicated Server Handling
             if (CurrentServerType.GetType() == ServerTypes.DEDICATED)
             {
                 if (isHost)
@@ -146,7 +194,10 @@ namespace LabFusion.Network
                 {
                     currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 2));
                 }
-            } else if (CurrentServerType.GetType() == ServerTypes.P2P)
+            } 
+            
+            // P2P Handling
+            else if (CurrentServerType.GetType() == ServerTypes.P2P)
             {
                 if (IsServer)
                 {
@@ -156,7 +207,10 @@ namespace LabFusion.Network
                 {
                     currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 0));
                 }
-            } else if (CurrentServerType.GetType() == ServerTypes.PUBLIC)
+            } 
+            
+            // Public Lobby Handling
+            else if (CurrentServerType.GetType() == ServerTypes.PUBLIC)
             {
                 if (isHost)
                     currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 3, 0));
@@ -166,13 +220,19 @@ namespace LabFusion.Network
         }
 
         internal override void SendToServer(NetworkChannel channel, FusionMessage message) {
+            // Dedicated Server Handling
             if (CurrentServerType.GetType() == ServerTypes.DEDICATED)
             {
                 currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 2));
-            } else if (CurrentServerType.GetType() == ServerTypes.P2P)
+            } 
+
+            // P2P Handling
+            else if (CurrentServerType.GetType() == ServerTypes.P2P)
             {
                 currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 0));
             }
+
+            // Public Lobby Handling
             else if (CurrentServerType.GetType() == ServerTypes.PUBLIC)
             {
                 if (isHost)
@@ -189,13 +249,16 @@ namespace LabFusion.Network
         }
 
         internal override void SendFromServer(ulong userId, NetworkChannel channel, FusionMessage message) {
+            // Dedicated Server Handling
             if (CurrentServerType.GetType() == ServerTypes.DEDICATED)
             {
                 if (isHost)
                 {
                     currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, (short)userId));
                 }
-            } 
+            }
+
+            // P2P Handling
             else if (CurrentServerType.GetType() == ServerTypes.P2P)
             {
                 if (IsServer)
@@ -206,6 +269,8 @@ namespace LabFusion.Network
                         currentserver.Send(RiptideHandler.PrepareMessage(message, channel, 0), client);
                 }
             }
+
+            // Public Lobby Handling
             else if (CurrentServerType.GetType() == ServerTypes.PUBLIC)
             {
                 if (isHost)
@@ -217,6 +282,9 @@ namespace LabFusion.Network
 
         internal override void StartServer()
         {
+            if (IsClient)
+                currentclient.Disconnect();
+
             // Making sure the server is fully started before calling start things
             currentclient.Connected += OnStarted;
 
@@ -226,26 +294,7 @@ namespace LabFusion.Network
             currentclient.Connect("127.0.0.1:7777");
         }
 
-        private void OnStarted(object sender, System.EventArgs e)
-        {
-            currentserver.ClientDisconnected += OnClientDisconnect;
-
-            currentclient.Connected -= OnStarted;
-#if DEBUG
-            FusionLogger.Log("SERVER START HOOKED");
-#endif
-            CurrentServerType.SetType(ServerTypes.P2P);
-
-            // Update player ID here since it's determined on the Riptide Client ID
-            PlayerIdManager.SetLongId(currentclient.Id);
-
-            OnUpdateRiptideLobby();
-
-            // Call server setup
-            InternalServerHelpers.OnStartServer();
-        }
-
-        private bool isConnecting;
+        private static bool isConnecting;
         public void ConnectToServer(string ip) {
             if (!isConnecting)
             {
@@ -278,32 +327,17 @@ namespace LabFusion.Network
             isConnecting = false;
             OnUpdateRiptideLobby();
 
-            Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Reliable, 1);
-            sent.AddString("RequestServerType");
-            currentclient.Send(sent);
-        }
-
-        public static void OnClientDisconnect(object sender, Riptide.DisconnectedEventArgs disconnect)
-        {
-            if (currentclient.IsConnected)
-                currentclient.Disconnect();
-
-            if (currentserver.IsRunning)
-                currentserver.Stop();
-
-            InternalServerHelpers.OnDisconnect(GetDisconnectReason(disconnect.Reason));
-
-            isHost = false;
-
-            OnUpdateRiptideLobby();
+            var request = Riptide.Message.Create(MessageSendMode.Reliable, 1);
+            request.AddString("RequestServerType");
+            currentclient.Send(request);
         }
 
         internal override void Disconnect(string reason = "") {
-            if (IsClient)
-                currentclient.Disconnect();
-
             if (IsServer)
                 currentserver.Stop();
+
+            if (IsClient)
+                currentclient.Disconnect();
 
             isHost = false;
 
@@ -317,9 +351,10 @@ namespace LabFusion.Network
             MultiplayerHooking.OnPlayerJoin += OnUserJoin;
             MultiplayerHooking.OnPlayerLeave += OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged += OnUpdateRiptideLobby;
-            MultiplayerHooking.OnDisconnect += OnDisconnect;
+            MultiplayerHooking.OnDisconnect += OnLeaveServer;
 
             // Riptide Hooks
+            currentclient.Disconnected += OnDisconnect;
             currentclient.ConnectionFailed += OnConnectionFail;
             Hooking.OnLevelInitialized += OnLevelLoad;
         }
@@ -353,7 +388,7 @@ namespace LabFusion.Network
                 showTitleOnPopup = true,
                 isMenuItem = false,
                 isPopup = true,
-                message = $"Failed to connect with reason: {GetConnectionFailReason(info.Reason)}",
+                message = $"Failed to connect to server!",
                 popupLength = 1.5f,
             });
             FusionNotifier.Send(new FusionNotification()
@@ -366,26 +401,7 @@ namespace LabFusion.Network
                 popupLength = 1.5f,
             });
 
-            FusionLogger.Error($"Failed to connect to server with error: {info.Message}");
-        }
-
-        private string GetConnectionFailReason(RejectReason reason)
-        {
-            switch (reason)
-            {
-                case RejectReason.ServerFull:
-                    return "Server is Full";
-                case RejectReason.NoConnection:
-                    return "No Connection";
-                case RejectReason.Custom:
-                    return "Custom Reason";
-                case RejectReason.Rejected:
-                    return "Connection Rejected";
-                case RejectReason.AlreadyConnected:
-                    return "Already Connected to Server";
-                default:
-                    return @"¯\_(ツ)_/¯";
-            }
+            FusionLogger.Error($"Failed to connect to server!");
         }
 
         private void OnGamemodeChanged(Gamemode gamemode) {
@@ -405,18 +421,23 @@ namespace LabFusion.Network
             OnUpdateRiptideLobby();
         }
 
-        private void OnDisconnect() {
+        private void OnLeaveServer() {
             VoiceManager.RemoveAll();
         }
 
         private void UnHookRiptideEvents() {
-            // Remove server hooks
+            // Add server hooks
             MultiplayerHooking.OnMainSceneInitialized -= OnUpdateRiptideLobby;
             GamemodeManager.OnGamemodeChanged -= OnGamemodeChanged;
-            MultiplayerHooking.OnPlayerJoin -= OnPlayerJoin;
+            MultiplayerHooking.OnPlayerJoin -= OnUserJoin;
             MultiplayerHooking.OnPlayerLeave -= OnPlayerLeave;
             MultiplayerHooking.OnServerSettingsChanged -= OnUpdateRiptideLobby;
-            MultiplayerHooking.OnDisconnect -= OnDisconnect;
+            MultiplayerHooking.OnDisconnect -= OnLeaveServer;
+
+            // Riptide Hooks
+            currentclient.Disconnected -= OnDisconnect;
+            currentclient.ConnectionFailed -= OnConnectionFail;
+            Hooking.OnLevelInitialized -= OnLevelLoad;
         }
 
         public static void OnUpdateRiptideLobby() {
@@ -424,7 +445,7 @@ namespace LabFusion.Network
             OnUpdateCreateServerText();
 
             if (!publicLobbyClient.IsConnected)
-                publicLobbyClient.Connect(FusionPreferences.ClientSettings.PublicLobbyIP.GetValue() + ":7676");
+                publicLobbyClient.Connect(PublicLobbyHost);
         }
 
         internal override void OnSetupBoneMenu(MenuCategory category) {
@@ -434,7 +455,6 @@ namespace LabFusion.Network
             CreateRiptideSettings(category);
             BoneMenuCreator.CreateSettingsMenu(category);
             BoneMenuCreator.CreateNotificationsMenu(category);
-            BoneMenuCreator.CreateBanListMenu(category);
 
 #if DEBUG
             // Debug only (dev tools)
@@ -446,7 +466,6 @@ namespace LabFusion.Network
         private MenuCategory _serverInfoCategory;
         private MenuCategory _manualJoiningCategory;
         private MenuCategory _publicLobbyCategory;
-        private MenuElement _publicLobbyCreateElement;
 
         private void CreateMatchmakingMenu(MenuCategory category) {
             // Root category
@@ -460,7 +479,7 @@ namespace LabFusion.Network
             _manualJoiningCategory = matchmaking.CreateCategory("Manual Joining", Color.white);
             CreateManualJoiningMenu(_manualJoiningCategory);
 
-            _publicLobbyCategory = category.CreateCategory("Public Lobbies", Color.white);
+            _publicLobbyCategory = matchmaking.CreateCategory("Public Lobbies", Color.white);
             CreatePublicLobbyMenu(_publicLobbyCategory);
 
             // Server List
@@ -477,49 +496,12 @@ namespace LabFusion.Network
             });
         }
 
-        private void CreatePublicLobby()
-        {
-            if (currentclient.IsConnected)
-            {
-                currentclient.Disconnect();
-            }
-
-            Riptide.Message createLobby = Riptide.Message.Create(Riptide.MessageSendMode.Reliable, 19);
-
-            createLobby.AddString(FusionPreferences.LocalServerSettings.ServerName.GetValue());
-            createLobby.AddString($"{LabFusion.FusionVersion.versionMajor}.{LabFusion.FusionVersion.versionMinor}.{LabFusion.FusionVersion.versionPatch}");
-
-            createLobby.AddBool(FusionPreferences.NametagsEnabled);
-            createLobby.AddInt((int)FusionPreferences.LocalServerSettings.Privacy.GetValue());
-            createLobby.AddInt((int)FusionPreferences.TimeScaleMode);
-            createLobby.AddByte(FusionPreferences.LocalServerSettings.MaxPlayers.GetValue());
-            createLobby.AddBool(FusionPreferences.LocalServerSettings.VoicechatEnabled.GetValue());
-            createLobby.AddBool(FusionPreferences.LocalServerSettings.AllowQuestUsers.GetValue());
-            createLobby.AddBool(FusionPreferences.LocalServerSettings.AllowPCUsers.GetValue());
-
-            createLobby.AddString(FusionSceneManager.Level.name);
-
-            currentclient.Connect(FusionPreferences.ClientSettings.PublicLobbyIP.GetValue() + ":7777", 5, 0, createLobby);
-        }
-
         private static FunctionElement _nicknameDisplay;
         private static FunctionElement _pingDisplay;
         private static FunctionElement _publicLobbyIP;
         private void CreateRiptideSettings(MenuCategory category)
         {
             var settings = category.CreateCategory("Riptide Settings", Color.blue);
-
-            // Create Nickname Menu
-            var nicknamePanel = settings.CreateCategory("Riptide Nickname", Color.white);
-            _nicknameDisplay = nicknamePanel.CreateFunctionElement($"Current Nickname: {FusionPreferences.ClientSettings.Nickname.GetValue()}", Color.white, null);
-
-            KeyboardCreator nicknameKeyboard = new KeyboardCreator();
-            nicknameKeyboard.CreateKeyboard(nicknamePanel, "Edit Nickname", FusionPreferences.ClientSettings.Nickname);
-
-            var nicknameInfo = nicknamePanel.CreateSubPanel("Reason for Existing", Color.red);
-            nicknameInfo.CreateFunctionElement("Yes, I know", Color.yellow, null);
-            nicknameInfo.CreateFunctionElement("`Fusion has this built in`", Color.yellow, null);
-            nicknameInfo.CreateFunctionElement("but I wanted a keyboard", Color.yellow, null);
 
             // Create Connection Info
             var connectionInfo = settings.CreateCategory("Connection Stuff", Color.white);
@@ -530,7 +512,8 @@ namespace LabFusion.Network
             {
                 if (currentclient.RTT == -1)
                 {
-                    _pingDisplay.SetName("Ping not calculated.");
+                    _pingDisplay.SetColor(Color.yellow);
+                    _pingDisplay.SetName("Not connected to server!");
                     return;
                 }
 
@@ -539,45 +522,38 @@ namespace LabFusion.Network
                 {
                     case <= 100:
                         _pingDisplay.SetColor(Color.green);
-                        _pingDisplay.SetName($"Ping:\n {ping}");
-                        return;
+                        break;
                     case <= 200:
                         _pingDisplay.SetColor(Color.yellow);
-                        _pingDisplay.SetName($"Ping:\n {ping}");
-                        return;
+                        break;
                     case <= 300:
                         _pingDisplay.SetColor(Color.red);
-                        _pingDisplay.SetName($"Ping:\n {ping}");
-                        return;
+                        break;
                     case > 300:
                         _pingDisplay.SetColor(Color.black);
-                        _pingDisplay.SetName($"Ping:\n {ping}");
-                        return;
+                        break;
                 }
+                _pingDisplay.SetName($"Ping:\n {ping}");
             });
 
             // Create Public Lobby Settings
-            var publicLobbySettings = category.CreateCategory("Public Lobby Settings", Color.magenta);
+            var publicLobbySettings = settings.CreateCategory("Public Lobby Settings", Color.magenta);
             publicLobbySettings.CreateFunctionElement("Current Public Lobby IP:", Color.white, null);
             _publicLobbyIP = publicLobbySettings.CreateFunctionElement(FusionPreferences.ClientSettings.PublicLobbyIP.GetValue(), Color.white, null);
             KeyboardCreator keyboard = new KeyboardCreator();
             keyboard.CreateKeyboard(publicLobbySettings, "Change Public Lobby IP", FusionPreferences.ClientSettings.PublicLobbyIP);
 
-            // Funny stuff
-            /// Maybe later idk
         }
 
         private static FunctionElement _createServerElement;
         private static FunctionElement _createLobbyElemebt;
 
         private void CreateServerInfoMenu(MenuCategory category) {
-            _createServerElement = category.CreateFunctionElement("Start P2P Server", Color.white, () =>
-            {
-                StartServer();
-            });
+            _createServerElement = category.CreateFunctionElement("Start P2P Server", Color.white, StartServer);
+
             _createLobbyElemebt = category.CreateFunctionElement("Create Public Lobby", Color.white, () =>
             {
-                
+                PublicLobbyManager.CreatePublicLobby();
             });
 
             if (!HelperMethods.IsAndroid()) {
@@ -588,23 +564,13 @@ namespace LabFusion.Network
             BoneMenuCreator.PopulateServerInfo(category);
         }
 
-        private void OnClickCreateServer() {
-            // Is a server already running? Disconnect. Otherwise, create server.
-            if (currentclient.IsConnected) {
-                Disconnect();
-            } else
-            {
-                StartServer();
-            }
-        }
-
         private void OnCopyServerCode() {
             string encodedIP = IPSafety.IPSafety.EncodeIPAddress(publicIp);
 
             Clipboard.SetText(encodedIP);
         }
 
-        public static void OnUpdateCreateServerText() {
+        private static void OnUpdateCreateServerText() {
             if (currentclient.IsConnected && !currentserver.IsRunning)
             {
                 _createServerElement.SetName("Disconnect");
@@ -615,7 +581,7 @@ namespace LabFusion.Network
             }
             else if (!currentclient.IsConnected)
             {
-                _createServerElement.SetName("Start Server");
+                _createServerElement.SetName("Start P2P Server");
             }
         }
 
@@ -669,15 +635,6 @@ namespace LabFusion.Network
             }
         }
 
-        private void OnClientDisconnect(object sender, ServerDisconnectedEventArgs client)
-        {
-            // Update the mod so it knows this user has left
-            InternalServerHelpers.OnUserLeave(client.Client.Id);
-
-            // Send disconnect notif to everyone
-            ConnectionSender.SendDisconnect(client.Client.Id, GetDisconnectReason(client.Reason));
-        }
-
         private void OnDisplayServerCode()
         {
             string encodedIP = IPSafety.IPSafety.EncodeIPAddress(publicIp);
@@ -693,15 +650,8 @@ namespace LabFusion.Network
             });
         }
 
-        internal override bool CheckSupported()
-        {
-            return true;
-        }
-
-        internal override bool CheckValidation()
-        {
-            return true;
-        }
+        internal override bool CheckSupported() => true;
+        internal override bool CheckValidation() => true;
 
         // Server List Menu
         private static MenuCategory _serverListCategory;
@@ -713,6 +663,7 @@ namespace LabFusion.Network
 
             CreateServerList();
         }
+
         private void CreateServerList()
         {
             _serverListCategory.Elements.Clear();

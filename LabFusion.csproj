@@ -468,12 +468,19 @@
     <Compile Include="Core\src\Network\Proxy\ProxySocketHandler.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyVoiceManager.cs" />
     <Compile Include="Core\src\Network\Proxy\ProxyVoiceHandler.cs" />
+    <Compile Include="Core\src\Network\Riptide\MessageReaders\DedicatedServerMessageReader.cs" />
+    <Compile Include="Core\src\Network\Riptide\MessageReaders\FusionMessageReader.cs" />
+    <Compile Include="Core\src\Network\Riptide\MessageReaders\PublicLobbyMessageReader.cs" />
+    <Compile Include="Core\src\Network\Riptide\MessageReaders\ServerHostingMessageReaders.cs" />
     <Compile Include="Core\src\Network\Riptide\PublicLobbyUtils\PublicLobbyManager.cs" />
     <Compile Include="Core\src\Network\Riptide\PublicLobbyUtils\RiptideLobbyMetaData.cs" />
+    <Compile Include="Core\src\Network\Riptide\RiptideNetworkLayer\RiptideNetworkHooks.cs" />
+    <Compile Include="Core\src\Network\Riptide\Utilities\Enums\CommandTypes.cs" />
+    <Compile Include="Core\src\Network\Riptide\Utilities\Enums\RiptideMessageTypes.cs" />
     <Compile Include="Core\src\Network\Riptide\Utilities\Enums\ServerTypes.cs" />
     <Compile Include="Core\src\Network\Riptide\Utilities\PortHelper.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideHandler.cs" />
-    <Compile Include="Core\src\Network\Riptide\RiptideNetworkLayer.cs" />
+    <Compile Include="Core\src\Network\Riptide\RiptideNetworkLayer\RiptideNetworkLayer.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideVoiceHandler.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideVoiceManager.cs" />
     <Compile Include="Core\src\Network\Steam\SpacewarNetworkLayer.cs" />
@@ -902,9 +909,13 @@
     <Reference Include="Mono.Nat">
       <HintPath>..\..\Referencing\Mono.Nat.dll</HintPath>
     </Reference>
+    <Reference Include="Oculus.Platform, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Oculus.Platform.dll</HintPath>
+    </Reference>
     <Reference Include="RiptideNetworking, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Riptide-main\RiptideNetworking\RiptideNetworking\bin\Debug\netstandard2.0\netstandard2.0\RiptideNetworking.dll</HintPath>
+      <HintPath>..\TideFusionNetworking-2.0.0\TideFusionNetworking\RiptideNetworking\bin\Debug\netstandard2.0\netstandard2.0\RiptideNetworking.dll</HintPath>
     </Reference>
     <Reference Include="SLZ.Algorithms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

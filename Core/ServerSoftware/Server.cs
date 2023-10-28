@@ -67,7 +67,6 @@ namespace ServerSoftware
             command.modifiers = typedArray;
 
             Commands.RunCommand(command);
-
         }
 
         public static void RestartServer(bool resetData = false)

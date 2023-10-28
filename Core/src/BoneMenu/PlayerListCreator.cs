@@ -112,7 +112,7 @@ namespace LabFusion.BoneMenu
                 // Kick button
                 if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.KickingAllowed.GetValue())) {
                     // TideFusion Specific
-                    if (RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.DEDICATED && permLevel == PermissionLevel.OWNER || RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.NONE)
+                    if (RiptideNetworkLayer.CurrentServerType.GetType() == ServerTypes.DEDICATED && permLevel == PermissionLevel.OWNER || RiptideNetworkLayer.CurrentServerType.GetType() == ServerTypes.NONE)
                     {
                         moderationCategory.CreateFunctionElement("Kick", Color.red, () =>
                         {
@@ -124,7 +124,7 @@ namespace LabFusion.BoneMenu
                 // Ban button
                 if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.BanningAllowed.GetValue())) {
                     // TideFusion Specific
-                    if (RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.DEDICATED && permLevel == PermissionLevel.OWNER || RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.NONE)
+                    if (RiptideNetworkLayer.CurrentServerType.GetType() == ServerTypes.DEDICATED && permLevel == PermissionLevel.OWNER || RiptideNetworkLayer.CurrentServerType.GetType() == ServerTypes.NONE)
                     {
                         moderationCategory.CreateFunctionElement("Ban", Color.red, () =>
                         {
@@ -137,7 +137,7 @@ namespace LabFusion.BoneMenu
                 if (FusionPermissions.HasSufficientPermissions(selfLevel, serverSettings.Teleportation.GetValue()))
                 {
                     // TideFusion Specific
-                    if (RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.DEDICATED && permLevel == PermissionLevel.OWNER || RiptideNetworkLayer.CurrentServerType.GetType() == Core.src.Network.Riptide.Enums.ServerTypes.NONE)
+                    if (RiptideNetworkLayer.CurrentServerType.GetType() == ServerTypes.DEDICATED && permLevel == PermissionLevel.OWNER || RiptideNetworkLayer.CurrentServerType.GetType() == ServerTypes.NONE)
                     {
                         moderationCategory.CreateFunctionElement("Teleport To Them", Color.red, () =>
                         {
