@@ -15,6 +15,7 @@ namespace LabFusion.Network
     {
         public void OnStarted(object sender, System.EventArgs e)
         {
+            isHost = true;
             currentserver.ClientDisconnected += OnPlayerDisconnect;
 
             currentclient.Connected -= OnStarted;

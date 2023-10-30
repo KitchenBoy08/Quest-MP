@@ -26,7 +26,7 @@ namespace LabFusion.Network
                 RiptideNetworkLayer.currentclient.Disconnect();
             }
 
-            Riptide.Message createLobby = Riptide.Message.Create(Riptide.MessageSendMode.Reliable, 19);
+            Riptide.Message createLobby = Riptide.Message.Create(Riptide.MessageSendMode.Reliable, (ushort)RiptideMessageTypes.CreateLobby);
 
             if (FusionPreferences.ClientSettings.TideServerName.GetValue() != string.Empty)
                 createLobby.AddString(FusionPreferences.ClientSettings.TideServerName.GetValue());
@@ -46,19 +46,11 @@ namespace LabFusion.Network
             RiptideNetworkLayer.currentclient.Connect(RiptideNetworkLayer.PublicLobbyHost, 5, 0, createLobby);
         }
 
-        private static void OnCreateLobby(object sender, EventArgs e)
-        {
-            RiptideNetworkLayer.isHost = true;
-
-            InternalServerHelpers.OnStartServer();
-        }
-
         public static void RequestLobbies(MenuCategory category)
         {
             publicLobbyCategory = category;
 
-            Message request = Message.Create(MessageSendMode.Reliable, 0);
-            request.AddString("LobbyRequest");
+            Message request = Message.Create(MessageSendMode.Reliable, (ushort)RiptideMessageTypes.RequestLobbies);
 
             RiptideNetworkLayer.publicLobbyClient.Send(request);
 
@@ -102,7 +94,7 @@ namespace LabFusion.Network
                     RiptideNetworkLayer.currentclient.Disconnect();
 
                 RiptideNetworkLayer.currentPublicHostID = (short)hostID;
-                Message joinRequest = Message.Create(MessageSendMode.Reliable, 10);
+                Message joinRequest = Message.Create(MessageSendMode.Reliable, (ushort)RiptideMessageTypes.JoinLobby);
                 joinRequest.AddInt(ServerID);
 
                 RiptideNetworkLayer.currentclient.Connect(RiptideNetworkLayer.PublicLobbyHost, 5, 0, joinRequest);
@@ -116,5 +108,7 @@ namespace LabFusion.Network
             var gameInfo = lobby.CreateSubPanel("Game Info", Color.white);
             gameInfo.CreateFunctionElement($"Level Name: {LevelName}", Color.white, null);
         }
+
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Riptide;
 using Server;
+using Server.Enums;
 using ServerSoftware.Utilities;
 using System;
 using System.Collections.Generic;
@@ -128,7 +129,7 @@ namespace ServerSoftware
 
         private static void SendCommandToHost(CommandTypes type, string commandString = "", int commandInt = 0)
         {
-            Message commandMessage = Message.Create(MessageSendMode.Reliable, 12);
+            Message commandMessage = Message.Create(MessageSendMode.Reliable, RiptideMessageTypes.ServerCommand);
             commandMessage.Release();
 
             commandMessage.AddInt((int)type);

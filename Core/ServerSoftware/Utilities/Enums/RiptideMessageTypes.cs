@@ -19,6 +19,8 @@ namespace Server.Enums
         SendToServer = 12,
         SendFromServer = 13,
         Broadcast = 14,
+        LevelInfo = 15,
+        Notification = 16,
         #endregion
 
         #region PUBLIC
@@ -26,6 +28,7 @@ namespace Server.Enums
         JoinLobby = 21,
         LobbyInfo = 22,
         LobbyDisconnect = 23,
+        RequestLobbies = 24,
         #endregion
     }
 }

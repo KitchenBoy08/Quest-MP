@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Core\Network\PacketHandlers.cs" />
     <Compile Include="Core\PublicLobby.cs" />
+    <Compile Include="Core\Utilities\Enums\RiptideMessageTypes.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Riptide;
-using PublicLobbyHost;
+using PublicLobbyHost.Utilities;
 
 namespace PublicLobbyHost
 {
@@ -25,7 +25,7 @@ namespace PublicLobbyHost
 
             foreach (var lobby in Program.lobbies)
             {
-                Message lobbyData = Message.Create(MessageSendMode.Reliable, 20);
+                Message lobbyData = Message.Create(MessageSendMode.Reliable, (ushort)RiptideMessageTypes.LobbyInfo);
 
                 lobbyData.AddInt(lobby.ServerID);
 
@@ -75,7 +75,7 @@ namespace PublicLobbyHost
             Program.mainHost.Send(createServer, client);
         }
 
-        [MessageHandler(10)]
+        [MessageHandler((ushort)RiptideMessageTypes.JoinLobby)]
         public static void HandleJoinLobby(ushort riptideID, Message message)
         {
             Program.mainHost.TryGetClient(riptideID, out Connection client);
@@ -90,27 +90,24 @@ namespace PublicLobbyHost
             Program.mainHost.Send(joinAccept, client.Id);
         }
 
-        [MessageHandler(1)]
+        [MessageHandler((ushort)RiptideMessageTypes.ServerType)]
         public static void HandleClientRequest(ushort riptideID, Message message)
         {
             Program.mainHost.TryGetClient(riptideID, out Connection client);
 
-            if (message.GetString() == "RequestServerType")
-            {
-                Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Reliable, 1);
-                sent.AddInt(3);
+            Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Reliable, (ushort)RiptideMessageTypes.ServerType);
+            sent.AddInt(3);
 
-                Program.mainHost.Send(sent, client.Id);
-            }
+            Program.mainHost.Send(sent, client.Id);
         }
 
-        [MessageHandler(3)]
+        [MessageHandler((ushort)RiptideMessageTypes.Broadcast)]
         public static void HandleBroadcast(ushort riptideID, Message message)
         {
             byte[] bytes = message.GetBytes();
             ushort id = message.GetUShort();
 
-            Message sent = Message.Create(message.SendMode, 0);
+            Message sent = Message.Create(message.SendMode, RiptideMessageTypes.FusionMessage);
             sent.Release();
 
             sent.AddBytes(bytes);
@@ -123,7 +120,7 @@ namespace PublicLobbyHost
 
         }
 
-        [MessageHandler(4)]
+        [MessageHandler((ushort)RiptideMessageTypes.SendToServer)]
         public static void HandleSendToServer(ushort riptideID, Message message)
         {
             if (Program.GetPublicLobby(riptideID) != null)
@@ -131,7 +128,7 @@ namespace PublicLobbyHost
                 byte[] bytes = message.GetBytes();
                 ushort id = message.GetUShort();
 
-                Message sent = Message.Create(message.SendMode, 0);
+                Message sent = Message.Create(message.SendMode, RiptideMessageTypes.FusionMessage);
                 sent.Release();
                 sent.AddBytes(bytes);
 
@@ -139,13 +136,13 @@ namespace PublicLobbyHost
             }
         }
 
-        [MessageHandler(5)]
+        [MessageHandler((ushort)RiptideMessageTypes.SendFromServer)]
         public static void HandleSendFromServer(ushort riptideID, Message message)
         {
             byte[] bytes = message.GetBytes();
             ushort id = message.GetUShort();
 
-            Message sent = Message.Create(message.SendMode, 0);
+            Message sent = Message.Create(message.SendMode, RiptideMessageTypes.FusionMessage);
             sent.Release();
             sent.AddBytes(bytes);
 

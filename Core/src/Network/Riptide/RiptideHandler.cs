@@ -63,7 +63,7 @@ namespace LabFusion.Network
         {
             if (CurrentServerType.GetType() == ServerTypes.P2P)
             {
-                var message = Message.Create(ConvertToSendMode(channel), 0); // Create the message
+                var message = Message.Create(ConvertToSendMode(channel), (ushort)RiptideMessageTypes.FusionMessage); // Create the message
 
                 message.Release(); // Make sure the message is empty before adding bytes
 

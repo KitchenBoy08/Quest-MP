@@ -68,7 +68,7 @@ namespace Server.Networking
             }
         }
 
-        [MessageHandler(7)]
+        [MessageHandler((ushort)RiptideMessageTypes.LevelInfo)]
         public static void HandleLevelInfo(ushort riptideID, Message message)
         {
             string levelBarcode = message.GetString();
@@ -78,7 +78,7 @@ namespace Server.Networking
             ServerClass.UpdateWindow($"Loaded new level with Title: \n{levelName}");
         }
 
-        [MessageHandler(8)]
+        [MessageHandler((ushort)RiptideMessageTypes.Notification)]
         public static void HandleClientNotification(ushort riptideID, Message message)
         {
             string notif = message.GetString();

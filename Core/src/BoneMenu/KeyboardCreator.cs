@@ -42,9 +42,7 @@ namespace LabFusion.Core.src.BoneMenu
             var setValue = keyboardCategory.CreateFunctionElement("Enter", Color.yellow, () => SetValue(outValue, preference));
 
             if (!HelperMethods.IsAndroid())
-            {
                 keyboardCategory.CreateFunctionElement("Paste", Color.white, OnPasteServerIP);
-            }
 
             var resetButton = keyboardCategory.CreateFunctionElement("Reset Keyboard", Color.red, () => ClearValue());
             keyboardCategory.CreateFunctionElement("Backspace", Color.white, () => BackOutValue());
@@ -65,6 +63,7 @@ namespace LabFusion.Core.src.BoneMenu
 
                 stringReference.SetName($"Current Value:" + System.Environment.NewLine + outValue);
             }
+
         }
 
         public void CreateDigitsMenu()

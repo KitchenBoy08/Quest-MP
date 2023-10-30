@@ -15,6 +15,9 @@ using SLZ.Marrow.SceneStreaming;
 using Steamworks.Data;
 using static LabFusion.Network.RiptideNetworkLayer;
 using LabFusion.Network;
+using LabFusion.Preferences;
+using LabFusion.Syncables;
+using UnityEngine;
 
 namespace LabFusion.Network
 {
@@ -28,7 +31,20 @@ namespace LabFusion.Network
             {
                 isHost = true;
 
-                // Mimicking the OnStartServer method in order to make it custom
+                // Cleanup gamemodes
+                GamemodeRegistration.ClearGamemodeTable();
+                ModuleMessageHandler.ClearHandlerTable();
+
+                // Cleanup information
+                SyncManager.OnCleanup();
+                Physics.autoSimulation = true;
+
+                // Cleanup prefs
+                FusionPreferences.ReceivedServerSettings = FusionPreferences.LocalServerSettings;
+
+                // Update hooks
+                MultiplayerHooking.Internal_OnDisconnect();
+
                 // Create local id
                 var id = new PlayerId(PlayerIdManager.LocalLongId, 0, InternalServerHelpers.GetInitialMetadata(), InternalServerHelpers.GetInitialEquippedItems());
                 id.Insert();
@@ -45,7 +61,7 @@ namespace LabFusion.Network
                 // Update hooks
                 MultiplayerHooking.Internal_OnStartServer();
 
-                Message response = Message.Create(MessageSendMode.Reliable, 11);
+                Message response = Message.Create(MessageSendMode.Reliable, (ushort)RiptideMessageTypes.HostRequest);
                 response.Release();
 
                 response.AddBool(true);
@@ -67,7 +83,7 @@ namespace LabFusion.Network
             {
                 RiptideNetworkLayer.isHost = false;
 
-                Message response = Message.Create(MessageSendMode.Reliable, 11);
+                Message response = Message.Create(MessageSendMode.Reliable, RiptideMessageTypes.HostRequest);
                 response.Release();
 
                 response.AddBool(false);

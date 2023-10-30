@@ -19,8 +19,7 @@ namespace PublicLobbyHost
         static void Main(string[] args)
         {
             Console.CursorVisible = false;
-            Console.
-            tick = new System.Timers.Timer(50);
+            tick = new System.Timers.Timer(10);
             tick.Elapsed += Tick;
             tick.AutoReset = true;
             tick.Enabled = true;
@@ -108,8 +107,9 @@ namespace PublicLobbyHost
         {
             Console.Clear();
             Console.WriteLine($"Current Lobby Count: {lobbies.Count}");
+            Console.WriteLine($"Current client count: {mainHost.ClientCount}");
 
-            Console.WriteLine("\n===============================\n");
+            Console.WriteLine("\n===============================");
 
             if (info != "")
             {
@@ -118,7 +118,7 @@ namespace PublicLobbyHost
             {
                 Console.WriteLine("No info to display!");
 
-                Console.WriteLine("\n===============================");
+                Console.WriteLine("===============================");
             }
         }
 

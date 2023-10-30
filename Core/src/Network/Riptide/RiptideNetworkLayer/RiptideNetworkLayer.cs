@@ -188,11 +188,11 @@ namespace LabFusion.Network
             {
                 if (isHost)
                 {
-                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 3));
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, (ushort)RiptideMessageTypes.Broadcast));
                 }
                 else
                 {
-                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 2));
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, (ushort)RiptideMessageTypes.SendToServer));
                 }
             } 
             
@@ -201,11 +201,11 @@ namespace LabFusion.Network
             {
                 if (IsServer)
                 {
-                    currentserver.SendToAll(RiptideHandler.PrepareMessage(message, channel, 0));
+                    currentserver.SendToAll(RiptideHandler.PrepareMessage(message, channel, (ushort)RiptideMessageTypes.FusionMessage));
                 }
                 else
                 {
-                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 0));
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, (ushort)RiptideMessageTypes.FusionMessage));
                 }
             } 
             
@@ -213,9 +213,9 @@ namespace LabFusion.Network
             else if (CurrentServerType.GetType() == ServerTypes.PUBLIC)
             {
                 if (isHost)
-                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 3, 0));
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, (ushort)RiptideMessageTypes.SendToServer, (short)currentclient.Id));
                 else
-                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 3, currentPublicHostID));
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, (ushort)RiptideMessageTypes.Broadcast, currentPublicHostID));
             }
         }
 
@@ -223,22 +223,22 @@ namespace LabFusion.Network
             // Dedicated Server Handling
             if (CurrentServerType.GetType() == ServerTypes.DEDICATED)
             {
-                currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 2));
+                currentclient.Send(RiptideHandler.PrepareMessage(message, channel, (ushort)RiptideMessageTypes.SendToServer));
             } 
 
             // P2P Handling
             else if (CurrentServerType.GetType() == ServerTypes.P2P)
             {
-                currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 0));
+                currentclient.Send(RiptideHandler.PrepareMessage(message, channel, (ushort)RiptideMessageTypes.FusionMessage));
             }
 
             // Public Lobby Handling
             else if (CurrentServerType.GetType() == ServerTypes.PUBLIC)
             {
                 if (isHost)
-                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, (short)currentclient.Id));
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, (ushort)RiptideMessageTypes.SendToServer, (short)currentclient.Id));
                 else
-                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, currentPublicHostID));
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, (ushort)RiptideMessageTypes.SendToServer, currentPublicHostID));
             }
         }
 
@@ -254,7 +254,7 @@ namespace LabFusion.Network
             {
                 if (isHost)
                 {
-                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, (short)userId));
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, (ushort)RiptideMessageTypes.SendFromServer, (short)userId));
                 }
             }
 
@@ -264,9 +264,9 @@ namespace LabFusion.Network
                 if (IsServer)
                 {
                     if (userId == PlayerIdManager.LocalLongId)
-                        currentserver.Send(RiptideHandler.PrepareMessage(message, channel, 0), (ushort)PlayerIdManager.LocalLongId);
-                    else if (currentserver.TryGetClient((ushort)userId, out Riptide.Connection client))
-                        currentserver.Send(RiptideHandler.PrepareMessage(message, channel, 0), client);
+                        currentserver.Send(RiptideHandler.PrepareMessage(message, channel, (ushort)RiptideMessageTypes.FusionMessage), (ushort)PlayerIdManager.LocalLongId);
+                    else if (currentserver.TryGetClient((ushort)userId, out Connection client))
+                        currentserver.Send(RiptideHandler.PrepareMessage(message, channel, (ushort)RiptideMessageTypes.FusionMessage), client);
                 }
             }
 
@@ -275,16 +275,43 @@ namespace LabFusion.Network
             {
                 if (isHost)
                 {
-                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, 4, (short)userId));
+                    currentclient.Send(RiptideHandler.PrepareMessage(message, channel, (ushort)RiptideMessageTypes.SendFromServer, (short)userId));
                 }
+            }
+        }
+
+        // P2P Server Create
+        private void OnClickCreateServer()
+        {
+            // Is a server already running? Disconnect
+            if (IsServer || IsClient)
+            {
+                Disconnect();
+            }
+            // Otherwise, start a server
+            else
+            {
+                StartServer();
+            }
+        }
+
+        // Public Lobby Create
+        private void OnClickCreateLobby()
+        {
+            // Is a server already running? Disconnect
+            if (IsServer || IsClient)
+            {
+                Disconnect();
+            }
+            // Otherwise, start a server
+            else
+            {
+                PublicLobbyManager.CreatePublicLobby();
             }
         }
 
         internal override void StartServer()
         {
-            if (IsClient)
-                currentclient.Disconnect();
-
             // Making sure the server is fully started before calling start things
             currentclient.Connected += OnStarted;
 
@@ -327,7 +354,7 @@ namespace LabFusion.Network
             isConnecting = false;
             OnUpdateRiptideLobby();
 
-            var request = Riptide.Message.Create(MessageSendMode.Reliable, 1);
+            var request = Riptide.Message.Create(MessageSendMode.Reliable, (ushort)RiptideMessageTypes.ServerType);
             request.AddString("RequestServerType");
             currentclient.Send(request);
         }
@@ -363,7 +390,7 @@ namespace LabFusion.Network
         {
             if (CurrentServerType.GetType() == ServerTypes.DEDICATED && isHost)
             {
-                Riptide.Message levelInfo = Riptide.Message.Create(MessageSendMode.Reliable, 7);
+                Riptide.Message levelInfo = Riptide.Message.Create(MessageSendMode.Reliable, (ushort)RiptideMessageTypes.LevelInfo);
                 levelInfo.Release();
 
                 levelInfo.AddString(info.barcode);
@@ -549,7 +576,7 @@ namespace LabFusion.Network
         private static FunctionElement _createLobbyElemebt;
 
         private void CreateServerInfoMenu(MenuCategory category) {
-            _createServerElement = category.CreateFunctionElement("Start P2P Server", Color.white, StartServer);
+            _createServerElement = category.CreateFunctionElement("Start P2P Server", Color.white, OnClickCreateServer);
 
             _createLobbyElemebt = category.CreateFunctionElement("Create Public Lobby", Color.white, () =>
             {

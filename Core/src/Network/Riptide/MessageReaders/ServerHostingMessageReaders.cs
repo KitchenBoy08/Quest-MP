@@ -129,7 +129,7 @@ namespace LabFusion.Network
         {
             if (RiptideNetworkLayer.currentserver.TryGetClient(riptideID, out Connection client))
             {
-                Message response = Message.Create(MessageSendMode.Reliable, 1);
+                Message response = Message.Create(MessageSendMode.Reliable, (ushort)RiptideMessageTypes.ServerType);
                 response.AddInt((int)ServerTypes.PUBLIC);
                 response.AddString("NONE");
                 response.AddString("NONE");
