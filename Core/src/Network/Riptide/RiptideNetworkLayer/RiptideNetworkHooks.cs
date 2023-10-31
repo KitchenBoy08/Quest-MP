@@ -42,7 +42,7 @@ namespace LabFusion.Network
             ConnectionSender.SendDisconnect(client.Client.Id, GetDisconnectReason(client.Reason));
         }
 
-        public void OnDisconnect(object sender, Riptide.DisconnectedEventArgs disconnect)
+        public void OnDisconnect(object sender, DisconnectedEventArgs disconnect)
         {
             FusionLogger.Error($"Disconnected with reason {disconnect.Reason}");
             InternalServerHelpers.OnDisconnect(GetDisconnectReason(disconnect.Reason));

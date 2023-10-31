@@ -1,6 +1,7 @@
 ﻿using BoneLib.BoneMenu.Elements;
 using LabFusion.Network;
 using LabFusion.Preferences;
+using LabFusion.Representation;
 using LabFusion.Senders;
 using LabFusion.Utilities;
 using Riptide;
@@ -18,6 +19,24 @@ namespace LabFusion.Network
     public static class PublicLobbyManager
     {
         public static MenuCategory publicLobbyCategory;
+
+        public static void UpdateServerInfo()
+        {
+            if (RiptideNetworkLayer.CurrentServerType.GetType() == ServerTypes.PUBLIC && RiptideNetworkLayer.isHost)
+            {
+                Message info = Message.Create(MessageSendMode.Reliable, (ushort)RiptideMessageTypes.UpdateLobbyInfo);
+
+                info.AddInt((int)FusionPreferences.LocalServerSettings.Privacy.GetValue());
+                info.AddByte(FusionPreferences.LocalServerSettings.MaxPlayers.GetValue());
+                info.AddInt(PlayerIdManager.PlayerIds.Count);
+                info.AddBool(FusionPreferences.LocalServerSettings.AllowQuestUsers.GetValue());
+                info.AddBool(FusionPreferences.LocalServerSettings.AllowPCUsers.GetValue());
+
+                info.AddString(FusionSceneManager.Title);
+
+                RiptideNetworkLayer.currentclient.Send(info);
+            }
+        }
 
         public static void CreatePublicLobby()
         {

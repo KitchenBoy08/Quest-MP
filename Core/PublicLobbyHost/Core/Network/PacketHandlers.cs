@@ -10,20 +10,20 @@ namespace PublicLobbyHost
 {
     public static class PacketHandlers
     {
-        private static void BroadcastToLobby(ushort id, Message message)
+        private static void BroadcastToLobby(ushort hostId, Message message)
         {
-            foreach (var client in Program.GetPublicLobby(id).clientIDs)
+            foreach (var client in PublicLobbyHost.GetPublicLobby(hostId).clientIDs)
             {
-                Program.mainHost.Send(message, client);
+                PublicLobbyHost.mainHost.Send(message, client);
             }
         }
 
-        [MessageHandler(0)]
+        [MessageHandler((ushort)RiptideMessageTypes.RequestLobbies)]
         public static void HandleLobbyRequest(ushort riptideID, Message message)
         {
-            Program.mainHost.TryGetClient(riptideID, out Connection client);
+            PublicLobbyHost.mainHost.TryGetClient(riptideID, out Connection client);
 
-            foreach (var lobby in Program.lobbies)
+            foreach (var lobby in PublicLobbyHost.lobbies)
             {
                 Message lobbyData = Message.Create(MessageSendMode.Reliable, (ushort)RiptideMessageTypes.LobbyInfo);
 
@@ -42,18 +42,18 @@ namespace PublicLobbyHost
 
                 lobbyData.AddString(lobby.LevelName);
 
-                Program.mainHost.Send(lobbyData, client.Id);
+                PublicLobbyHost.mainHost.Send(lobbyData, client.Id);
             }
         
         }
 
-        [MessageHandler(19)]
+        [MessageHandler((ushort)RiptideMessageTypes.CreateLobby)]
         public static void HandleCreateLobby(ushort riptideID, Message message)
         {
-            Program.mainHost.TryGetClient(riptideID, out Connection client);
+            PublicLobbyHost.mainHost.TryGetClient(riptideID, out Connection client);
 
             PublicLobby newLobby = new PublicLobby();
-            newLobby.ServerID = Program.lobbies.Count;
+            newLobby.ServerID = PublicLobbyHost.lobbies.Count;
 
             newLobby.hostID = riptideID;
 
@@ -68,37 +68,60 @@ namespace PublicLobbyHost
 
             newLobby.LevelName = message.GetString();
 
-            Program.lobbies.Add(newLobby);
+            PublicLobbyHost.lobbies.Add(newLobby);
 
             Message createServer = Message.Create(MessageSendMode.Reliable, 19);
             createServer.AddByte(0);
-            Program.mainHost.Send(createServer, client);
+            PublicLobbyHost.mainHost.Send(createServer, client);
         }
 
         [MessageHandler((ushort)RiptideMessageTypes.JoinLobby)]
         public static void HandleJoinLobby(ushort riptideID, Message message)
         {
-            Program.mainHost.TryGetClient(riptideID, out Connection client);
+            PublicLobbyHost.mainHost.TryGetClient(riptideID, out Connection client);
 
             int serverID = message.GetInt();
 
-            Program.lobbies[serverID].clientIDs.Add(client.Id);
+            PublicLobbyHost.lobbies[serverID].clientIDs.Add(client.Id);
 
             Message joinAccept = Message.Create(MessageSendMode.Reliable, 22);
             joinAccept.AddInt(serverID);
 
-            Program.mainHost.Send(joinAccept, client.Id);
+            PublicLobbyHost.mainHost.Send(joinAccept, client.Id);
+        }
+
+        [MessageHandler((ushort)RiptideMessageTypes.UpdateLobbyInfo)]
+        public static void HandleUpdateLobby(ushort riptideID, Message message)
+        {
+            var lobby = PublicLobbyHost.GetPublicLobby(riptideID);
+            
+            int privacy = message.GetInt();
+            byte maxPlayers = message.GetByte();
+            int playerCount = message.GetInt();
+            bool allowQuestPlayers = message.GetBool();
+            bool allowPcPlayers = message.GetBool();
+
+            string levelName = message.GetString();
+
+            lobby.Privacy = privacy;
+            lobby.MaxPlayers = maxPlayers;
+            lobby.PlayerCount = playerCount;
+            lobby.AllowQuestUsers = allowQuestPlayers;
+            lobby.AllowPCUsers = allowPcPlayers;
+            lobby.LevelName = levelName;
+
+            PublicLobbyHost.UpdateLobby(lobby);
         }
 
         [MessageHandler((ushort)RiptideMessageTypes.ServerType)]
         public static void HandleClientRequest(ushort riptideID, Message message)
         {
-            Program.mainHost.TryGetClient(riptideID, out Connection client);
+            PublicLobbyHost.mainHost.TryGetClient(riptideID, out Connection client);
 
             Riptide.Message sent = Riptide.Message.Create(MessageSendMode.Reliable, (ushort)RiptideMessageTypes.ServerType);
             sent.AddInt(3);
 
-            Program.mainHost.Send(sent, client.Id);
+            PublicLobbyHost.mainHost.Send(sent, client.Id);
         }
 
         [MessageHandler((ushort)RiptideMessageTypes.Broadcast)]
@@ -116,14 +139,14 @@ namespace PublicLobbyHost
             if (id == 0)
                 BroadcastToLobby(id, sent);
             else
-                Program.mainHost.Send(sent, id);
+                PublicLobbyHost.mainHost.Send(sent, id);
 
         }
 
         [MessageHandler((ushort)RiptideMessageTypes.SendToServer)]
         public static void HandleSendToServer(ushort riptideID, Message message)
         {
-            if (Program.GetPublicLobby(riptideID) != null)
+            if (PublicLobbyHost.GetPublicLobby(riptideID) != null)
             {
                 byte[] bytes = message.GetBytes();
                 ushort id = message.GetUShort();
@@ -132,7 +155,7 @@ namespace PublicLobbyHost
                 sent.Release();
                 sent.AddBytes(bytes);
 
-                Program.mainHost.Send(sent, id);
+                PublicLobbyHost.mainHost.Send(sent, id);
             }
         }
 
@@ -146,7 +169,7 @@ namespace PublicLobbyHost
             sent.Release();
             sent.AddBytes(bytes);
 
-            Program.mainHost.Send(sent, id);
+            PublicLobbyHost.mainHost.Send(sent, id);
         }
     }
 }

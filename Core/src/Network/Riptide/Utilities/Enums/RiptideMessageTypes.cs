@@ -29,6 +29,7 @@ namespace LabFusion.Network
         LobbyInfo = 22,
         LobbyDisconnect = 23,
         RequestLobbies = 24,
+        UpdateLobbyInfo = 25,
         #endregion
     }
 }

@@ -10,6 +10,7 @@ using LabFusion.Network;
 using LabFusion.Representation;
 using LabFusion.Utilities;
 using LabFusion.Preferences;
+using BoneLib;
 
 namespace LabFusion.Network
 {
@@ -40,6 +41,11 @@ namespace LabFusion.Network
             {
                 settings = settings,
             };
+        }
+
+        internal static void OnChangeLevel(LevelInfo info)
+        {
+            throw new NotImplementedException();
         }
     }
 

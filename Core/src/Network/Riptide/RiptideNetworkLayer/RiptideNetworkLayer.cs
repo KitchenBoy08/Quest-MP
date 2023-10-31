@@ -303,7 +303,7 @@ namespace LabFusion.Network
             {
                 Disconnect();
             }
-            // Otherwise, start a server
+            // Otherwise, create a lobby
             else
             {
                 PublicLobbyManager.CreatePublicLobby();
@@ -355,7 +355,6 @@ namespace LabFusion.Network
             OnUpdateRiptideLobby();
 
             var request = Riptide.Message.Create(MessageSendMode.Reliable, (ushort)RiptideMessageTypes.ServerType);
-            request.AddString("RequestServerType");
             currentclient.Send(request);
         }
 
@@ -384,6 +383,13 @@ namespace LabFusion.Network
             currentclient.Disconnected += OnDisconnect;
             currentclient.ConnectionFailed += OnConnectionFail;
             Hooking.OnLevelInitialized += OnLevelLoad;
+
+            // Preference Hooks
+            FusionPreferences.LocalServerSettings.Privacy.OnValueChanged += ServerSettingsHooks.OnServerPrivacyChanged;
+            FusionPreferences.LocalServerSettings.MaxPlayers.OnValueChanged += ServerSettingsHooks.OnMaxPlayersChanged;
+            FusionPreferences.LocalServerSettings.AllowQuestUsers.OnValueChanged += ServerSettingsHooks.OnAllowQuestUsersChanged;
+            FusionPreferences.LocalServerSettings.AllowPCUsers.OnValueChanged += ServerSettingsHooks.OnAllowPCUsersChanged;
+            Hooking.OnLevelInitialized += ServerSettingsHooks.OnChangeLevel;
         }
 
         private void OnLevelLoad(LevelInfo info)
@@ -465,6 +471,12 @@ namespace LabFusion.Network
             currentclient.Disconnected -= OnDisconnect;
             currentclient.ConnectionFailed -= OnConnectionFail;
             Hooking.OnLevelInitialized -= OnLevelLoad;
+
+            // Preference Hooks
+            FusionPreferences.LocalServerSettings.Privacy.OnValueChanged -= ServerSettingsHooks.OnServerPrivacyChanged;
+            FusionPreferences.LocalServerSettings.MaxPlayers.OnValueChanged -= ServerSettingsHooks.OnMaxPlayersChanged;
+            FusionPreferences.LocalServerSettings.AllowQuestUsers.OnValueChanged -= ServerSettingsHooks.OnAllowQuestUsersChanged;
+            FusionPreferences.LocalServerSettings.AllowPCUsers.OnValueChanged -= ServerSettingsHooks.OnAllowPCUsersChanged;
         }
 
         public static void OnUpdateRiptideLobby() {
@@ -576,12 +588,8 @@ namespace LabFusion.Network
         private static FunctionElement _createLobbyElemebt;
 
         private void CreateServerInfoMenu(MenuCategory category) {
-            _createServerElement = category.CreateFunctionElement("Start P2P Server", Color.white, OnClickCreateServer);
-
-            _createLobbyElemebt = category.CreateFunctionElement("Create Public Lobby", Color.white, () =>
-            {
-                PublicLobbyManager.CreatePublicLobby();
-            });
+            _createServerElement = category.CreateFunctionElement("Start P2P Server", Color.white, OnClickCreateServer, "P2P Lobbies Require that you PORT FORWARD.");
+            _createLobbyElemebt = category.CreateFunctionElement("Create Public Lobby", Color.white, OnClickCreateLobby);
 
             if (!HelperMethods.IsAndroid()) {
                 category.CreateFunctionElement("Copy Server Code to Clipboard", Color.white, OnCopyServerCode);
@@ -664,17 +672,36 @@ namespace LabFusion.Network
 
         private void OnDisplayServerCode()
         {
-            string encodedIP = IPSafety.IPSafety.EncodeIPAddress(publicIp);
-
-            FusionNotifier.Send(new FusionNotification()
+            if (publicIp == null || publicIp == string.Empty)
             {
-                title = "Server Code",
-                showTitleOnPopup = true,
-                isMenuItem = false,
-                isPopup = true,
-                message = $"Code: {encodedIP}",
-                popupLength = 20f,
-            });
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    title = "Server Code",
+                    showTitleOnPopup = true,
+                    isMenuItem = false,
+                    isPopup = true,
+                    message = $"Failed to obtain IP address! Please retry!",
+                    popupLength = 3f,
+                    type = NotificationType.ERROR
+                });
+                IPGetter.GetExternalIP((ip) =>
+                {
+                    publicIp = ip;
+                });
+            } else
+            {
+                string encodedIP = IPSafety.IPSafety.EncodeIPAddress(publicIp);
+
+                FusionNotifier.Send(new FusionNotification()
+                {
+                    title = "Server Code",
+                    showTitleOnPopup = true,
+                    isMenuItem = false,
+                    isPopup = true,
+                    message = $"Code: \n{encodedIP}",
+                    popupLength = 20f,
+                });
+            }
         }
 
         internal override bool CheckSupported() => true;

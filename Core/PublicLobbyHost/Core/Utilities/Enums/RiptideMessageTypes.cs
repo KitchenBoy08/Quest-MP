@@ -28,6 +28,8 @@ namespace PublicLobbyHost.Utilities
         JoinLobby = 21,
         LobbyInfo = 22,
         LobbyDisconnect = 23,
+        RequestLobbies = 24,
+        UpdateLobbyInfo = 25,
         #endregion
     }
 }

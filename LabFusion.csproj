@@ -474,6 +474,7 @@
     <Compile Include="Core\src\Network\Riptide\MessageReaders\ServerHostingMessageReaders.cs" />
     <Compile Include="Core\src\Network\Riptide\PublicLobbyUtils\PublicLobbyManager.cs" />
     <Compile Include="Core\src\Network\Riptide\PublicLobbyUtils\RiptideLobbyMetaData.cs" />
+    <Compile Include="Core\src\Network\Riptide\PublicLobbyUtils\ServerSettingsHooks.cs" />
     <Compile Include="Core\src\Network\Riptide\RiptideNetworkLayer\RiptideNetworkHooks.cs" />
     <Compile Include="Core\src\Network\Riptide\Utilities\Enums\CommandTypes.cs" />
     <Compile Include="Core\src\Network\Riptide\Utilities\Enums\RiptideMessageTypes.cs" />

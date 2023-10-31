@@ -9,7 +9,7 @@ using System.Timers;
 
 namespace PublicLobbyHost
 {
-    public class Program
+    public class PublicLobbyHost
     {
         public static List<PublicLobby> lobbies = new List<PublicLobby>();
         public static Server mainHost = new Server();
@@ -130,6 +130,15 @@ namespace PublicLobbyHost
                     return lobby;
             }
             return null;
+        }
+
+        public static void UpdateLobby(PublicLobby lobby)
+        {
+            for (int i = 0; i < lobbies.Count; i++)
+            {
+                if (lobbies[i].hostID == lobby.hostID)
+                    lobbies[i] = lobby;
+            }
         }
     }
 }
