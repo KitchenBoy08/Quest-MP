@@ -43,6 +43,7 @@
     <None Remove="Core\resources\text\credits\raw_credits_03.txt" />
     <None Remove="Core\resources\text\raw_changelog.txt" />
     <None Remove="Core\src\AssemblyInfo.tt" />
+    <None Remove="Core\src\Patching\Patches\Attacks\clhc22nq.d20~" />
   </ItemGroup>
 
   <ItemGroup>

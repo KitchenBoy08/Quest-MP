@@ -21,27 +21,12 @@ using MelonLoader.NativeUtils;
 
 namespace LabFusion.Patching
 {
-    // Since some methods here use structs, we native patch thanks to IL2CPP nonsense
+    [HarmonyPatch(typeof(ImpactProperties))]
     public static class ImpactPropertiesPatches
     {
-        public static void Patch()
-        {
-            PatchReceiveAttack();
-        }
-
-        // ReceiveAttack patching stuff
-        private static ReceiveAttackPatchDelegate _original;
-
-        private unsafe static void PatchReceiveAttack()
-        {
-            var tgtPtr = NativeUtilities.GetNativePtr<ImpactProperties>("NativeMethodInfoPtr_ReceiveAttack_Public_Virtual_Final_New_Void_Attack_0");
-            var dstPtr = NativeUtilities.GetDestPtr<ReceiveAttackPatchDelegate>(ReceiveAttack);
-
-            MelonUtils.NativeHookAttach((IntPtr)(&tgtPtr), dstPtr);
-            _original = NativeUtilities.GetOriginal<ReceiveAttackPatchDelegate>(tgtPtr);
-        }
-
-        private static void ReceiveAttack(IntPtr instance, IntPtr attack, IntPtr method)
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(ImpactProperties.ReceiveAttack))]
+        public static bool ReceiveAttack(Attack attack)
         {
             try
             {
@@ -49,37 +34,29 @@ namespace LabFusion.Patching
                 {
                     unsafe
                     {
-                        var _attack = *(Attack_*)attack;
-
-                        Collider collider = null;
-                        TriggerRefProxy proxy = null;
-
-                        if (_attack.collider != IntPtr.Zero)
-                            collider = new Collider(_attack.collider);
-
-                        if (_attack.proxy != IntPtr.Zero)
-                            proxy = new TriggerRefProxy(_attack.proxy);
+                        Collider collider = attack.collider;
+                        TriggerRefProxy proxy = attack.proxy;
 
                         // Check if this was a bullet attack + it was us who shot the bullet
-                        if (proxy == RigData.RigReferences.Proxy && _attack.attackType == AttackType.Piercing)
+                        if (proxy == RigData.RigReferences.Proxy && attack.attackType == AttackType.Piercing)
                         {
                             var rb = collider.attachedRigidbody;
                             if (!rb)
-                                return;
+                                return false;
 
                             ImpactUtilities.OnHitRigidbody(rb);
                         }
                     }
                 }
-
-                _original(instance, attack, method);
             }
             catch (Exception e)
             {
 #if DEBUG
-                FusionLogger.LogException("executing native patch ImpactProperties.ReceiveAttack", e);
+                FusionLogger.LogException("executing patch ImpactProperties.ReceiveAttack", e);
 #endif
             }
+
+            return true;
         }
 
         private static IEnumerator CoWaitAndSync(Rigidbody rb)

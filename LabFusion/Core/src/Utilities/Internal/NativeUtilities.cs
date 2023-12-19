@@ -16,10 +16,5 @@ namespace LabFusion.Utilities
         {
             return destination.Method.MethodHandle.GetFunctionPointer();
         }
-
-        internal static TDelegate GetOriginal<TDelegate>(IntPtr nativePtr)
-        {
-            return Marshal.GetDelegateForFunctionPointer<TDelegate>(nativePtr);
-        }
     }
 }

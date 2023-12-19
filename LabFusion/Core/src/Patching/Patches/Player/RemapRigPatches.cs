@@ -16,14 +16,15 @@ using Il2CppSLZ.Rig;
 
 namespace LabFusion.Patching
 {
-    [HarmonyPatch(typeof(RemapRig))]
+    // TODO: Figure out why this patch crashes ML 0.6.1
+    // [HarmonyPatch(typeof(RemapRig))]
     public static class RemapRigPatches
     {
         private static bool _wasChargingInput = false;
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(RemapRig.JumpCharge))]
-        public static void JumpCharge(RemapRig __instance, float deltaTime, bool chargeInput, bool __state)
+        public static void JumpCharge(RemapRig __instance, float deltaTime, bool chargeInput)
         {
             if (NetworkInfo.HasServer && __instance.manager.IsSelf())
             {

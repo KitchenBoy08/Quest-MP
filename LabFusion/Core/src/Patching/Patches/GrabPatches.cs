@@ -17,8 +17,6 @@ using LabFusion.Grabbables;
 using LabFusion.Network;
 using LabFusion.Extensions;
 
-using Il2ActionHandReceiver = Il2CppSystem.Action<Il2CppSLZ.Interaction.HandReciever>;
-
 namespace LabFusion.Patching
 {
     [HarmonyPatch(typeof(BarrelGrip))]
@@ -26,7 +24,7 @@ namespace LabFusion.Patching
     {
         [HarmonyPostfix]
         [HarmonyPatch(nameof(BarrelGrip.UpdateJointConfiguration))]
-        public static void UpdateJointConfiguration(Hand hand) => GripPatches.UpdateJointConfiguration(hand);
+        public static void UpdateJointConfiguration(Hand hand) => GripPatchShortcuts.UpdateJointConfiguration(hand);
     }
 
     [HarmonyPatch(typeof(SphereGrip))]
@@ -34,7 +32,7 @@ namespace LabFusion.Patching
     {
         [HarmonyPostfix]
         [HarmonyPatch(nameof(SphereGrip.UpdateJointConfiguration))]
-        public static void UpdateJointConfiguration(Hand hand) => GripPatches.UpdateJointConfiguration(hand);
+        public static void UpdateJointConfiguration(Hand hand) => GripPatchShortcuts.UpdateJointConfiguration(hand);
     }
 
     [HarmonyPatch(typeof(GenericGrip))]
@@ -42,7 +40,7 @@ namespace LabFusion.Patching
     {
         [HarmonyPostfix]
         [HarmonyPatch(nameof(GenericGrip.UpdateJointConfiguration))]
-        public static void UpdateJointConfiguration(Hand hand) => GripPatches.UpdateJointConfiguration(hand);
+        public static void UpdateJointConfiguration(Hand hand) => GripPatchShortcuts.UpdateJointConfiguration(hand);
     }
 
     [HarmonyPatch(typeof(TargetGrip))]
@@ -50,23 +48,24 @@ namespace LabFusion.Patching
     {
         [HarmonyPostfix]
         [HarmonyPatch(nameof(TargetGrip.UpdateJointConfiguration))]
-        public static void UpdateJointConfiguration(Hand hand) => GripPatches.UpdateJointConfiguration(hand);
+        public static void UpdateJointConfiguration(Hand hand) => GripPatchShortcuts.UpdateJointConfiguration(hand);
     }
 
-    [HarmonyPatch(typeof(BoxGrip))]
-    public static class BoxGripPatches
-    {
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(BoxGrip.UpdateJointConfiguration))]
-        public static void UpdateJointConfiguration(Hand hand) => GripPatches.UpdateJointConfiguration(hand);
-    }
+    // TODO: figure out why this patch causes a "Stack overflow" in ml 0.6
+    //[HarmonyPatch(typeof(BoxGrip))]
+    //public static class BoxGripPatches
+    //{
+    //    [HarmonyPostfix]
+    //    [HarmonyPatch(nameof(BoxGrip.UpdateJointConfiguration))]
+    //    public static void UpdateJointConfiguration(Hand hand) => GripPatchShortcuts.UpdateJointConfiguration(hand);
+    //}
 
     [HarmonyPatch(typeof(CylinderGrip))]
     public static class CylinderGripPatches
     {
         [HarmonyPostfix]
         [HarmonyPatch(nameof(CylinderGrip.UpdateJointConfiguration))]
-        public static void UpdateJointConfiguration(Hand hand) => GripPatches.UpdateJointConfiguration(hand);
+        public static void UpdateJointConfiguration(Hand hand) => GripPatchShortcuts.UpdateJointConfiguration(hand);
     }
 
     [HarmonyPatch(typeof(ForcePullGrip), nameof(ForcePullGrip.OnFarHandHoverUpdate))]
@@ -118,10 +117,8 @@ namespace LabFusion.Patching
         }
     }
 
-    [HarmonyPatch(typeof(Grip))]
-    public static class GripPatches
+    public static class GripPatchShortcuts
     {
-        // This is just referenced by other grip patches, not actually a patch itself
         public static void UpdateJointConfiguration(Hand hand)
         {
             if (NetworkInfo.HasServer && PlayerRepManager.HasPlayerId(hand.manager))
@@ -132,7 +129,11 @@ namespace LabFusion.Patching
                 joint.breakTorque = float.PositiveInfinity;
             }
         }
+    }
 
+    [HarmonyPatch(typeof(Grip))]
+    public static class GripPatches
+    {
         [HarmonyPatch(nameof(Grip.OnAttachedToHand))]
         [HarmonyPostfix]
         private static void OnAttachedToHand(Grip __instance, Hand hand)
