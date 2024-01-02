@@ -15,15 +15,15 @@ namespace LabFusion.Utilities
 {
     public class ItemPair
     {
-        public GameObject GameObject { get; private set; }
-        public Texture2D Preview { get; private set; }
+        public WeakAssetReference<GameObject> GameObject { get; private set; } = new();
+        public WeakAssetReference<Texture2D> Preview { get; private set; } = new();
 
         public static ItemPair LoadFromBundle(AssetBundle bundle, string name)
         {
             var itemPair = new ItemPair();
 
-            bundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.ItemPrefix + name, (v) => { itemPair.GameObject = v; });
-            bundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.PreviewPrefix + name, (v) => { itemPair.Preview = v; });
+            bundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.ItemPrefix + name, (v) => { itemPair.GameObject.SetAsset(v); });
+            bundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.PreviewPrefix + name, (v) => { itemPair.Preview.SetAsset(v); });
 
             return itemPair;
         }
@@ -31,7 +31,7 @@ namespace LabFusion.Utilities
 
     public static class FusionPointItemLoader
     {
-        public static AssetBundle ItemBundle { get; private set; }
+        public static WeakAssetReference<AssetBundle> ItemBundle { get; private set; } = new();
 
         private static readonly string[] _itemNames = new string[] {
             // BaBa Corp Cosmetics
@@ -124,11 +124,12 @@ namespace LabFusion.Utilities
 
         private static void OnBundleCompleted(AsyncOperation operation)
         {
-            ItemBundle = _itemBundleRequest.assetBundle;
+            var bundle = _itemBundleRequest.assetBundle;
+            ItemBundle.SetAsset(bundle);
 
             foreach (var item in _itemNames)
             {
-                _itemPairs.Add(item, ItemPair.LoadFromBundle(ItemBundle, item));
+                _itemPairs.Add(item, ItemPair.LoadFromBundle(bundle, item));
             }
         }
 
@@ -147,8 +148,11 @@ namespace LabFusion.Utilities
         public static void OnBundleUnloaded()
         {
             // Unload item bundle
-            if (ItemBundle != null)
-                ItemBundle.Unload(true);
+            if (ItemBundle.HasAsset)
+            {
+                ItemBundle.Asset.Unload(true);
+                ItemBundle.UnloadAsset();
+            }
         }
 
         public static ItemPair GetPair(string name)

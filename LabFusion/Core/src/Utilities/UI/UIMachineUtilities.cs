@@ -53,13 +53,13 @@ namespace LabFusion.Utilities
             triggerLasers.OnTriggerEnterEvent.AddCall(UnityEvent.GetDelegate((UnityAction)(() =>
             {
                 canvas.SetActive(true);
-                FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOn);
+                FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOn.Asset);
             })));
 
             triggerLasers.OnTriggerExitEvent.AddCall(UnityEvent.GetDelegate((UnityAction)(() =>
             {
                 canvas.SetActive(false);
-                FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOff);
+                FusionAudio.Play3D(canvas.transform.position, FusionContentLoader.UITurnOff.Asset);
             })));
 
         }

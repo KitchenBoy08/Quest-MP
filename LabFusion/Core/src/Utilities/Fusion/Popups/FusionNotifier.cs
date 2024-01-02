@@ -190,10 +190,10 @@ namespace LabFusion.Utilities
 
                 Texture2D incomingTexture = notification.type switch
                 {
-                    NotificationType.WARNING => FusionContentLoader.NotificationWarning,
-                    NotificationType.ERROR => FusionContentLoader.NotificationError,
-                    NotificationType.SUCCESS => FusionContentLoader.NotificationSuccess,
-                    _ => FusionContentLoader.NotificationInformation,
+                    NotificationType.WARNING => FusionContentLoader.NotificationWarning.Asset,
+                    NotificationType.ERROR => FusionContentLoader.NotificationError.Asset,
+                    NotificationType.SUCCESS => FusionContentLoader.NotificationSuccess.Asset,
+                    _ => FusionContentLoader.NotificationInformation.Asset,
                 };
                 Sprite incomingSprite = Sprite.Create(incomingTexture, new Rect(0.0f, 0.0f, incomingTexture.width, incomingTexture.height), new Vector2(0.5f, 0.5f), 100.0f);
 

@@ -552,7 +552,7 @@ namespace LabFusion.SDK.Points
             {
                 PointItemManager.SetEquipped(_targetInfoItem, false);
 
-                FusionAudio.Play3D(transform.position, FusionContentLoader.UnequipItem);
+                FusionAudio.Play3D(transform.position, FusionContentLoader.UnequipItem.Asset);
 
                 _doorRigidbody.AddRelativeTorque(Vector3Extensions.right * 30f, ForceMode.Impulse);
             }
@@ -561,7 +561,7 @@ namespace LabFusion.SDK.Points
             {
                 PointItemManager.SetEquipped(_targetInfoItem, true);
 
-                FusionAudio.Play3D(transform.position, FusionContentLoader.EquipItem);
+                FusionAudio.Play3D(transform.position, FusionContentLoader.EquipItem.Asset);
 
                 _doorRigidbody.AddRelativeTorque(Vector3Extensions.left * 30f, ForceMode.Impulse);
             }
@@ -583,12 +583,12 @@ namespace LabFusion.SDK.Points
                 SelectPanel(_lastCatalogPanel);
                 LoadCatalogPage();
 
-                FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseSuccess, 1f);
+                FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseSuccess.Asset, 1f);
             }
             // Failure
             else
             {
-                FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseFailure, 1f);
+                FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseFailure.Asset, 1f);
             }
         }
 
@@ -605,12 +605,12 @@ namespace LabFusion.SDK.Points
                 SelectPanel(_lastCatalogPanel);
                 LoadCatalogPage();
 
-                FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseSuccess, 1f);
+                FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseSuccess.Asset, 1f);
             }
             // Failure
             else
             {
-                FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseFailure, 1f);
+                FusionAudio.Play3D(transform.position, FusionContentLoader.PurchaseFailure.Asset, 1f);
             }
         }
 

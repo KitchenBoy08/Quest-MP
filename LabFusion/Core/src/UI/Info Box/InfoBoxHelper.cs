@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 using LabFusion.Utilities;
+using Il2CppSLZ.Marrow.Warehouse;
 
 namespace LabFusion.UI
 {
@@ -8,23 +9,25 @@ namespace LabFusion.UI
     {
         public static void SetupInfoBox(Vector3 position, Quaternion rotation, Vector3 scale)
         {
-            // Make sure we have the prefab
-            if (FusionContentLoader.InfoBoxPrefab == null)
-            {
-                FusionLogger.Warn("Missing the Info Box prefab!");
-                return;
-            }
-
             // Create the GameObject
-            GameObject shop = GameObject.Instantiate(FusionContentLoader.InfoBoxPrefab);
-            shop.SetActive(false);
-            shop.transform.position = position;
-            shop.transform.rotation = rotation;
-            shop.transform.localScale = scale;
-            shop.SetActive(true);
+            LevelCrate level = FusionSceneManager.Level;
 
-            // Add the info box script
-            shop.gameObject.AddComponent<InfoBox>();
+            FusionContentLoader.InfoBoxPrefab.Load((go) =>
+            {
+                // Make sure the level hasn't changed
+                if (level != FusionSceneManager.Level)
+                    return;
+
+                GameObject shop = GameObject.Instantiate(go);
+                shop.SetActive(false);
+                shop.transform.position = position;
+                shop.transform.rotation = rotation;
+                shop.transform.localScale = scale;
+                shop.SetActive(true);
+
+                // Add the info box script
+                shop.gameObject.AddComponent<InfoBox>();
+            });
         }
     }
 }
