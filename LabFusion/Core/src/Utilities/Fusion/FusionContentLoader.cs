@@ -75,68 +75,77 @@ namespace LabFusion.Utilities
             "music_AppenBeyuge",
         };
 
-        private static readonly List<AudioClip> _combatPlaylist = new List<AudioClip>();
+        private static readonly List<AudioClip> _combatPlaylist = new();
         public static AudioClip[] CombatPlaylist => _combatPlaylist.ToArray();
+
+        private static AssetBundleCreateRequest _contentBundleRequest = null;
+
+        private static void OnBundleCompleted(AsyncOperation operation)
+        {
+            ContentBundle = _contentBundleRequest.assetBundle;
+
+            ContentBundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.PointShopPrefab, (v) => { PointShopPrefab = v; });
+            ContentBundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.InfoBoxPrefab, (v) => { InfoBoxPrefab = v; });
+            ContentBundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.CupBoardPrefab, (v) => { CupBoardPrefab = v; });
+
+            ContentBundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.EntangledLinePrefab, (v) => { EntangledLinePrefab = v; });
+
+            ContentBundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.AchievementPopupPrefab, (v) => { AchievementPopupPrefab = v; });
+            ContentBundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.BitPopupPrefab, (v) => { BitPopupPrefab = v; });
+            ContentBundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.MutePopupPrefab, (v) => { MutePopupPrefab = v; });
+
+            ContentBundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.SabrelakeLogo, (v) => { SabrelakeLogo = v; });
+            ContentBundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.LavaGangLogo, (v) => { LavaGangLogo = v; });
+
+            foreach (var song in _combatSongNames)
+            {
+                ContentBundle.LoadPersistentAssetAsync<AudioClip>(song, (v) => { _combatPlaylist.Add(v); });
+            }
+
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.GeoGrpFellDownTheStairs, (v) => { GeoGrpFellDownTheStairs = v; });
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.BouncingStrong, (v) => { BouncingStrong = v; });
+
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.LavaGangVictory, (v) => { LavaGangVictory = v; });
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.SabrelakeVictory, (v) => { SabrelakeVictory = v; });
+
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.LavaGangFailure, (v) => { LavaGangFailure = v; });
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.SabrelakeFailure, (v) => { SabrelakeFailure = v; });
+
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.DMTie, (v) => { DMTie = v; });
+
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.BitGet, (v) => { BitGet = v; });
+
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.UISelect, (v) => { UISelect = v; });
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.UIDeny, (v) => { UIDeny = v; });
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.UIConfirm, (v) => { UIConfirm = v; });
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.UITurnOff, (v) => { UITurnOff = v; });
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.UITurnOn, (v) => { UITurnOn = v; });
+
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.PurchaseFailure, (v) => { PurchaseFailure = v; });
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.PurchaseSuccess, (v) => { PurchaseSuccess = v; });
+
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.EquipItem, (v) => { EquipItem = v; });
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.UnequipItem, (v) => { UnequipItem = v; });
+
+            ContentBundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.NotificationInformation, (v) => { NotificationInformation = v; });
+            ContentBundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.NotificationWarning, (v) => { NotificationWarning = v; });
+            ContentBundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.NotificationError, (v) => { NotificationError = v; });
+            ContentBundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.NotificationSuccess, (v) => { NotificationSuccess = v; });
+
+            ContentBundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.LaserCursor, (v) => { LaserCursor = v; });
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.LaserPulseSound, (v) => { LaserPulseSound = v; });
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.LaserRaySpawn, (v) => { LaserRaySpawn = v; });
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.LaserRayDespawn, (v) => { LaserRayDespawn = v; });
+            ContentBundle.LoadPersistentAssetAsync<AudioClip>(ResourcePaths.LaserPrismaticSFX, (v) => { LaserPrismaticSFX = v; });
+        }
 
         public static void OnBundleLoad()
         {
-            ContentBundle = FusionBundleLoader.LoadAssetBundle(ResourcePaths.ContentBundle);
+            _contentBundleRequest = FusionBundleLoader.LoadAssetBundleAsync(ResourcePaths.ContentBundle);
 
-            if (ContentBundle != null)
+            if (_contentBundleRequest != null)
             {
-                PointShopPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.PointShopPrefab);
-                InfoBoxPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.InfoBoxPrefab);
-                CupBoardPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.CupBoardPrefab);
-
-                EntangledLinePrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.EntangledLinePrefab);
-
-                AchievementPopupPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.AchievementPopupPrefab);
-                BitPopupPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.BitPopupPrefab);
-                MutePopupPrefab = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.MutePopupPrefab);
-
-                SabrelakeLogo = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.SabrelakeLogo);
-                LavaGangLogo = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.LavaGangLogo);
-
-                foreach (var song in _combatSongNames)
-                {
-                    _combatPlaylist.Add(ContentBundle.LoadPersistentAsset<AudioClip>(song));
-                }
-
-                GeoGrpFellDownTheStairs = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.GeoGrpFellDownTheStairs);
-                BouncingStrong = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.BouncingStrong);
-
-                LavaGangVictory = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.LavaGangVictory);
-                SabrelakeVictory = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.SabrelakeVictory);
-
-                LavaGangFailure = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.LavaGangFailure);
-                SabrelakeFailure = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.SabrelakeFailure);
-
-                DMTie = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.DMTie);
-
-                BitGet = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.BitGet);
-
-                UISelect = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.UISelect);
-                UIDeny = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.UIDeny);
-                UIConfirm = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.UIConfirm);
-                UITurnOff = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.UITurnOff);
-                UITurnOn = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.UITurnOn);
-
-                PurchaseFailure = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.PurchaseFailure);
-                PurchaseSuccess = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.PurchaseSuccess);
-
-                EquipItem = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.EquipItem);
-                UnequipItem = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.UnequipItem);
-
-                NotificationInformation = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.NotificationInformation);
-                NotificationWarning = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.NotificationWarning);
-                NotificationError = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.NotificationError);
-                NotificationSuccess = ContentBundle.LoadPersistentAsset<Texture2D>(ResourcePaths.NotificationSuccess);
-
-                LaserCursor = ContentBundle.LoadPersistentAsset<GameObject>(ResourcePaths.LaserCursor);
-                LaserPulseSound = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.LaserPulseSound);
-                LaserRaySpawn = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.LaserRaySpawn);
-                LaserRayDespawn = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.LaserRayDespawn);
-                LaserPrismaticSFX = ContentBundle.LoadPersistentAsset<AudioClip>(ResourcePaths.LaserPrismaticSFX);
+                _contentBundleRequest.add_completed((Il2CppSystem.Action<AsyncOperation>)OnBundleCompleted);
             }
             else
                 FusionLogger.Error("Content Bundle failed to load!");

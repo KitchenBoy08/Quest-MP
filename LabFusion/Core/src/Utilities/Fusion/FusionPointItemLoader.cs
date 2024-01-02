@@ -20,11 +20,12 @@ namespace LabFusion.Utilities
 
         public static ItemPair LoadFromBundle(AssetBundle bundle, string name)
         {
-            return new ItemPair()
-            {
-                GameObject = bundle.LoadPersistentAsset<GameObject>(ResourcePaths.ItemPrefix + name),
-                Preview = bundle.LoadPersistentAsset<Texture2D>(ResourcePaths.PreviewPrefix + name),
-            };
+            var itemPair = new ItemPair();
+
+            bundle.LoadPersistentAssetAsync<GameObject>(ResourcePaths.ItemPrefix + name, (v) => { itemPair.GameObject = v; });
+            bundle.LoadPersistentAssetAsync<Texture2D>(ResourcePaths.PreviewPrefix + name, (v) => { itemPair.Preview = v; });
+
+            return itemPair;
         }
     }
 
@@ -119,16 +120,25 @@ namespace LabFusion.Utilities
 
         private static readonly Dictionary<string, ItemPair> _itemPairs = new();
 
+        private static AssetBundleCreateRequest _itemBundleRequest = null;
+
+        private static void OnBundleCompleted(AsyncOperation operation)
+        {
+            ItemBundle = _itemBundleRequest.assetBundle;
+
+            foreach (var item in _itemNames)
+            {
+                _itemPairs.Add(item, ItemPair.LoadFromBundle(ItemBundle, item));
+            }
+        }
+
         public static void OnBundleLoad()
         {
-            ItemBundle = FusionBundleLoader.LoadAssetBundle(ResourcePaths.ItemBundle);
+            _itemBundleRequest = FusionBundleLoader.LoadAssetBundleAsync(ResourcePaths.ItemBundle);
 
-            if (ItemBundle != null)
+            if (_itemBundleRequest != null)
             {
-                foreach (var item in _itemNames)
-                {
-                    _itemPairs.Add(item, ItemPair.LoadFromBundle(ItemBundle, item));
-                }
+                _itemBundleRequest.add_completed((Il2CppSystem.Action<AsyncOperation>)OnBundleCompleted);
             }
             else
                 FusionLogger.Error("Item bundle failed to load!");
