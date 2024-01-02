@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Configurations>Debug;Release;Debug-Lite;Release-Lite</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -12,7 +13,17 @@
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Lite|AnyCPU'">
+    <DefineConstants>$(DefineConstants);MELONLOADER</DefineConstants>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants);MELONLOADER</DefineConstants>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Lite|AnyCPU'">
     <DefineConstants>$(DefineConstants);MELONLOADER</DefineConstants>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
   </PropertyGroup>
@@ -57,13 +68,16 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Core\resources\bundles\Android\achievement_bundle.fusion" />
-    <EmbeddedResource Include="Core\resources\bundles\Android\content_bundle.fusion" />
-    <EmbeddedResource Include="Core\resources\bundles\Android\item_bundle.fusion" />
-    <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\achievement_bundle.fusion" />
-    <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\content_bundle.fusion" />
-    <EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\item_bundle.fusion" />
+	<ItemGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU' Or '$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<EmbeddedResource Include="Core\resources\bundles\Android\achievement_bundle.fusion" />
+		<EmbeddedResource Include="Core\resources\bundles\Android\content_bundle.fusion" />
+		<EmbeddedResource Include="Core\resources\bundles\Android\item_bundle.fusion" />
+		<EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\achievement_bundle.fusion" />
+		<EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\content_bundle.fusion" />
+		<EmbeddedResource Include="Core\resources\bundles\StandaloneWindows64\item_bundle.fusion" />
+	</ItemGroup>
+
+	<ItemGroup>
     <EmbeddedResource Include="Core\resources\lib\x86_64\steam_api64.dll" />
     <EmbeddedResource Include="Core\resources\text\credits\raw_credits_01.txt" />
     <EmbeddedResource Include="Core\resources\text\credits\raw_credits_02.txt" />
