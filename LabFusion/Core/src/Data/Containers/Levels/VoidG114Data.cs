@@ -45,6 +45,7 @@ namespace LabFusion.Data
 
             if (GameController != null)
             {
+#if !DEBUG_LITE && !RELEASE_LITE
                 // Point shop
                 PointShopHelper.SetupPointShop(PointShopPosition, PointShopRotation, Vector3Extensions.one * 0.8f);
 
@@ -64,6 +65,7 @@ namespace LabFusion.Data
 
                 // Cup board
                 CupBoardHelper.SetupCupBoard(CupBoardPosition, CupBoardRotation, Vector3Extensions.one);
+#endif
             }
         }
     }

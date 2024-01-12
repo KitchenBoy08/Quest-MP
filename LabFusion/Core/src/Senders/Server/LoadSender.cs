@@ -20,17 +20,30 @@ namespace LabFusion.Senders
             MessageSender.SendToServer(NetworkChannel.Reliable, message);
         }
 
-        public static void SendLevelLoad(string barcode, ulong userId)
+        public static void SendLevelLoad(string barcode, string loadBarcode, ulong userId)
         {
             if (!NetworkInfo.IsServer)
                 return;
 
-            using FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode));
-            using var data = SceneLoadData.Create(barcode);
+            using FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode, loadBarcode));
+            using var data = SceneLoadData.Create(barcode, loadBarcode);
             writer.Write(data);
 
             using var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer);
             MessageSender.SendFromServer(userId, NetworkChannel.Reliable, message);
+        }
+
+        public static void SendLevelLoad(string barcode, string loadBarcode)
+        {
+            if (!NetworkInfo.IsServer)
+                return;
+
+            using FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode, loadBarcode));
+            using var data = SceneLoadData.Create(barcode, loadBarcode);
+            writer.Write(data);
+
+            using var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer);
+            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
         }
 
         public static void SendLoadingState(bool isLoading)
@@ -40,19 +53,6 @@ namespace LabFusion.Senders
 
             // Set the loading metadata
             PlayerIdManager.LocalId.TrySetMetadata(MetadataHelper.LoadingKey, isLoading.ToString());
-        }
-
-        public static void SendLevelLoad(string barcode)
-        {
-            if (!NetworkInfo.IsServer)
-                return;
-
-            using FusionWriter writer = FusionWriter.Create(SceneLoadData.GetSize(barcode));
-            using var data = SceneLoadData.Create(barcode);
-            writer.Write(data);
-
-            using var message = FusionMessage.Create(NativeMessageTag.SceneLoad, writer);
-            MessageSender.BroadcastMessageExceptSelf(NetworkChannel.Reliable, message);
         }
     }
 }

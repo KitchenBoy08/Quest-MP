@@ -14,19 +14,23 @@ namespace LabFusion.Network
     {
         public string levelBarcode;
 
-        public static int GetSize(string barcode)
+        public string loadBarcode;
+
+        public static int GetSize(string barcode, string loadBarcode)
         {
-            return barcode.GetSize();
+            return barcode.GetSize() + loadBarcode.GetSize();
         }
 
         public void Serialize(FusionWriter writer)
         {
             writer.Write(levelBarcode);
+            writer.Write(loadBarcode);
         }
 
         public void Deserialize(FusionReader reader)
         {
             levelBarcode = reader.ReadString();
+            loadBarcode = reader.ReadString();
         }
 
         public void Dispose()
@@ -34,11 +38,12 @@ namespace LabFusion.Network
             GC.SuppressFinalize(this);
         }
 
-        public static SceneLoadData Create(string levelBarcode)
+        public static SceneLoadData Create(string levelBarcode, string loadBarcode)
         {
             return new SceneLoadData()
             {
                 levelBarcode = levelBarcode,
+                loadBarcode = loadBarcode,
             };
         }
     }
@@ -57,7 +62,7 @@ namespace LabFusion.Network
                 FusionLogger.Log($"Received level load for {data.levelBarcode}!");
 #endif
 
-                FusionSceneManager.SetTargetScene(data.levelBarcode);
+                FusionSceneManager.SetTargetScene(data.levelBarcode, data.loadBarcode);
             }
         }
     }
